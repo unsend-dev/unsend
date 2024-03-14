@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "unsend",
   "private": true,
   "scripts": {
     "build": "turbo build",
@@ -11,7 +11,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
-    "turbo": "^1.12.4"
+    "turbo": "latest"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
