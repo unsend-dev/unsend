@@ -3,18 +3,28 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter=web",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:generate": "pnpm db generate",
+    "db:push": "pnpm db push",
+    "db:migrate-dev": "pnpm db migrate-dev",
+    "db:migrate-deploy": "pnpm db migrate-deploy",
+    "db:studio": "pnpm db studio",
+    "db": "pnpm load-env -- pnpm --filter @unsend/db",
+    "load-env": "dotenv -e .env"
   },
   "devDependencies": {
     "@unsend/eslint-config": "workspace:*",
     "@unsend/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
-    "turbo": "latest"
+    "dotenv-cli": "^7.4.1",
+    "prettier": "^3.2.5"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "turbo": "^1.12.5"
   }
 }
