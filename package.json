@@ -3,15 +3,15 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev --filter=web",
+    "dev": "pnpm load-env -- turbo dev --filter=web",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "db:generate": "pnpm db generate",
-    "db:push": "pnpm db push",
-    "db:migrate-dev": "pnpm db migrate-dev",
-    "db:migrate-deploy": "pnpm db migrate-deploy",
-    "db:studio": "pnpm db studio",
-    "db": "pnpm load-env -- pnpm --filter @unsend/db",
+    "db:generate": "pnpm db db:generate",
+    "db:push": "pnpm db db:push",
+    "db:migrate-dev": "pnpm db db:migrate-dev",
+    "db:migrate-deploy": "pnpm db db:migrate-deploy",
+    "db:studio": "pnpm db db:studio",
+    "db": "pnpm load-env -- pnpm --filter=web",
     "load-env": "dotenv -e .env"
   },
   "devDependencies": {

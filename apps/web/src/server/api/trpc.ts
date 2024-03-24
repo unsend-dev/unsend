@@ -9,7 +9,7 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -106,3 +106,21 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+export const teamProcedure = protectedProcedure.use(
+  async ({ ctx, next, input }) => {
+    const teamUser = await db.teamUser.findFirst({
+      where: { userId: ctx.session.user.id },
+      include: { team: true },
+    });
+    if (!teamUser) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
+    }
+    return next({
+      ctx: {
+        team: teamUser.team,
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  }
+);
