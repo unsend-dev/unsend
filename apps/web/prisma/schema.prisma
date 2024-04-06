@@ -101,17 +101,19 @@ enum DomainStatus {
 }
 
 model Domain {
-  id         Int          @id @default(autoincrement())
-  name       String       @unique
-  teamId     Int
-  status     DomainStatus @default(PENDING)
-  region     String       @default("us-east-1")
-  publicKey  String
-  dkimStatus String?
-  spfDetails String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  teamId        Int
+  status        DomainStatus @default(PENDING)
+  region        String       @default("us-east-1")
+  clickTracking Boolean      @default(false)
+  openTracking  Boolean      @default(false)
+  publicKey     String
+  dkimStatus    String?
+  spfDetails    String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  team          Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 enum ApiPermission {

@@ -176,7 +176,7 @@ export default async function AuthenticatedDashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          <main className="flex flex-1 flex-col gap-4 p-4 w-full lg:max-w-6xl mx-auto lg:gap-6 lg:p-6">
             {children}
           </main>
         </div>
