@@ -91,6 +91,15 @@ importers:
       '@aws-sdk/client-sns':
         specifier: ^3.540.0
         version: 3.540.0
+      '@hono/node-server':
+        specifier: ^1.9.1
+        version: 1.9.1
+      '@hono/swagger-ui':
+        specifier: ^0.2.1
+        version: 0.2.1(hono@4.2.2)
+      '@hono/zod-openapi':
+        specifier: ^0.10.0
+        version: 0.10.0(hono@4.2.2)(zod@3.22.4)
       '@prisma/client':
         specifier: ^5.11.0
         version: 5.11.0(prisma@5.11.0)
@@ -118,6 +127,9 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      hono:
+        specifier: ^4.2.2
+        version: 4.2.2
       install:
         specifier: ^0.13.0
         version: 0.13.0
@@ -349,6 +361,15 @@ packages:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
     dev: true
+
+  /@asteasolutions/zod-to-openapi@7.0.0(zod@3.22.4):
+    resolution: {integrity: sha512-rJRKHD2m6nUb/9ZheeN8nqOURX24WTzY8Sex1ZKT0Kpx+xfpRcD0fTD6vEeXNHGaDGxzu65Jj/jb2x6nLTjcMw==}
+    peerDependencies:
+      zod: ^3.20.2
+    dependencies:
+      openapi3-ts: 4.3.1
+      zod: 3.22.4
+    dev: false
 
   /@auth/core@0.28.0:
     resolution: {integrity: sha512-/fh/tb/L4NMSYcyPoo4Imn8vN6MskcVfgESF8/ndgtI4fhD/7u7i5fTVzWgNRZ4ebIEGHNDbWFRxaTu1NtQgvA==}
@@ -1442,6 +1463,42 @@ packages:
 
   /@floating-ui/utils@0.2.1:
     resolution: {integrity: sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==}
+    dev: false
+
+  /@hono/node-server@1.9.1:
+    resolution: {integrity: sha512-XBru0xbtRlTZJyAiFJLn7XDKbCVXBaRhVQAQhB9TwND2gwj8jf9SDWIj/7VxVtNAjURJf7Ofcz58DRA6DPYiWA==}
+    engines: {node: '>=18.14.1'}
+    dev: false
+
+  /@hono/swagger-ui@0.2.1(hono@4.2.2):
+    resolution: {integrity: sha512-wBxVMRe3/v8xH4o6icmwztiIq0DG0s7+jHVMHVUAoFFCWEQNL2iskMmQtrhSDtsFmBZUeUFQUaaJ6Ir6DOmHLA==}
+    peerDependencies:
+      hono: '*'
+    dependencies:
+      hono: 4.2.2
+    dev: false
+
+  /@hono/zod-openapi@0.10.0(hono@4.2.2)(zod@3.22.4):
+    resolution: {integrity: sha512-XvUtRMI5IugLSkdadYi349k1I40RntfeDqAcIskQ5dXqD+7ZEn3PxGX/jntyHXcbTLLotfzRTXQi0eh4Bb/LWg==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      hono: '>=3.11.3'
+      zod: 3.*
+    dependencies:
+      '@asteasolutions/zod-to-openapi': 7.0.0(zod@3.22.4)
+      '@hono/zod-validator': 0.2.1(hono@4.2.2)(zod@3.22.4)
+      hono: 4.2.2
+      zod: 3.22.4
+    dev: false
+
+  /@hono/zod-validator@0.2.1(hono@4.2.2)(zod@3.22.4):
+    resolution: {integrity: sha512-HFoxln7Q6JsE64qz2WBS28SD33UB2alp3aRKmcWnNLDzEL1BLsWfbdX6e1HIiUprHYTIXf5y7ax8eYidKUwyaA==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.19.1
+    dependencies:
+      hono: 4.2.2
+      zod: 3.22.4
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -4076,7 +4133,7 @@ packages:
       enhanced-resolve: 5.16.0
       eslint: 8.57.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.3
       is-core-module: 2.13.1
@@ -4888,6 +4945,11 @@ packages:
     dependencies:
       function-bind: 1.1.2
 
+  /hono@4.2.2:
+    resolution: {integrity: sha512-mDmjBHF6uBNN3TASdAbDCFsN9FLbrlgXyFZkhLEkU7hUgk0+T9hcsUrL/nho4qV+Xk0RDHx7gop4Q1gelZZVRw==}
+    engines: {node: '>=16.0.0'}
+    dev: false
+
   /hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
@@ -5616,6 +5678,12 @@ packages:
     dependencies:
       wrappy: 1.0.2
     dev: true
+
+  /openapi3-ts@4.3.1:
+    resolution: {integrity: sha512-ha/kTOLhMQL7MvS9Abu/cpCXx5qwHQ++88YkUzn1CGfmM8JvCOG/4ZE6tRsexgXRFaoJrcwLyf81H2Y/CXALtA==}
+    dependencies:
+      yaml: 2.4.1
+    dev: false
 
   /openid-client@5.6.5:
     resolution: {integrity: sha512-5P4qO9nGJzB5PI0LFlhj4Dzg3m4odt0qsJTfyEtZyOlkgpILwEioOhVVJOrS1iVH494S4Ee5OCjjg6Bf5WOj3w==}
