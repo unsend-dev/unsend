@@ -7,7 +7,11 @@ import {
   teamProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { createDomain, getDomain } from "~/server/service/domain-service";
+import {
+  createDomain,
+  getDomain,
+  updateDomain,
+} from "~/server/service/domain-service";
 
 export const domainRouter = createTRPCRouter({
   createDomain: teamProcedure
@@ -21,6 +25,9 @@ export const domainRouter = createTRPCRouter({
       where: {
         teamId: ctx.team.id,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return domains;
@@ -30,5 +37,20 @@ export const domainRouter = createTRPCRouter({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       return getDomain(input.id);
+    }),
+
+  updateDomain: teamProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        clickTracking: z.boolean().optional(),
+        openTracking: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return updateDomain(input.id, {
+        clickTracking: input.clickTracking,
+        openTracking: input.openTracking,
+      });
     }),
 });

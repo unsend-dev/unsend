@@ -67,3 +67,13 @@ export async function getDomain(id: number) {
 
   return domain;
 }
+
+export async function updateDomain(
+  id: number,
+  data: { clickTracking?: boolean; openTracking?: boolean }
+) {
+  return db.domain.update({
+    where: { id },
+    data,
+  });
+}

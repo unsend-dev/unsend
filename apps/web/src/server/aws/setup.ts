@@ -78,6 +78,12 @@ async function setupSESConfiguration() {
     topicArn,
     [...GENERAL_EVENTS, "OPEN"]
   );
+
+  await setWebhookConfiguration(APP_SETTINGS.SES_CONFIGURATION_FULL, topicArn, [
+    ...GENERAL_EVENTS,
+    "CLICK",
+    "OPEN",
+  ]);
 }
 
 async function setWebhookConfiguration(

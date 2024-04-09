@@ -97,8 +97,10 @@ export async function sendEmailThroughSes({
   text,
   html,
   region = "us-east-1",
+  configurationSetName,
 }: EmailContent & {
   region?: string;
+  configurationSetName: string;
 }) {
   const sesClient = getSesClient(region);
   const command = new SendEmailCommand({
@@ -128,6 +130,7 @@ export async function sendEmailThroughSes({
         },
       },
     },
+    ConfigurationSetName: configurationSetName,
   });
 
   try {
