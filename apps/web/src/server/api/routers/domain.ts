@@ -13,6 +13,7 @@ import {
   getDomain,
   updateDomain,
 } from "~/server/service/domain-service";
+import { sendEmail } from "~/server/service/email-service";
 
 export const domainRouter = createTRPCRouter({
   createDomain: teamProcedure
@@ -61,4 +62,37 @@ export const domainRouter = createTRPCRouter({
       await deleteDomain(input.id);
       return { success: true };
     }),
+
+  sendTestEmailFromDomain: teamProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(
+      async ({
+        ctx: {
+          session: { user },
+          team,
+        },
+        input,
+      }) => {
+        const domain = await db.domain.findFirst({
+          where: { id: input.id, teamId: team.id },
+        });
+
+        if (!domain) {
+          throw new Error("Domain not found");
+        }
+
+        if (!user.email) {
+          throw new Error("User email not found");
+        }
+
+        return sendEmail({
+          teamId: team.id,
+          to: user.email,
+          from: `hello@${domain.name}`,
+          subject: "Test mail",
+          text: "Hello this is a test mail",
+          html: "<p>Hello this is a test mail</p>",
+        });
+      }
+    ),
 });

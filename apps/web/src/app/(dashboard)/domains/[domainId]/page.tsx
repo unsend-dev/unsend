@@ -290,8 +290,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
         <p className="font-semibold text-xl mt-2 text-destructive">Danger</p>
 
         <p className="text-destructive text-sm font-semibold">
-          Deleting a domain will remove all of its DNS records and stop sending
-          emails.
+          Deleting a domain will stop sending emails with this domain.
         </p>
         <DeleteDomain domain={domain} />
       </div>

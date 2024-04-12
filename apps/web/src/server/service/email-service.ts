@@ -8,16 +8,16 @@ export async function sendEmail(
 ) {
   const { to, from, subject, text, html, teamId } = emailContent;
 
-  const domains = await db.domain.findMany({ where: { teamId } });
-
   const fromDomain = from.split("@")[1];
-  if (!fromDomain) {
-    throw new Error("From email is not valid");
-  }
 
-  const domain = domains.find((domain) => domain.name === fromDomain);
+  const domain = await db.domain.findFirst({
+    where: { teamId, name: fromDomain },
+  });
+
   if (!domain) {
-    throw new Error("Domain not found. Add domain to unsend first");
+    throw new Error(
+      "Domain of from email is wrong. Use the email verified by unsend"
+    );
   }
 
   if (domain.status !== "SUCCESS") {
