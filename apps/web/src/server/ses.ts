@@ -66,7 +66,7 @@ export async function addDomain(domain: string, region = "us-east-1") {
 
   const emailIdentityCommand = new PutEmailIdentityMailFromAttributesCommand({
     EmailIdentity: domain,
-    MailFromDomain: `send.${domain}`,
+    MailFromDomain: `mail.${domain}`,
   });
 
   const emailIdentityResponse = await sesClient.send(emailIdentityCommand);
@@ -75,10 +75,21 @@ export async function addDomain(domain: string, region = "us-east-1") {
     response.$metadata.httpStatusCode !== 200 ||
     emailIdentityResponse.$metadata.httpStatusCode !== 200
   ) {
-    throw new Error("Failed to create email identity");
+    console.log(response);
+    console.log(emailIdentityResponse);
+    throw new Error("Failed to create domain identity");
   }
 
   return publicKey;
+}
+
+export async function deleteDomain(domain: string, region = "us-east-1") {
+  const sesClient = getSesClient(region);
+  const command = new DeleteEmailIdentityCommand({
+    EmailIdentity: domain,
+  });
+  const response = await sesClient.send(command);
+  return response.$metadata.httpStatusCode === 200;
 }
 
 export async function getDomainIdentity(domain: string, region = "us-east-1") {
@@ -165,7 +176,6 @@ export async function addWebhookConfiguration(
     ConfigurationSetName: configName, // required
     EventDestinationName: "unsend_destination", // required
     EventDestination: {
-      // EventDestinationDefinition
       Enabled: true,
       MatchingEventTypes: eventTypes,
       SnsDestination: {

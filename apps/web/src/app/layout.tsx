@@ -2,6 +2,7 @@ import "@unsend/ui/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@unsend/ui/theme-provider";
+import { Toaster } from "@unsend/ui/src/toaster";
 
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark">
+          <Toaster />
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ThemeProvider>
       </body>

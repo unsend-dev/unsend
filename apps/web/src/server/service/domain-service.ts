@@ -1,15 +1,21 @@
-import { addDomain, getDomainIdentity } from "~/server/ses";
+import dns from "dns";
+import util from "util";
+import * as tldts from "tldts";
+import * as ses from "~/server/ses";
 import { db } from "~/server/db";
 
+const dnsResolveTxt = util.promisify(dns.resolveTxt);
+
 export async function createDomain(teamId: number, name: string) {
-  console.log("Creating domain:", name);
-  const publicKey = await addDomain(name);
+  const subdomain = tldts.getSubdomain(name);
+  const publicKey = await ses.addDomain(name);
 
   const domain = await db.domain.create({
     data: {
       name,
       publicKey,
       teamId,
+      subdomain,
     },
   });
 
@@ -28,7 +34,10 @@ export async function getDomain(id: number) {
   }
 
   if (domain.status !== "SUCCESS") {
-    const domainIdentity = await getDomainIdentity(domain.name, domain.region);
+    const domainIdentity = await ses.getDomainIdentity(
+      domain.name,
+      domain.region
+    );
 
     const dkimStatus = domainIdentity.DkimAttributes?.Status;
     const spfDetails = domainIdentity.MailFromAttributes?.MailFromDomainStatus;
@@ -36,13 +45,17 @@ export async function getDomain(id: number) {
     const verificationStatus = domainIdentity.VerificationStatus;
     const lastCheckedTime =
       domainIdentity.VerificationInfo?.LastCheckedTimestamp;
+    const _dmarcRecord = await getDmarcRecord(domain.name);
+    const dmarcRecord = _dmarcRecord?.[0]?.[0];
 
     console.log(domainIdentity);
+    console.log(dmarcRecord);
 
     if (
       domain.dkimStatus !== dkimStatus ||
       domain.spfDetails !== spfDetails ||
-      domain.status !== verificationStatus
+      domain.status !== verificationStatus ||
+      domain.dmarcAdded !== (dmarcRecord ? true : false)
     ) {
       domain = await db.domain.update({
         where: {
@@ -52,16 +65,18 @@ export async function getDomain(id: number) {
           dkimStatus,
           spfDetails,
           status: verificationStatus ?? "NOT_STARTED",
+          dmarcAdded: dmarcRecord ? true : false,
         },
       });
     }
 
     return {
       ...domain,
-      dkimStatus,
-      spfDetails,
-      verificationError,
+      dkimStatus: dkimStatus?.toString() ?? null,
+      spfDetails: spfDetails?.toString() ?? null,
+      verificationError: verificationError?.toString() ?? null,
       lastCheckedTime,
+      dmarcAdded: dmarcRecord ? true : false,
     };
   }
 
@@ -76,4 +91,34 @@ export async function updateDomain(
     where: { id },
     data,
   });
+}
+
+export async function deleteDomain(id: number) {
+  const domain = await db.domain.findUnique({
+    where: { id },
+  });
+
+  if (!domain) {
+    throw new Error("Domain not found");
+  }
+
+  const deleted = await ses.deleteDomain(domain.name, domain.region);
+
+  if (!deleted) {
+    throw new Error("Error in deleting domain");
+  }
+
+  return db.domain.delete({
+    where: { id },
+  });
+}
+
+async function getDmarcRecord(domain: string) {
+  try {
+    const dmarcRecord = await dnsResolveTxt(`_dmarc.${domain}`);
+    return dmarcRecord;
+  } catch (error) {
+    console.error("Error fetching DMARC record:", error);
+    return null; // or handle error as appropriate
+  }
 }

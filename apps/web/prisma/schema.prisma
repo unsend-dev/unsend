@@ -111,6 +111,9 @@ model Domain {
   publicKey     String
   dkimStatus    String?
   spfDetails    String?
+  dmarcAdded    Boolean      @default(false)
+  errorMessage  String?
+  subdomain     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   team          Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)

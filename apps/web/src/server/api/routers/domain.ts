@@ -9,6 +9,7 @@ import {
 import { db } from "~/server/db";
 import {
   createDomain,
+  deleteDomain,
   getDomain,
   updateDomain,
 } from "~/server/service/domain-service";
@@ -52,5 +53,12 @@ export const domainRouter = createTRPCRouter({
         clickTracking: input.clickTracking,
         openTracking: input.openTracking,
       });
+    }),
+
+  deleteDomain: teamProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await deleteDomain(input.id);
+      return { success: true };
     }),
 });

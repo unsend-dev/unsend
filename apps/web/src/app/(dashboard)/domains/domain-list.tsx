@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Switch } from "@unsend/ui/src/switch";
 import { api } from "~/trpc/react";
 import React from "react";
+import { StatusIndicator } from "./status-indicator";
+import { DomainStatusBadge } from "./domain-badge";
 
 export default function DomainsList() {
   const domainsQuery = api.domain.domains.useQuery();
@@ -72,6 +74,7 @@ const DomainItem: React.FC<{ domain: Domain }> = ({ domain }) => {
             </Link>
             <DomainStatusBadge status={domain.status} />
           </div>
+
           <div className="flex flex-col gap-4">
             <div>
               <p className="text-sm text-muted-foreground">Created at</p>
@@ -111,56 +114,4 @@ const DomainItem: React.FC<{ domain: Domain }> = ({ domain }) => {
       </div>
     </div>
   );
-};
-
-const DomainStatusBadge: React.FC<{ status: DomainStatus }> = ({ status }) => {
-  let badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10"; // Default color
-  switch (status) {
-    case DomainStatus.NOT_STARTED:
-      badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10";
-      break;
-    case DomainStatus.SUCCESS:
-      badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
-      break;
-    case DomainStatus.FAILED:
-      badgeColor = "bg-red-500/10 text-red-800 border-red-600/10";
-      break;
-    case DomainStatus.TEMPORARY_FAILURE:
-    case DomainStatus.PENDING:
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
-      break;
-    default:
-      badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10";
-  }
-
-  return (
-    <div
-      className={`border text-center w-[120px] text-sm capitalize rounded-full py-0.5 ${badgeColor}`}
-    >
-      {status === "SUCCESS" ? "Verified" : status.toLowerCase()}
-    </div>
-  );
-};
-
-const StatusIndicator: React.FC<{ status: DomainStatus }> = ({ status }) => {
-  let badgeColor = "bg-gray-400"; // Default color
-  switch (status) {
-    case DomainStatus.NOT_STARTED:
-      badgeColor = "bg-gray-400";
-      break;
-    case DomainStatus.SUCCESS:
-      badgeColor = "bg-emerald-500";
-      break;
-    case DomainStatus.FAILED:
-      badgeColor = "bg-red-500";
-      break;
-    case DomainStatus.TEMPORARY_FAILURE:
-    case DomainStatus.PENDING:
-      badgeColor = "bg-yellow-500";
-      break;
-    default:
-      badgeColor = "bg-gray-400";
-  }
-
-  return <div className={` w-[1px] ${badgeColor} my-1.5 rounded-full`}></div>;
 };
