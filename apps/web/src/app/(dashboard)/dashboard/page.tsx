@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Bell,
@@ -23,7 +25,15 @@ import {
 } from "@unsend/ui/src/dropdown-menu";
 import { Input } from "@unsend/ui/src/input";
 import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
+import DashboardChart from "./dashboard-chart";
 
 export default function Dashboard() {
-  return <div>Hello</div>;
+  return (
+    <div>
+      Dashboard
+      <div className="mx-auto flex justify-center item-center mt-[30vh]">
+        <DashboardChart />
+      </div>
+    </div>
+  );
 }

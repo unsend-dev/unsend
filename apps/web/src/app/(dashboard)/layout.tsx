@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Bell,
+  BellRing,
   CircleUser,
   Globe,
   Home,
@@ -10,6 +11,7 @@ import {
   LineChart,
   Mail,
   Menu,
+  MessageSquareMore,
   Package,
   Package2,
   Search,
@@ -83,6 +85,16 @@ export default async function AuthenticatedDashboardLayout({
                 <NavButton href="/domains">
                   <Globe className="h-4 w-4" />
                   Domains
+                </NavButton>
+
+                <NavButton href="/sms" comingSoon>
+                  <MessageSquareMore className="h-4 w-4" />
+                  SMS
+                </NavButton>
+
+                <NavButton href="/sms" comingSoon>
+                  <BellRing className="h-4 w-4" />
+                  Push notification
                 </NavButton>
 
                 <NavButton href="/api-keys">

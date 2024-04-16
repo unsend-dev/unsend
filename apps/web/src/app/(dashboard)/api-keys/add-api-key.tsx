@@ -15,12 +15,15 @@ import {
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import { CheckIcon, ClipboardCopy, Plus } from "lucide-react";
+import { toast } from "@unsend/ui/src/toaster";
 
 export default function AddApiKey() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [apiKey, setApiKey] = useState("");
   const addDomainMutation = api.apiKey.createToken.useMutation();
+  const [isCopied, setIsCopied] = useState(false);
 
   const utils = api.useUtils();
 
@@ -41,9 +44,18 @@ export default function AddApiKey() {
 
   function handleCopy() {
     navigator.clipboard.writeText(apiKey);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  }
+
+  function copyAndClose() {
+    handleCopy();
     setApiKey("");
     setName("");
     setOpen(false);
+    toast.success("API key copied to clipboard");
   }
 
   return (
@@ -52,18 +64,34 @@ export default function AddApiKey() {
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button>Add API Key</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-1" />
+          Add API Key
+        </Button>
       </DialogTrigger>
       {apiKey ? (
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Copy API key</DialogTitle>
           </DialogHeader>
-          <div className="py-2 bg-gray-200 rounded-lg">{apiKey}</div>
+          <div className="py-2 bg-muted rounded-lg px-2 flex items-center justify-between">
+            <p>{apiKey}</p>
+            <Button
+              variant="ghost"
+              className="hover:bg-transparent p-0 cursor-pointer  group-hover:opacity-100"
+              onClick={handleCopy}
+            >
+              {isCopied ? (
+                <CheckIcon className="h-4 w-4 text-green-500" />
+              ) : (
+                <ClipboardCopy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
           <DialogFooter>
             <Button
               type="submit"
-              onClick={handleCopy}
+              onClick={copyAndClose}
               disabled={addDomainMutation.isPending}
             >
               Close

@@ -287,7 +287,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-semibold text-xl mt-2 text-destructive">Danger</p>
+        <p className="font-semibold text-lg text-destructive">Danger</p>
 
         <p className="text-destructive text-sm font-semibold">
           Deleting a domain will stop sending emails with this domain.

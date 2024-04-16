@@ -34,6 +34,7 @@ export const apiRouter = createTRPCRouter({
         permission: true,
         partialToken: true,
         lastUsed: true,
+        createdAt: true,
       },
     });
 

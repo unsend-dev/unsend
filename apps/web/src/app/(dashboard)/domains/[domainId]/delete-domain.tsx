@@ -49,7 +49,7 @@ export const DeleteDomain: React.FC<{ domain: Domain }> = ({ domain }) => {
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button variant="destructive" className="w-[200px]">
+        <Button variant="destructive" className="w-[150px]" size="sm">
           Delete domain
         </Button>
       </DialogTrigger>

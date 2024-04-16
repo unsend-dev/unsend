@@ -4,7 +4,7 @@ import { APP_SETTINGS } from "~/utils/constants";
 import { createTopic, subscribeEndpoint } from "./sns";
 import { env } from "~/env";
 import { AppSettingsService } from "~/server/service/app-settings-service";
-import { addWebhookConfiguration } from "../ses";
+import { addWebhookConfiguration } from "./ses";
 import { EventType } from "@aws-sdk/client-sesv2";
 
 const GENERAL_EVENTS: EventType[] = [

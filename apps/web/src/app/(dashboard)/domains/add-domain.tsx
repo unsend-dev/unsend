@@ -15,6 +15,7 @@ import {
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 export default function AddDomain() {
   const [open, setOpen] = useState(false);
@@ -43,7 +44,10 @@ export default function AddDomain() {
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button>Add domain</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-1" />
+          Add domain
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

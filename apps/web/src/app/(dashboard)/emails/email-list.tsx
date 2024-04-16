@@ -21,6 +21,7 @@ import {
   MailX,
 } from "lucide-react";
 import { formatDistance, formatDistanceToNow } from "date-fns";
+import { EmailStatus } from "@prisma/client";
 
 export default function EmailsList() {
   const emailsQuery = api.email.emails.useQuery();
@@ -65,40 +66,40 @@ export default function EmailsList() {
   );
 }
 
-const EmailIcon: React.FC<{ status: string }> = ({ status }) => {
+const EmailIcon: React.FC<{ status: EmailStatus }> = ({ status }) => {
   switch (status) {
-    case "Send":
+    case "SENT":
       return (
         // <div className="border border-gray-400/60 p-2 rounded-lg bg-gray-400/10">
         <Mail className="w-6 h-6 text-gray-500 " />
         // </div>
       );
-    case "Delivery":
-    case "Delayed":
+    case "DELIVERED":
       return (
         // <div className="border border-emerald-600/60 p-2 rounded-lg bg-emerald-500/10">
         <MailCheck className="w-6 h-6 text-emerald-800" />
         // </div>
       );
-    case "Bounced":
+    case "BOUNCED":
       return (
         // <div className="border border-red-600/60 p-2 rounded-lg bg-red-500/10">
         <MailX className="w-6 h-6 text-red-900" />
         // </div>
       );
-    case "Clicked":
+    case "CLICKED":
       return (
         // <div className="border border-cyan-600/60 p-2 rounded-lg bg-cyan-500/10">
         <MailSearch className="w-6 h-6 text-cyan-700" />
         // </div>
       );
-    case "Opened":
+    case "OPENED":
       return (
         // <div className="border border-indigo-600/60 p-2 rounded-lg bg-indigo-500/10">
         <MailOpen className="w-6 h-6 text-indigo-700" />
         // </div>
       );
-    case "Complained":
+    case "DELIVERY_DELAYED":
+    case "COMPLAINED":
       return (
         // <div className="border border-yellow-600/60 p-2 rounded-lg bg-yellow-500/10">
         <MailWarning className="w-6 h-6 text-yellow-700" />
@@ -113,26 +114,27 @@ const EmailIcon: React.FC<{ status: string }> = ({ status }) => {
   }
 };
 
-const EmailStatusBadge: React.FC<{ status: string }> = ({ status }) => {
+const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({ status }) => {
   let badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10"; // Default color
   switch (status) {
-    case "Send":
+    case "SENT":
       badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10";
       break;
-    case "Delivery":
-    case "Delayed":
+    case "DELIVERED":
       badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
       break;
-    case "Bounced":
+    case "BOUNCED":
       badgeColor = "bg-red-500/10 text-red-800 border-red-600/10";
       break;
-    case "Clicked":
+    case "CLICKED":
       badgeColor = "bg-cyan-500/10 text-cyan-600 border-cyan-600/10";
       break;
-    case "Opened":
+    case "OPENED":
       badgeColor = "bg-indigo-500/10 text-indigo-600 border-indigo-600/10";
       break;
-    case "Complained":
+    case "DELIVERY_DELAYED":
+      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
+    case "COMPLAINED":
       badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
       break;
     default:
@@ -141,9 +143,9 @@ const EmailStatusBadge: React.FC<{ status: string }> = ({ status }) => {
 
   return (
     <div
-      className={`border text-center w-[120px] rounded-full py-0.5 ${badgeColor}`}
+      className={` text-center w-[130px] rounded capitalize py-0.5 text-xs ${badgeColor}`}
     >
-      {status}
+      {status.toLowerCase().split("_").join(" ")}
     </div>
   );
 };

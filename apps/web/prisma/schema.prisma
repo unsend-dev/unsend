@@ -137,14 +137,27 @@ model ApiKey {
   team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
+enum EmailStatus {
+  SENT
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  DELIVERED
+  REJECTED
+  RENDERING_FAILURE
+  DELIVERY_DELAYED
+}
+
 model Email {
-  id           String       @id
+  id           String       @id @default(cuid())
+  sesEmailId   String?      @unique
   to           String
   from         String
   subject      String
   text         String?
   html         String?
-  latestStatus String?
+  latestStatus EmailStatus  @default(SENT)
   teamId       Int
   domainId     Int?
   createdAt    DateTime     @default(now())
@@ -155,10 +168,10 @@ model Email {
 
 model EmailEvent {
   emailId   String
-  status    String
+  status    EmailStatus
   data      Json?
-  createdAt DateTime @default(now())
-  email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
 
   @@unique([emailId, status])
 }

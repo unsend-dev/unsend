@@ -1,7 +1,7 @@
 import dns from "dns";
 import util from "util";
 import * as tldts from "tldts";
-import * as ses from "~/server/ses";
+import * as ses from "~/server/aws/ses";
 import { db } from "~/server/db";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);

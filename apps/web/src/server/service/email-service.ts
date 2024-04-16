@@ -1,6 +1,6 @@
 import { EmailContent } from "~/types";
 import { db } from "../db";
-import { sendEmailThroughSes } from "../ses";
+import { sendEmailThroughSes } from "../aws/ses";
 import { APP_SETTINGS } from "~/utils/constants";
 
 export async function sendEmail(
@@ -45,7 +45,7 @@ export async function sendEmail(
         subject,
         text,
         html,
-        id: messageId,
+        sesEmailId: messageId,
         teamId,
         domainId: domain.id,
       },

@@ -20,7 +20,7 @@ export default function DomainsList() {
             <DomainItem key={domain.id} domain={domain} />
           ))
         ) : (
-          <div>No domains</div>
+          <div className="text-center mt-20">No domains Added</div>
         )}
       </div>
     </div>
