@@ -1,24 +1,55 @@
+import { EmailStatus } from "@prisma/client";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-  teamProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { createDomain, getDomain } from "~/server/service/domain-service";
+
+const statuses = Object.values(EmailStatus) as [EmailStatus];
+
+const DEFAULT_LIMIT = 30;
 
 export const emailRouter = createTRPCRouter({
-  emails: teamProcedure.query(async ({ ctx }) => {
-    const emails = await db.email.findMany({
-      where: {
-        teamId: ctx.team.id,
-      },
-    });
+  emails: teamProcedure
+    .input(
+      z.object({
+        page: z.number().optional(),
+        status: z.enum(statuses).optional().nullable(),
+        domain: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const page = input.page || 1;
+      const limit = DEFAULT_LIMIT;
+      const offset = (page - 1) * limit;
 
-    return emails;
-  }),
+      const whereConditions = {
+        teamId: ctx.team.id,
+        ...(input.status ? { latestStatus: input.status } : {}),
+        ...(input.domain ? { domainId: input.domain } : {}),
+      };
+
+      const countP = db.email.count({ where: whereConditions });
+
+      const emailsP = db.email.findMany({
+        where: whereConditions,
+        select: {
+          id: true,
+          createdAt: true,
+          latestStatus: true,
+          subject: true,
+          to: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: offset,
+        take: limit,
+      });
+
+      const [emails, count] = await Promise.all([emailsP, countP]);
+
+      return { emails, totalPage: Math.ceil(count / limit) };
+    }),
 
   getEmail: teamProcedure
     .input(z.object({ id: z.string() }))
@@ -30,7 +61,7 @@ export const emailRouter = createTRPCRouter({
         include: {
           emailEvents: {
             orderBy: {
-              createdAt: "desc",
+              createdAt: "asc",
             },
           },
         },

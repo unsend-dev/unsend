@@ -28,8 +28,16 @@ export interface SesMail {
 }
 
 export interface SesBounce {
-  bounceType: string;
-  bounceSubType: string;
+  bounceType: "Transient" | "Permanent" | "Undetermined";
+  bounceSubType:
+    | "General"
+    | "NoEmail"
+    | "Suppressed"
+    | "OnAccountSuppressionList	"
+    | "MailboxFull"
+    | "MessageTooLarge"
+    | "ContentRejected"
+    | "AttachmentRejected";
   bouncedRecipients: Array<{
     emailAddress: string;
     action: string;
@@ -94,7 +102,17 @@ export interface SesRenderingFailure {
 }
 
 export interface SesDeliveryDelay {
-  delayType: string;
+  delayType:
+    | "InternalFailure"
+    | "General"
+    | "MailboxFull"
+    | "SpamDetected"
+    | "RecipientServerError"
+    | "IPFailure"
+    | "TransientCommunicationFailure"
+    | "BYOIPHostNameLookupUnavailable"
+    | "Undetermined"
+    | "SendingDeferral";
   expirationTime: string;
   delayedRecipients: string[];
   timestamp: string;

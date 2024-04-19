@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import {
   Bell,
   BellRing,
+  BookUser,
   CircleUser,
+  Code,
   Globe,
   Home,
   KeyRound,
@@ -17,6 +19,7 @@ import {
   Search,
   ShoppingCart,
   Users,
+  Volume2,
 } from "lucide-react";
 import { Button } from "@unsend/ui/src/button";
 
@@ -61,12 +64,8 @@ export default async function AuthenticatedDashboardLayout({
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
               <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Image
-                  src="/unsend_white_new.png"
-                  alt="Unsend"
-                  width={25}
-                  height={25}
-                />
+                <Image src="/Logo-1.png" alt="Unsend" width={40} height={40} />
+
                 <span className=" ">Unsend</span>
               </Link>
             </div>
@@ -87,6 +86,16 @@ export default async function AuthenticatedDashboardLayout({
                   Domains
                 </NavButton>
 
+                <NavButton href="/contacts" comingSoon>
+                  <BookUser className="h-4 w-4" />
+                  Contacts
+                </NavButton>
+
+                <NavButton href="/contacts" comingSoon>
+                  <Volume2 className="h-4 w-4" />
+                  Marketing
+                </NavButton>
+
                 <NavButton href="/sms" comingSoon>
                   <MessageSquareMore className="h-4 w-4" />
                   SMS
@@ -98,8 +107,8 @@ export default async function AuthenticatedDashboardLayout({
                 </NavButton>
 
                 <NavButton href="/api-keys">
-                  <KeyRound className="h-4 w-4" />
-                  API keys
+                  <Code className="h-4 w-4" />
+                  Developer settings
                 </NavButton>
               </nav>
             </div>

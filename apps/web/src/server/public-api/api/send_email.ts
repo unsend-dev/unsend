@@ -19,6 +19,14 @@ const route = createRoute({
             subject: z.string(),
             text: z.string().optional(),
             html: z.string().optional(),
+            attachments: z
+              .array(
+                z.object({
+                  filename: z.string(),
+                  content: z.string(),
+                })
+              )
+              .optional(),
           }),
         },
       },

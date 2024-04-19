@@ -1,12 +1,12 @@
 import { EmailContent } from "~/types";
 import { db } from "../db";
-import { sendEmailThroughSes } from "../aws/ses";
+import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { APP_SETTINGS } from "~/utils/constants";
 
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
 ) {
-  const { to, from, subject, text, html, teamId } = emailContent;
+  const { to, from, subject, text, html, teamId, attachments } = emailContent;
 
   const fromDomain = from.split("@")[1];
 
@@ -24,18 +24,33 @@ export async function sendEmail(
     throw new Error("Domain is not verified");
   }
 
-  const messageId = await sendEmailThroughSes({
-    to,
-    from,
-    subject,
-    text,
-    html,
-    region: domain.region,
-    configurationSetName: getConfigurationSetName(
-      domain.clickTracking,
-      domain.openTracking
-    ),
-  });
+  const messageId = attachments
+    ? await sendEmailWithAttachments({
+        to,
+        from,
+        subject,
+        text,
+        html,
+        region: domain.region,
+        configurationSetName: getConfigurationSetName(
+          domain.clickTracking,
+          domain.openTracking
+        ),
+        attachments,
+      })
+    : await sendEmailThroughSes({
+        to,
+        from,
+        subject,
+        text,
+        html,
+        region: domain.region,
+        configurationSetName: getConfigurationSetName(
+          domain.clickTracking,
+          domain.openTracking
+        ),
+        attachments,
+      });
 
   if (messageId) {
     return await db.email.create({

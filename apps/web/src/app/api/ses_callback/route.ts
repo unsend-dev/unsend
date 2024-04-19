@@ -1,6 +1,3 @@
-import { headers } from "next/headers";
-import { hashToken } from "~/server/auth";
-import { db } from "~/server/db";
 import { parseSesHook } from "~/server/service/ses-hook-parser";
 
 export async function GET(req: Request) {
@@ -22,14 +19,15 @@ export async function POST(req: Request) {
   try {
     message = JSON.parse(data.Message || "{}");
     const status = await parseSesHook(message);
+    console.log("Error is parsing hook", status);
     if (!status) {
-      return Response.json({ data: "Error is parsing hook" }, { status: 400 });
+      return Response.json({ data: "Error is parsing hook" });
     }
 
     return Response.json({ data: "Success" });
   } catch (e) {
     console.error(e);
-    return Response.json({ data: "Error is parsing hook" }, { status: 400 });
+    return Response.json({ data: "Error is parsing hook" });
   }
 }
 

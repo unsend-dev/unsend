@@ -10,6 +10,7 @@ import {
   EventType,
 } from "@aws-sdk/client-sesv2";
 import { generateKeyPairSync } from "crypto";
+import mime from "mime-types";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
 import { APP_SETTINGS } from "~/utils/constants";
@@ -151,6 +152,63 @@ export async function sendEmailThroughSes({
   } catch (error) {
     console.error("Failed to send email", error);
     throw new Error("Failed to send email");
+  }
+}
+
+export async function sendEmailWithAttachments({
+  to,
+  from,
+  subject,
+  text,
+  html,
+  attachments,
+  region = "us-east-1",
+  configurationSetName,
+}: EmailContent & {
+  region?: string;
+  configurationSetName: string;
+  attachments: { filename: string; content: string }[];
+}) {
+  const sesClient = getSesClient(region);
+  const boundary = "NextPart";
+  let rawEmail = `From: ${from}\n`;
+  rawEmail += `To: ${to}\n`;
+  rawEmail += `Subject: ${subject}\n`;
+  rawEmail += `MIME-Version: 1.0\n`;
+  rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
+  rawEmail += `--${boundary}\n`;
+  rawEmail += `Content-Type: text/html; charset="UTF-8"\n\n`;
+  rawEmail += `${html}\n\n`;
+
+  for (const attachment of attachments) {
+    const content = attachment.content; // Convert buffer to base64
+    const mimeType =
+      mime.lookup(attachment.filename) || "application/octet-stream";
+    rawEmail += `--${boundary}\n`;
+    rawEmail += `Content-Type: ${mimeType}; name="${attachment.filename}"\n`;
+    rawEmail += `Content-Disposition: attachment; filename="${attachment.filename}"\n`;
+    rawEmail += `Content-Transfer-Encoding: base64\n\n`;
+    rawEmail += `${content}\n\n`;
+  }
+
+  rawEmail += `--${boundary}--`;
+
+  const command = new SendEmailCommand({
+    Content: {
+      Raw: {
+        Data: Buffer.from(rawEmail),
+      },
+    },
+    ConfigurationSetName: configurationSetName,
+  });
+
+  try {
+    const response = await sesClient.send(command);
+    console.log("Email with attachments sent! Message ID:", response.MessageId);
+    return response.MessageId;
+  } catch (error) {
+    console.error("Failed to send email with attachments", error);
+    throw new Error("Failed to send email with attachments");
   }
 }
 

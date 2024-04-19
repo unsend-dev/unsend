@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   Table,
-  TableCaption,
   TableHeader,
   TableRow,
   TableHead,
@@ -20,15 +19,85 @@ import {
   MailWarning,
   MailX,
 } from "lucide-react";
-import { formatDistance, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { EmailStatus } from "@prisma/client";
+import { EmailStatusBadge } from "./email-status-badge";
+import { useState } from "react";
+import EmailDetails from "./email-details";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation"; // Adjust the import based on your project setup
+import dynamic from "next/dynamic";
+import { useUrlState } from "~/hooks/useUrlState";
+import { Button } from "@unsend/ui/src/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@unsend/ui/src/select";
+
+/* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs. Because they stupid change it everyday */
+const DynamicSheetWithNoSSR = dynamic(
+  () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
+  { ssr: false }
+);
+
+const DynamicSheetContentWithNoSSR = dynamic(
+  () => import("@unsend/ui/src/sheet").then((mod) => mod.SheetContent),
+  { ssr: false }
+);
 
 export default function EmailsList() {
-  const emailsQuery = api.email.emails.useQuery();
+  const [selectedEmail, setSelectedEmail] = useUrlState("emailId");
+  const [page, setPage] = useUrlState("page", "1");
+  const [status, setStatus] = useUrlState("status");
+
+  const pageNumber = Number(page);
+
+  const emailsQuery = api.email.emails.useQuery({
+    page: pageNumber,
+    status: status?.toUpperCase() as EmailStatus,
+  });
+
+  const handleSelectEmail = (emailId: string) => {
+    setSelectedEmail(emailId);
+  };
+
+  const handleSheetChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setSelectedEmail(null);
+    }
+  };
 
   return (
-    <div className="mt-10">
-      <div className="flex rounded-xl border shadow">
+    <div className="mt-10 flex flex-col gap-4">
+      <div className="flex justify-end">
+        <Select
+          value={status ?? "All statuses"}
+          onValueChange={(val) =>
+            setStatus(val === "All statuses" ? null : val)
+          }
+        >
+          <SelectTrigger className="w-[180px] capitalize">
+            {status ? status.toLowerCase().replace("_", " ") : "All statuses"}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All statuses" className=" capitalize">
+              All statuses
+            </SelectItem>
+            {Object.values(EmailStatus).map((status) => (
+              <SelectItem value={status} className=" capitalize">
+                {status.toLowerCase().replace("_", " ")}
+              </SelectItem>
+            ))}
+            {/* <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="system">System</SelectItem> */}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col rounded-xl border shadow">
         <Table className="">
           <TableHeader className="">
             <TableRow className=" bg-muted/30">
@@ -41,26 +110,62 @@ export default function EmailsList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {emailsQuery.data?.map((email) => (
-              <TableRow key={email.id}>
-                <TableCell className="font-medium flex gap-4 items-center">
-                  <EmailIcon status={email.latestStatus ?? "Send"} />
-                  <p>{email.to}</p>
-                </TableCell>
-                <TableCell>
-                  <EmailStatusBadge status={email.latestStatus ?? "Sent"} />
-                  {/* <Badge className="w-[100px] flex py-1 justify-center text-emerald-400 hover:bg-emerald-500/10 bg-emerald-500/10 rounded">
-                    {email.latestStatus ?? "Sent"}
-                  </Badge> */}
-                </TableCell>
-                <TableCell>{email.subject}</TableCell>
-                <TableCell className="text-right">
-                  {formatDistanceToNow(email.createdAt, { addSuffix: true })}
+            {emailsQuery.data?.emails.length ? (
+              emailsQuery.data?.emails.map((email) => (
+                <TableRow
+                  key={email.id}
+                  onClick={() => handleSelectEmail(email.id)}
+                  className=" cursor-pointer"
+                >
+                  <TableCell className="font-medium">
+                    <div className="flex gap-4 items-center">
+                      <EmailIcon status={email.latestStatus ?? "Send"} />
+                      <p>{email.to}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <EmailStatusBadge status={email.latestStatus ?? "Sent"} />
+                  </TableCell>
+                  <TableCell>{email.subject}</TableCell>
+                  <TableCell className="text-right">
+                    {formatDistanceToNow(email.createdAt, { addSuffix: true })}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="h-32">
+                <TableCell colSpan={4} className="text-center">
+                  No emails found
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
+
+        <DynamicSheetWithNoSSR
+          open={!!selectedEmail}
+          onOpenChange={handleSheetChange}
+        >
+          <DynamicSheetContentWithNoSSR className=" sm:max-w-3xl">
+            {selectedEmail ? <EmailDetails emailId={selectedEmail} /> : null}
+          </DynamicSheetContentWithNoSSR>
+        </DynamicSheetWithNoSSR>
+      </div>
+      <div className="flex gap-4 justify-end">
+        <Button
+          size="sm"
+          onClick={() => setPage((pageNumber - 1).toString())}
+          disabled={pageNumber === 1}
+        >
+          Previous
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => setPage((pageNumber + 1).toString())}
+          disabled={pageNumber >= (emailsQuery.data?.totalPage ?? 0)}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
@@ -112,40 +217,4 @@ const EmailIcon: React.FC<{ status: EmailStatus }> = ({ status }) => {
         // </div>
       );
   }
-};
-
-const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({ status }) => {
-  let badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10"; // Default color
-  switch (status) {
-    case "SENT":
-      badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10";
-      break;
-    case "DELIVERED":
-      badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
-      break;
-    case "BOUNCED":
-      badgeColor = "bg-red-500/10 text-red-800 border-red-600/10";
-      break;
-    case "CLICKED":
-      badgeColor = "bg-cyan-500/10 text-cyan-600 border-cyan-600/10";
-      break;
-    case "OPENED":
-      badgeColor = "bg-indigo-500/10 text-indigo-600 border-indigo-600/10";
-      break;
-    case "DELIVERY_DELAYED":
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
-    case "COMPLAINED":
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
-      break;
-    default:
-      badgeColor = "bg-gray-400/10 text-gray-500 border-gray-400/10";
-  }
-
-  return (
-    <div
-      className={` text-center w-[130px] rounded capitalize py-0.5 text-xs ${badgeColor}`}
-    >
-      {status.toLowerCase().split("_").join(" ")}
-    </div>
-  );
 };
