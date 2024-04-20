@@ -2,11 +2,14 @@ import { EmailContent } from "~/types";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { APP_SETTINGS } from "~/utils/constants";
+import { sendWelcomeEmail } from "./job-service";
 
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
 ) {
   const { to, from, subject, text, html, teamId, attachments } = emailContent;
+
+  sendWelcomeEmail({ email: to });
 
   const fromDomain = from.split("@")[1];
 
