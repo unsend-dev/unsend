@@ -22,8 +22,8 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
           <EmailStatusBadge status={emailQuery.data?.latestStatus ?? "SENT"} />
         </div>
       </div>
-      <div className="flex flex-col gap-8 mt-10 items-start">
-        <div className="p-2 rounded-lg border  flex flex-col gap-4 ">
+      <div className="flex flex-col gap-8 mt-10 items-start ">
+        <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full">
           <div className="flex gap-2">
             <span className="w-[65px] text-muted-foreground ">From</span>
             <span>{emailQuery.data?.from}</span>
