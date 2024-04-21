@@ -64,7 +64,7 @@ export default async function AuthenticatedDashboardLayout({
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
               <Link href="/" className="flex items-center gap-2 font-semibold">
-                <Image src="/Logo-1.png" alt="Unsend" width={40} height={40} />
+                <Image src="/Logo-2.png" alt="Unsend" width={20} height={20} />
 
                 <span className=" ">Unsend</span>
               </Link>

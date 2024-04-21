@@ -16,7 +16,6 @@ type CodeProps = {
   codeBlocks: {
     language: Language;
     code: string;
-    display?: string;
   }[];
 };
 
