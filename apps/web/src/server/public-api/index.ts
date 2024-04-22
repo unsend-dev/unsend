@@ -1,6 +1,6 @@
 import { getApp } from "./hono";
-import getDomains from "./api/get_domains";
-import sendEmail from "./api/send_email";
+import getDomains from "./api/get-domains";
+import sendEmail from "./api/send-email";
 
 export const app = getApp();
 

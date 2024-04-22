@@ -1,8 +1,11 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
+import { handleError } from "./api-error";
 
 export function getApp() {
   const app = new OpenAPIHono().basePath("/api");
+
+  app.onError(handleError);
 
   // The OpenAPI documentation will be available at /doc
   app.doc("/v1/doc", (c) => ({
