@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import { api } from "~/trpc/react";
 import { Domain, DomainStatus } from "@prisma/client";
 import {
@@ -12,7 +11,6 @@ import {
   BreadcrumbSeparator,
 } from "@unsend/ui/src/breadcrumb";
 import { DomainStatusBadge } from "../domain-badge";
-import { formatDistanceToNow } from "date-fns";
 import {
   Table,
   TableBody,
@@ -26,7 +24,6 @@ import { CheckIcon, ClipboardCopy } from "lucide-react";
 import React from "react";
 import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
-import { DkimStatus } from "@aws-sdk/client-sesv2";
 import SendTestMail from "./send-test-mail";
 
 export default function DomainItemPage({

@@ -1,5 +1,4 @@
 import { Context } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 import { hashToken } from "../auth";
 import { db } from "../db";
 

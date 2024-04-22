@@ -53,7 +53,7 @@ export const emailRouter = createTRPCRouter({
 
   getEmail: teamProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const email = await db.email.findUnique({
         where: {
           id: input.id,

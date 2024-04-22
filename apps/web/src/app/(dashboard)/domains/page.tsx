@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import DomainsList from "./domain-list";
 import AddDomain from "./add-domain";
 

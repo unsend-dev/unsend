@@ -1,14 +1,7 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-  teamProcedure,
-} from "~/server/api/trpc";
-import { db } from "~/server/db";
+import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
 import { addApiKey } from "~/server/service/api-service";
-import { createDomain, getDomain } from "~/server/service/domain-service";
 
 export const apiRouter = createTRPCRouter({
   createToken: teamProcedure

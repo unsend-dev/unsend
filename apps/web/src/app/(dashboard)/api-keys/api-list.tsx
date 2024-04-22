@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "@unsend/ui/src/table";
 import { formatDistanceToNow } from "date-fns";
-import Link from "next/link";
 import { api } from "~/trpc/react";
 
 export default function ApiList() {

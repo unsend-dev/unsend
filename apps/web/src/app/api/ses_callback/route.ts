@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 }
 
 async function handleSubscription(message: any) {
-  const subResponse = await fetch(message.SubscribeURL, {
+  await fetch(message.SubscribeURL, {
     method: "GET",
   });
 

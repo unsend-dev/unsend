@@ -4,8 +4,6 @@ import { Button } from "@unsend/ui/src/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,9 +11,8 @@ import {
 import { api } from "~/trpc/react";
 import React, { useState } from "react";
 import { Domain } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { toast } from "@unsend/ui/src/toaster";
-import { Send, SendHorizonal } from "lucide-react";
+import { SendHorizonal } from "lucide-react";
 import { Code } from "@unsend/ui/src/code";
 
 const jsCode = `const requestOptions = {
@@ -112,13 +109,10 @@ if (curl_errno($ch)) {
 
 export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
   const [open, setOpen] = useState(false);
-  const [domainName, setDomainName] = useState("");
   const sendTestEmailFromDomainMutation =
     api.domain.sendTestEmailFromDomain.useMutation();
 
   const utils = api.useUtils();
-
-  const router = useRouter();
 
   function handleSendTestEmail() {
     sendTestEmailFromDomainMutation.mutate(

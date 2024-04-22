@@ -25,7 +25,12 @@
         "AWS_ACCESS_KEY",
         "APP_URL",
         "SNS_TOPIC",
-        "NEXTAUTH_SECRET"
+        "NEXTAUTH_SECRET",
+        "NODE_ENV",
+        "VERCEL_URL",
+        "VERCEL",
+        "SKIP_ENV_VALIDATION",
+        "PORT"
       ]
     },
     "lint": {

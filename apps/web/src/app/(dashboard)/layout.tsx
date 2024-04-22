@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  Bell,
   BellRing,
   BookUser,
   CircleUser,
   Code,
   Globe,
   Home,
-  KeyRound,
   LayoutDashboard,
   LineChart,
   Mail,
@@ -16,7 +14,6 @@ import {
   MessageSquareMore,
   Package,
   Package2,
-  Search,
   ShoppingCart,
   Users,
   Volume2,
@@ -31,13 +28,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@unsend/ui/src/dropdown-menu";
-import { Input } from "@unsend/ui/src/input";
 import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 
 import { NextAuthProvider } from "~/providers/next-auth";
 import { getServerAuthSession } from "~/server/auth";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { NavButton } from "./nav-button";
 
 export const metadata = {

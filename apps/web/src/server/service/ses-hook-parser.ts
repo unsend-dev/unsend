@@ -1,5 +1,5 @@
 import { EmailStatus } from "@prisma/client";
-import { SesEvent, SesEventDataKey, SesEventType } from "~/types/aws-types";
+import { SesEvent, SesEventDataKey } from "~/types/aws-types";
 import { db } from "../db";
 
 export async function parseSesHook(data: SesEvent) {

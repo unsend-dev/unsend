@@ -6,7 +6,6 @@ import { Label } from "@unsend/ui/src/label";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,

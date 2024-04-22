@@ -159,6 +159,7 @@ export async function sendEmailWithAttachments({
   to,
   from,
   subject,
+  // eslint-disable-next-line no-unused-vars
   text,
   html,
   attachments,

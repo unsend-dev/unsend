@@ -49,6 +49,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.2.2",
     "@types/eslint": "^8.56.2",
     "@types/mime-types": "^2.1.4",
     "@types/node": "^20.11.20",

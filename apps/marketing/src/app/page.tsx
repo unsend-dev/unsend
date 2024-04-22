@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Rocket } from "lucide-react";
 import {
   RocketLaunchIcon,
   EnvelopeIcon,
@@ -9,7 +8,6 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   BellAlertIcon,
 } from "@heroicons/react/24/solid";
-import { Code } from "@unsend/ui/src/code";
 
 export default function Home() {
   return (
@@ -31,8 +29,6 @@ export default function Home() {
             <motion.a
               className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex gap-2"
               whileHover={{ scale: 1.2 }}
-              onHoverStart={(e) => {}}
-              onHoverEnd={(e) => {}}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
               href="https://app.youform.io/forms/caja89vr"
               target="_blank"
@@ -141,8 +137,6 @@ email.send({
           <motion.a
             className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex gap-2"
             whileHover={{ scale: 1.2 }}
-            onHoverStart={(e) => {}}
-            onHoverEnd={(e) => {}}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
             href="https://app.youform.io/forms/caja89vr"
             target="_blank"

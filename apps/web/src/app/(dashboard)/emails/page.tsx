@@ -1,5 +1,3 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
 const EmailList = dynamic(

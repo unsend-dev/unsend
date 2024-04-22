@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import ApiList from "./api-list";
 import AddApiKey from "./add-api-key";
 

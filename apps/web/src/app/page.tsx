@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
 import { Button } from "@unsend/ui/src/button";
 import { SendHorizonal } from "lucide-react";
 

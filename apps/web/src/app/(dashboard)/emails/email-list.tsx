@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   Table,
   TableHeader,
@@ -9,7 +8,6 @@ import {
   TableBody,
   TableCell,
 } from "@unsend/ui/src/table";
-import { Badge } from "@unsend/ui/src/badge";
 import { api } from "~/trpc/react";
 import {
   Mail,
@@ -22,10 +20,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { EmailStatus } from "@prisma/client";
 import { EmailStatusBadge } from "./email-status-badge";
-import { useState } from "react";
 import EmailDetails from "./email-details";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation"; // Adjust the import based on your project setup
 import dynamic from "next/dynamic";
 import { useUrlState } from "~/hooks/useUrlState";
 import { Button } from "@unsend/ui/src/button";
@@ -34,7 +29,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@unsend/ui/src/select";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs. Because they stupid change it everyday */

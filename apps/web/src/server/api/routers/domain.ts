@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-  teamProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import {
   createDomain,
@@ -37,7 +32,7 @@ export const domainRouter = createTRPCRouter({
 
   getDomain: teamProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       return getDomain(input.id);
     }),
 
@@ -49,7 +44,7 @@ export const domainRouter = createTRPCRouter({
         openTracking: z.boolean().optional(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       return updateDomain(input.id, {
         clickTracking: input.clickTracking,
         openTracking: input.openTracking,
@@ -58,7 +53,7 @@ export const domainRouter = createTRPCRouter({
 
   deleteDomain: teamProcedure
     .input(z.object({ id: z.number() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       await deleteDomain(input.id);
       return { success: true };
     }),

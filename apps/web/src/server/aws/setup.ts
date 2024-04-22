@@ -1,5 +1,3 @@
-import { JsonValue } from "@prisma/client/runtime/library";
-import { db } from "../db";
 import { APP_SETTINGS } from "~/utils/constants";
 import { createTopic, subscribeEndpoint } from "./sns";
 import { env } from "~/env";
