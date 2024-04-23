@@ -6,14 +6,17 @@ import { EmailStatusBadge, EmailStatusIcon } from "./email-status-badge";
 import { formatDate } from "date-fns";
 import { EmailStatus } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
-import { SesDeliveryDelay } from "~/types/aws-types";
-import { DELIVERY_DELAY_ERRORS } from "~/lib/constants/ses-errors";
+import { SesBounce, SesDeliveryDelay } from "~/types/aws-types";
+import {
+  BOUNCE_ERROR_MESSAGES,
+  DELIVERY_DELAY_ERRORS,
+} from "~/lib/constants/ses-errors";
 
 export default function EmailDetails({ emailId }: { emailId: string }) {
   const emailQuery = api.email.getEmail.useQuery({ id: emailId });
 
   return (
-    <div>
+    <div className="h-full overflow-auto">
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <h1 className="font-bold text-lg">{emailQuery.data?.to}</h1>
@@ -96,6 +99,34 @@ const EmailStatusText = ({
     const errorMessage = DELIVERY_DELAY_ERRORS[_errorData.delayType];
 
     return <div>{errorMessage}</div>;
+  } else if (status === "BOUNCED") {
+    const _errorData = data as unknown as SesBounce;
+    _errorData.bounceType;
+
+    return <div>{getErrorMessage(_errorData)}</div>;
   }
   return <div>{status}</div>;
+};
+
+const getErrorMessage = (data: SesBounce) => {
+  if (data.bounceType === "Permanent") {
+    return BOUNCE_ERROR_MESSAGES[data.bounceType][
+      data.bounceSubType as
+        | "General"
+        | "NoEmail"
+        | "Suppressed"
+        | "OnAccountSuppressionList"
+    ];
+  } else if (data.bounceType === "Transient") {
+    return BOUNCE_ERROR_MESSAGES[data.bounceType][
+      data.bounceSubType as
+        | "General"
+        | "MailboxFull"
+        | "MessageTooLarge"
+        | "ContentRejected"
+        | "AttachmentRejected"
+    ];
+  } else if (data.bounceType === "Undetermined") {
+    return BOUNCE_ERROR_MESSAGES.Undetermined;
+  }
 };
