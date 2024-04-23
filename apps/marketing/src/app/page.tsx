@@ -8,6 +8,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   BellAlertIcon,
 } from "@heroicons/react/24/solid";
+import { formatDate } from "date-fns";
 
 export default function Home() {
   return (
@@ -57,23 +58,86 @@ export default function Home() {
               <li>Get notified of email bounces and complaints.</li>
             </ul>
           </div>
-          <div className="w-1/2">
-            {/* <Code
-              codeBlocks={[
-                {
-                  language: "js",
-                  code: `const unsend = require("unsend");
-
-const email = unsend.email();
-
-email.send({
-  to: "user@example.com",
-  subject: "Hello, World!",
-  text: "Hello, World!",
-});`,
-                },
-              ]}
-            /> */}
+          <div className="w-1/2 flex flex-col  border rounded-lg p-8">
+            <div className=" border-l border-dashed flex flex-col gap-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.3,
+                  damping: 15,
+                  stiffness: 100,
+                  type: "spring",
+                }}
+                viewport={{ once: true }}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex gap-5 items-start">
+                  <div className=" -ml-2.5">
+                    <div
+                      className={`flex justify-center items-center p-1.5 bg-gray-600/50 rounded-full`}
+                    >
+                      <div className={`h-2 w-2 rounded-full bg-gray-600`}></div>
+                    </div>
+                  </div>
+                  <div className="-mt-1">
+                    <div className=" capitalize font-medium">
+                      <div
+                        className={` text-center w-[130px] rounded capitalize py-1 text-xs bg-gray-400/10 text-gray-400 border-gray-400/10`}
+                      >
+                        Sent
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {formatDate(Date.now() - 100000, "MMM dd, hh:mm a")}
+                    </div>
+                    <div className="mt-1 text-primary/80">
+                      We received your request and sent the email to recipient's
+                      server.
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.3,
+                  damping: 15,
+                  stiffness: 100,
+                  type: "spring",
+                  delay: 0.3,
+                }}
+                viewport={{ once: true }}
+              >
+                <div className="flex gap-5 items-start">
+                  <div className=" -ml-2.5">
+                    <div
+                      className={`flex justify-center items-center p-1.5 bg-emerald-500/50 rounded-full`}
+                    >
+                      <div
+                        className={`h-2 w-2 rounded-full bg-emerald-500`}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="-mt-1">
+                    <div className=" capitalize font-medium">
+                      <div
+                        className={` text-center w-[130px] rounded capitalize py-1 text-xs bg-emerald-500/10 text-emerald-500 border-emerald-600/10`}
+                      >
+                        Delivered
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {formatDate(new Date(), "MMM dd, hh:mm a")}
+                    </div>
+                    <div className="mt-1 text-primary/80">
+                      Mail is successfully delivered to the recipient.
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </div>
         <div className="flex">
