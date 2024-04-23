@@ -39,7 +39,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
             <span className="w-[65px] text-muted-foreground ">Subject</span>
             <span>{emailQuery.data?.subject}</span>
           </div>
-          <div className=" dark:bg-slate-200 h-[350px] overflow-auto text-black rounded">
+          <div className=" dark:bg-slate-200 h-[300px] overflow-auto text-black rounded">
             <div
               className="px-4 py-4 overflow-auto"
               dangerouslySetInnerHTML={{ __html: emailQuery.data?.html ?? "" }}
@@ -64,7 +64,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
                       <div className="text-xs text-muted-foreground mt-2">
                         {formatDate(evt.createdAt, "MMM dd, hh:mm a")}
                       </div>
-                      <div className="mt-1 text-primary/70">
+                      <div className="mt-1 text-primary/80">
                         <EmailStatusText status={evt.status} data={evt.data} />
                       </div>
                     </div>
@@ -103,7 +103,25 @@ const EmailStatusText = ({
     const _errorData = data as unknown as SesBounce;
     _errorData.bounceType;
 
-    return <div>{getErrorMessage(_errorData)}</div>;
+    return (
+      <div className="flex flex-col gap-4">
+        <p>{getErrorMessage(_errorData)}</p>
+        <div className="flex gap-2 ">
+          <div className="w-1/2">
+            <p className="text-sm text-muted-foreground">Type </p>
+            <p>{_errorData.bounceType}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Sub Type </p>
+            <p>{_errorData.bounceSubType}</p>
+          </div>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">SMTP response</p>
+          <p>{_errorData.bouncedRecipients[0]?.diagnosticCode}</p>
+        </div>
+      </div>
+    );
   }
   return <div>{status}</div>;
 };
