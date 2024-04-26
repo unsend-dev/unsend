@@ -151,6 +151,7 @@ export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
             { language: "php", code: phpCode },
             { language: "python", code: pythonCode },
           ]}
+          codeClassName="max-w-[38rem] h-[20rem]"
         />
         <div className="flex justify-end w-full">
           <Button

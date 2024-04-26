@@ -1,6 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { PublicAPIApp } from "../hono";
-import { getTeamFromToken } from "../auth";
+import { PublicAPIApp } from "~/server/public-api/hono";
+import { getTeamFromToken } from "~/server/public-api/auth";
 import { sendEmail } from "~/server/service/email-service";
 
 const route = createRoute({

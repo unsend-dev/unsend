@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 import { Button } from "./button";
 import { ClipboardCopy, Check } from "lucide-react";
 import { useState } from "react";
+import { cn } from "../lib/utils";
 
 type Language = "js" | "ruby" | "php" | "python";
 
@@ -17,6 +18,7 @@ type CodeProps = {
     language: Language;
     code: string;
   }[];
+  codeClassName?: string;
 };
 
 SyntaxHighlighter.registerLanguage("js", js);
@@ -24,7 +26,7 @@ SyntaxHighlighter.registerLanguage("ruby", ruby);
 SyntaxHighlighter.registerLanguage("php", php);
 SyntaxHighlighter.registerLanguage("python", python);
 
-export const Code: React.FC<CodeProps> = ({ codeBlocks }) => {
+export const Code: React.FC<CodeProps> = ({ codeBlocks, codeClassName }) => {
   const [selectedTab, setSelectedTab] = useState(
     codeBlocks[0]?.language ?? "js"
   );
@@ -41,7 +43,7 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks }) => {
   };
 
   return (
-    <div className="rounded-md bg-background border">
+    <div className="rounded-xl bg-background border">
       <Tabs
         defaultValue={codeBlocks[0]?.language}
         onValueChange={(val) => setSelectedTab(val as Language)}
@@ -53,7 +55,7 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks }) => {
                 <TabsTrigger
                   key={block.language}
                   value={block.language}
-                  className="data-[state=active]:bg-accent py-0.5 px-4"
+                  className="data-[state=active]:bg-accent py-0.5 px-4 "
                 >
                   {block.language}
                 </TabsTrigger>
@@ -81,9 +83,9 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks }) => {
           <TabsContent
             key={block.language}
             value={block.language}
-            className="py-2"
+            className="mt-0"
           >
-            <div className="overflow-auto max-w-[38rem] h-[20rem]">
+            <div className={cn("overflow-auto", codeClassName)}>
               <SyntaxHighlighter language={block.language} style={codeTheme}>
                 {block.code}
               </SyntaxHighlighter>

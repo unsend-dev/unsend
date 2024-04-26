@@ -1,8 +1,8 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { DomainSchema } from "~/lib/zod/domain-schema";
-import { PublicAPIApp } from "../hono";
-import { db } from "../../db";
-import { getTeamFromToken } from "../auth";
+import { PublicAPIApp } from "~/server/public-api/hono";
+import { db } from "~/server/db";
+import { getTeamFromToken } from "~/server/public-api/auth";
 
 const route = createRoute({
   method: "get",

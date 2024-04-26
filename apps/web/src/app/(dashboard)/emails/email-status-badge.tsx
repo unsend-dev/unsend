@@ -12,7 +12,7 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
       badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
       break;
     case "BOUNCED":
-      badgeColor = "bg-red-500/10 text-red-800 border-red-600/10";
+      badgeColor = "bg-red-500/10 text-red-600 border-red-600/10";
       break;
     case "CLICKED":
       badgeColor = "bg-cyan-500/10 text-cyan-600 border-cyan-600/10";
@@ -47,27 +47,27 @@ export const EmailStatusIcon: React.FC<{ status: EmailStatus }> = ({
 
   switch (status) {
     case "DELIVERED":
-      outsideColor = "bg-emerald-500/40";
+      outsideColor = "bg-emerald-500/30";
       insideColor = "bg-emerald-500";
       break;
     case "BOUNCED":
-      outsideColor = "bg-red-500/40";
+      outsideColor = "bg-red-500/30";
       insideColor = "bg-red-500";
       break;
     case "CLICKED":
-      outsideColor = "bg-cyan-500/40";
+      outsideColor = "bg-cyan-500/30";
       insideColor = "bg-cyan-500";
       break;
     case "OPENED":
-      outsideColor = "bg-indigo-500/40";
+      outsideColor = "bg-indigo-500/30";
       insideColor = "bg-indigo-500";
       break;
     case "DELIVERY_DELAYED":
-      outsideColor = "bg-yellow-500/40";
+      outsideColor = "bg-yellow-500/30";
       insideColor = "bg-yellow-500";
       break;
     case "COMPLAINED":
-      outsideColor = "bg-yellow-500/40";
+      outsideColor = "bg-yellow-500/30";
       insideColor = "bg-yellow-500";
       break;
     default:

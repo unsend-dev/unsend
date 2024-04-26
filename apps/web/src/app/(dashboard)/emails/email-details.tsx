@@ -57,7 +57,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
                     <div className=" -ml-2.5">
                       <EmailStatusIcon status={evt.status} />
                     </div>
-                    <div className="-mt-1">
+                    <div className="-mt-[0.125rem]">
                       <div className=" capitalize font-medium">
                         <EmailStatusBadge status={evt.status} />
                       </div>

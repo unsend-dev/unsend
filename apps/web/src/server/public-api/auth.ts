@@ -3,6 +3,9 @@ import { hashToken } from "../auth";
 import { db } from "../db";
 import { UnsendApiError } from "./api-error";
 
+/**
+ * Gets the team from the token. Also will check if the token is valid.
+ */
 export const getTeamFromToken = async (c: Context) => {
   const authHeader = c.req.header("Authorization");
   if (!authHeader) {
@@ -11,7 +14,7 @@ export const getTeamFromToken = async (c: Context) => {
       message: "No Authorization header provided",
     });
   }
-  const token = authHeader.split(" ")[1]; // Assuming the Authorization header is in the format "Bearer <token>"
+  const token = authHeader.split(" ")[1];
   if (!token) {
     throw new UnsendApiError({
       code: "UNAUTHORIZED",
@@ -37,6 +40,16 @@ export const getTeamFromToken = async (c: Context) => {
       message: "Invalid API token",
     });
   }
+
+  // No await so it won't block the request. Need to be moved to a queue in future
+  db.apiKey.update({
+    where: {
+      tokenHash: hashedToken,
+    },
+    data: {
+      lastUsed: new Date(),
+    },
+  });
 
   return team;
 };
