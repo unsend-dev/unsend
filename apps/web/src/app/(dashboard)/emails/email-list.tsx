@@ -31,7 +31,7 @@ import {
   SelectTrigger,
 } from "@unsend/ui/src/select";
 
-/* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs. Because they stupid change it everyday */
+/* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
   { ssr: false }

@@ -10,9 +10,7 @@ export default async function EmailsPage() {
       <div className="flex justify-between items-center">
         <h1 className="font-bold text-lg">Emails</h1>
       </div>
-      {/* <Suspense fallback={<div>Loading...</div>}> */}
       <EmailList />
-      {/* </Suspense> */}
     </div>
   );
 }

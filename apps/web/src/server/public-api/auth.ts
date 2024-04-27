@@ -42,14 +42,16 @@ export const getTeamFromToken = async (c: Context) => {
   }
 
   // No await so it won't block the request. Need to be moved to a queue in future
-  db.apiKey.update({
-    where: {
-      tokenHash: hashedToken,
-    },
-    data: {
-      lastUsed: new Date(),
-    },
-  });
+  db.apiKey
+    .update({
+      where: {
+        tokenHash: hashedToken,
+      },
+      data: {
+        lastUsed: new Date(),
+      },
+    })
+    .catch(console.error);
 
   return team;
 };
