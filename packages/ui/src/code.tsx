@@ -11,7 +11,7 @@ import { ClipboardCopy, Check } from "lucide-react";
 import { useState } from "react";
 import { cn } from "../lib/utils";
 
-type Language = "js" | "ruby" | "php" | "python";
+type Language = "js" | "ruby" | "php" | "python" | "curl";
 
 type CodeProps = {
   codeBlocks: {
@@ -85,7 +85,7 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks, codeClassName }) => {
             value={block.language}
             className="mt-0"
           >
-            <div className={cn("overflow-auto", codeClassName)}>
+            <div className={cn("overflow-auto rounded-b-xl", codeClassName)}>
               <SyntaxHighlighter language={block.language} style={codeTheme}>
                 {block.code}
               </SyntaxHighlighter>

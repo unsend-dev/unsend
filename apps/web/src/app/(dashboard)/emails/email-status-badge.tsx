@@ -12,13 +12,13 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
       badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
       break;
     case "BOUNCED":
-      badgeColor = "bg-red-500/10 text-red-600 border-red-600/10";
+      badgeColor = "bg-red-500/30 text-red-600 border-red-600/10";
       break;
     case "CLICKED":
-      badgeColor = "bg-cyan-500/10 text-cyan-600 border-cyan-600/10";
+      badgeColor = "bg-cyan-500/10 text-cyan-500 border-cyan-600/10";
       break;
     case "OPENED":
-      badgeColor = "bg-indigo-500/10 text-indigo-600 border-indigo-600/10";
+      badgeColor = "bg-indigo-500/20 text-indigo-500 border-indigo-600/10";
       break;
     case "DELIVERY_DELAYED":
       badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
