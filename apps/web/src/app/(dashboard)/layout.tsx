@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  BellRing,
   BookUser,
   CircleUser,
   Code,
@@ -11,7 +10,6 @@ import {
   LineChart,
   Mail,
   Menu,
-  MessageSquareMore,
   Package,
   Package2,
   ShoppingCart,
@@ -32,7 +30,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 
 import { NextAuthProvider } from "~/providers/next-auth";
 import { getServerAuthSession } from "~/server/auth";
-import Image from "next/image";
 import { NavButton } from "./nav-button";
 
 export const metadata = {

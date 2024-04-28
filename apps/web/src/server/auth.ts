@@ -6,6 +6,8 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import GitHubProvider from "next-auth/providers/github";
+import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -48,6 +50,9 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   adapter: PrismaAdapter(db) as Adapter,
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     /**
      * ...add more providers here.
@@ -61,6 +66,21 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    EmailProvider({
+      from: "no-reply@splitpro.app",
+      async sendVerificationRequest({ identifier: email, url, token }) {
+        await sendSignUpEmail(email, token, url);
+      },
+      async generateVerificationToken() {
+        return Math.random().toString(36).substring(2, 7).toLowerCase();
+      },
     }),
   ],
 };
@@ -73,6 +93,7 @@ export const authOptions: NextAuthOptions = {
 export const getServerAuthSession = () => getServerSession(authOptions);
 
 import { createHash } from "crypto";
+import { sendSignUpEmail } from "./mailer";
 
 /**
  * Hashes a token using SHA-256.

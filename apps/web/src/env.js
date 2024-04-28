@@ -34,6 +34,10 @@ export const env = createEnv({
     AWS_SECRET_KEY: z.string(),
     APP_URL: z.string().optional(),
     SNS_TOPIC: z.string(),
+    UNSEND_API_KEY: z.string(),
+    UNSEND_URL: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
   },
 
   /**
@@ -60,6 +64,10 @@ export const env = createEnv({
     AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
     APP_URL: process.env.APP_URL,
     SNS_TOPIC: process.env.SNS_TOPIC,
+    UNSEND_API_KEY: process.env.UNSEND_API_KEY,
+    UNSEND_URL: process.env.UNSEND_URL,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

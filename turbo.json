@@ -30,7 +30,11 @@
         "VERCEL_URL",
         "VERCEL",
         "SKIP_ENV_VALIDATION",
-        "PORT"
+        "PORT",
+        "UNSEND_API_KEY",
+        "UNSEND_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET"
       ]
     },
     "lint": {
