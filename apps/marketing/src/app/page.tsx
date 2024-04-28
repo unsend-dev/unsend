@@ -129,7 +129,7 @@ export default function Home() {
   return (
     <div className="bg-neutral-950 pb-20">
       <div className=" mx-auto  w-full lg:max-w-6xl relative flex flex-col ">
-        <nav className="py-4 flex justify-between">
+        <nav className="p-4 flex justify-between">
           <div className="text-2xl font-semibold">
             <Link href="/">Unsend</Link>
           </div>
@@ -181,7 +181,7 @@ export default function Home() {
             Send transactional, marketing emails, SMSes and push notifications
             effortlessly.
           </p>
-          <div className="flex justify-center mt-16">
+          <div className="flex justify-center mt-16 ">
             <motion.a
               className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex gap-2"
               whileHover={{ scale: 1.2 }}
@@ -205,7 +205,7 @@ export default function Home() {
             type: "spring",
           }}
           viewport={{ once: true }}
-          className="p-3 bg-neutral-900 mt-24 rounded-xl"
+          className="p-3 bg-neutral-900 mt-24 rounded-xl mx-2"
         >
           <Image
             src="/app.webp"
@@ -546,7 +546,7 @@ export default function Home() {
           </motion.a>
         </div>
       </div>
-      <div className="flex justify-between mt-20 max-w-5xl mx-auto">
+      <div className="flex justify-between mt-20 max-w-5xl mx-auto px-4">
         <div>
           Email: <a href="mailto:hello@unsend.dev">hello@unsend.dev</a>
         </div>
