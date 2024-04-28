@@ -9,6 +9,22 @@ export const metadata: Metadata = {
   title: "Unsend",
   description: "Open source sending infrastructure for developers",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  twitter: {
+    card: "summary_large_image",
+    site: "https://unsend.dev",
+    title: "Unsend",
+    description: "Open source sending infrastructure for developers",
+    images: "https://unsend.dev/og_banner.png",
+    creator: "@KM_Koushik_",
+  },
+  openGraph: {
+    type: "website",
+    title: "Unsend",
+    description: "Open source sending infrastructure for developers",
+    siteName: "Unsend",
+    url: "https://unsend.dev",
+    images: "https://unsend.dev/og_banner.png",
+  },
 };
 
 export default function RootLayout({
