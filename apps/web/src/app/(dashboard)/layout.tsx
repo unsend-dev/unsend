@@ -49,6 +49,10 @@ export default async function AuthenticatedDashboardLayout({
     redirect("/");
   }
 
+  if (!session.user.isBetaUser) {
+    redirect("/wait-list");
+  }
+
   return (
     <NextAuthProvider session={session}>
       <div className="flex min-h-screen w-full h-full">

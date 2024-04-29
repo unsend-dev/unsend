@@ -61,6 +61,7 @@ model User {
   email         String?    @unique
   emailVerified DateTime?
   image         String?
+  isBetaUser    Boolean    @default(false)
   accounts      Account[]
   sessions      Session[]
   teamUsers     TeamUser[]
