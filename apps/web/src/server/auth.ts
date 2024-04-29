@@ -32,6 +32,7 @@ declare module "next-auth" {
   // eslint-disable-next-line no-unused-vars
   interface User {
     id: number;
+    isBetaUser: boolean;
   }
 }
 
@@ -47,6 +48,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
+        isBetaUser: user.isBetaUser,
       },
     }),
   },
