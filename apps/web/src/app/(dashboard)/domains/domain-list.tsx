@@ -8,6 +8,7 @@ import { api } from "~/trpc/react";
 import React from "react";
 import { StatusIndicator } from "./status-indicator";
 import { DomainStatusBadge } from "./domain-badge";
+import Spinner from "@unsend/ui/src/spinner";
 
 export default function DomainsList() {
   const domainsQuery = api.domain.domains.useQuery();
@@ -15,7 +16,14 @@ export default function DomainsList() {
   return (
     <div className="mt-10">
       <div className="flex flex-col gap-6">
-        {!domainsQuery.isLoading && domainsQuery.data?.length ? (
+        {domainsQuery.isLoading ? (
+          <div className="flex justify-center mt-10">
+            <Spinner
+              className="w-6 h-6 mx-auto"
+              innerSvgClass="stroke-primary"
+            />
+          </div>
+        ) : domainsQuery.data?.length ? (
           domainsQuery.data?.map((domain) => (
             <DomainItem key={domain.id} domain={domain} />
           ))

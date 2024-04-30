@@ -30,6 +30,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@unsend/ui/src/select";
+import Spinner from "@unsend/ui/src/spinner";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -104,7 +105,16 @@ export default function EmailsList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {emailsQuery.data?.emails.length ? (
+            {emailsQuery.isLoading ? (
+              <TableRow className="h-32">
+                <TableCell colSpan={4} className="text-center py-4">
+                  <Spinner
+                    className="w-6 h-6 mx-auto"
+                    innerSvgClass="stroke-primary"
+                  />
+                </TableCell>
+              </TableRow>
+            ) : emailsQuery.data?.emails.length ? (
               emailsQuery.data?.emails.map((email) => (
                 <TableRow
                   key={email.id}
@@ -128,7 +138,7 @@ export default function EmailsList() {
               ))
             ) : (
               <TableRow className="h-32">
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={4} className="text-center py-4">
                   No emails found
                 </TableCell>
               </TableRow>
