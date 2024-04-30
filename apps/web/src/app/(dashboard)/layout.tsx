@@ -31,6 +31,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 import { NextAuthProvider } from "~/providers/next-auth";
 import { getServerAuthSession } from "~/server/auth";
 import { NavButton } from "./nav-button";
+import { db } from "~/server/db";
 
 export const metadata = {
   title: "Unsend",
@@ -51,6 +52,16 @@ export default async function AuthenticatedDashboardLayout({
 
   if (!session.user.isBetaUser) {
     redirect("/wait-list");
+  }
+
+  const teamUser = await db.teamUser.findFirst({
+    where: {
+      userId: session.user.id,
+    },
+  });
+
+  if (!teamUser) {
+    redirect("/create-team");
   }
 
   return (
