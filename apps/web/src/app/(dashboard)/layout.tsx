@@ -69,10 +69,13 @@ export default async function AuthenticatedDashboardLayout({
       <div className="flex min-h-screen w-full h-full">
         <div className="hidden bg-muted/20 md:block md:w-[280px]">
           <div className="flex h-full max-h-screen flex-col gap-2">
-            <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
+            <div className="flex h-14 gap-4 items-center px-4 lg:h-[60px] lg:px-6">
               <Link href="/" className="flex items-center gap-2 font-semibold">
                 <span className=" text-lg">Unsend</span>
               </Link>
+              <span className="text-[10px] text-muted-foreground bg-muted p-0.5 px-2 rounded-full">
+                Early access
+              </span>
             </div>
             <div className="flex-1">
               <nav className="grid items-start px-2 text-sm font-medium lg:px-4">

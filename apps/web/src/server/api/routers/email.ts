@@ -1,4 +1,5 @@
 import { EmailStatus } from "@prisma/client";
+import { format, subDays } from "date-fns";
 import { z } from "zod";
 
 import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
@@ -49,6 +50,111 @@ export const emailRouter = createTRPCRouter({
       const [emails, count] = await Promise.all([emailsP, countP]);
 
       return { emails, totalPage: Math.ceil(count / limit) };
+    }),
+
+  dashboard: teamProcedure
+    .input(
+      z.object({
+        days: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { team } = ctx;
+      const daysInMs = (input.days || 7) * 24 * 60 * 60 * 1000;
+
+      const rawEmailStatusCounts = await db.email.findMany({
+        where: {
+          teamId: team.id,
+          createdAt: {
+            gt: new Date(Date.now() - daysInMs),
+          },
+        },
+        select: {
+          latestStatus: true,
+          createdAt: true,
+        },
+      });
+
+      const totalCount = rawEmailStatusCounts.length;
+
+      const emailStatusCounts = rawEmailStatusCounts.reduce(
+        (acc, cur) => {
+          acc[cur.latestStatus] = {
+            count: (acc[cur.latestStatus]?.count || 0) + 1,
+            percentage:
+              (((acc[cur.latestStatus]?.count || 0) + 1) / totalCount) * 100,
+          };
+          return acc;
+        },
+        {
+          DELIVERED: { count: 0, percentage: 0 },
+          COMPLAINED: { count: 0, percentage: 0 },
+          OPENED: { count: 0, percentage: 0 },
+          CLICKED: { count: 0, percentage: 0 },
+          BOUNCED: { count: 0, percentage: 0 },
+        } as Record<EmailStatus, { count: number; percentage: number }>
+      );
+
+      const dateRecord: Record<
+        string,
+        Record<
+          "DELIVERED" | "COMPLAINED" | "OPENED" | "CLICKED" | "BOUNCED",
+          number
+        >
+      > = {};
+
+      const currentDate = new Date();
+
+      for (let i = 0; i < (input.days || 7); i++) {
+        const actualDate = subDays(currentDate, i);
+        dateRecord[format(actualDate, "MMM dd")] = {
+          DELIVERED: 0,
+          COMPLAINED: 0,
+          OPENED: 0,
+          CLICKED: 0,
+          BOUNCED: 0,
+        };
+      }
+
+      const _emailDailyStatusCounts = rawEmailStatusCounts.reduce(
+        (acc, { latestStatus, createdAt }) => {
+          const day = format(createdAt, "MMM dd");
+
+          console.log(day);
+          if (
+            !day ||
+            ![
+              "DELIVERED",
+              "COMPLAINED",
+              "OPENED",
+              "CLICKED",
+              "BOUNCED",
+            ].includes(latestStatus)
+          ) {
+            return acc;
+          }
+
+          acc[day]![
+            latestStatus as
+              | "DELIVERED"
+              | "COMPLAINED"
+              | "OPENED"
+              | "CLICKED"
+              | "BOUNCED"
+          ]++;
+          return acc;
+        },
+        dateRecord
+      );
+
+      const emailDailyStatusCounts = Object.entries(_emailDailyStatusCounts)
+        .reverse()
+        .map(([date, counts]) => ({
+          name: date,
+          ...counts,
+        }));
+
+      return { emailStatusCounts, totalCount, emailDailyStatusCounts };
     }),
 
   getEmail: teamProcedure
