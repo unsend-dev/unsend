@@ -60,7 +60,8 @@ export const emailRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { team } = ctx;
-      const daysInMs = (input.days || 7) * 24 * 60 * 60 * 1000;
+      const days = input.days !== 7 ? 30 : 7;
+      const daysInMs = days * 24 * 60 * 60 * 1000;
 
       const rawEmailStatusCounts = await db.email.findMany({
         where: {
@@ -81,8 +82,12 @@ export const emailRouter = createTRPCRouter({
         (acc, cur) => {
           acc[cur.latestStatus] = {
             count: (acc[cur.latestStatus]?.count || 0) + 1,
-            percentage:
-              (((acc[cur.latestStatus]?.count || 0) + 1) / totalCount) * 100,
+            percentage: Number(
+              (
+                (((acc[cur.latestStatus]?.count || 0) + 1) / totalCount) *
+                100
+              ).toFixed(0)
+            ),
           };
           return acc;
         },

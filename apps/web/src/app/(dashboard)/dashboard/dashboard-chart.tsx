@@ -34,7 +34,7 @@ export default function DashboardChart() {
         </Tabs>
       </div>
 
-      <div className="flex flex-col gap-8 mt-8">
+      <div className="flex flex-col gap-16 mt-10">
         <div className="flex flex-wrap gap-2">
           {!statusQuery.isLoading && statusQuery.data ? (
             <>
