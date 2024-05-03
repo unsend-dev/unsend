@@ -36,3 +36,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+prod_db.tar

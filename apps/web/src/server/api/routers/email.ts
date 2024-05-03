@@ -125,7 +125,6 @@ export const emailRouter = createTRPCRouter({
         (acc, { latestStatus, createdAt }) => {
           const day = format(createdAt, "MMM dd");
 
-          console.log(day);
           if (
             !day ||
             ![
@@ -136,6 +135,10 @@ export const emailRouter = createTRPCRouter({
               "BOUNCED",
             ].includes(latestStatus)
           ) {
+            return acc;
+          }
+
+          if (!acc[day]) {
             return acc;
           }
 
