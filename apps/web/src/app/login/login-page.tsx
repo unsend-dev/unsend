@@ -71,7 +71,7 @@ export default function LoginPage() {
     <main className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-8">
         <Image
-          src="/logo-bold.png"
+          src="/logo-dark.png"
           alt="Unsend"
           width={60}
           height={60}
