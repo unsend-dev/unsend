@@ -139,6 +139,7 @@ model ApiKey {
 }
 
 enum EmailStatus {
+  QUEUED
   SENT
   OPENED
   CLICKED
@@ -158,11 +159,12 @@ model Email {
   subject      String
   text         String?
   html         String?
-  latestStatus EmailStatus  @default(SENT)
+  latestStatus EmailStatus  @default(QUEUED)
   teamId       Int
   domainId     Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  attachments  String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
 }

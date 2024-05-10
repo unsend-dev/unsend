@@ -38,6 +38,7 @@
     "mime-types": "^2.1.35",
     "next": "^14.2.1",
     "next-auth": "^4.24.6",
+    "pg-boss": "^9.0.3",
     "pnpm": "^8.15.5",
     "prisma": "^5.11.0",
     "query-string": "^9.0.0",
