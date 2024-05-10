@@ -4,8 +4,10 @@ export type EmailContent = {
   subject: string;
   text?: string;
   html?: string;
-  attachments?: {
-    filename: string;
-    content: string;
-  }[];
+  attachments?: Array<EmailAttachment>;
+};
+
+export type EmailAttachment = {
+  filename: string;
+  content: string;
 };
