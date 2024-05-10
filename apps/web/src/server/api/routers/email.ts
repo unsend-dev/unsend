@@ -172,12 +172,21 @@ export const emailRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
-        include: {
+        select: {
           emailEvents: {
             orderBy: {
               createdAt: "asc",
             },
           },
+          id: true,
+          createdAt: true,
+          latestStatus: true,
+          subject: true,
+          to: true,
+          from: true,
+          domainId: true,
+          text: true,
+          html: true,
         },
       });
 
