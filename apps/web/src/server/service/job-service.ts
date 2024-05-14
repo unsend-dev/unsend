@@ -1,8 +1,11 @@
 import pgBoss from "pg-boss";
 import { env } from "~/env";
-import { EmailAttachment, EmailContent } from "~/types";
-import { db } from "../db";
-import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
+import { EmailAttachment } from "~/types";
+import { db } from "~/server/db";
+import {
+  sendEmailThroughSes,
+  sendEmailWithAttachments,
+} from "~/server/aws/ses";
 import { getConfigurationSetName } from "~/utils/ses-utils";
 
 const boss = new pgBoss({
