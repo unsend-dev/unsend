@@ -15,6 +15,7 @@ const route = createRoute({
             to: z.string().email(),
             from: z.string().email(),
             subject: z.string(),
+            replyTo: z.string().optional(),
             text: z.string().optional(),
             html: z.string().optional(),
             attachments: z

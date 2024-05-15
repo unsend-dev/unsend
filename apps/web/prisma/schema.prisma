@@ -157,6 +157,7 @@ model Email {
   to           String
   from         String
   subject      String
+  replyTo      String?
   text         String?
   html         String?
   latestStatus EmailStatus  @default(QUEUED)
