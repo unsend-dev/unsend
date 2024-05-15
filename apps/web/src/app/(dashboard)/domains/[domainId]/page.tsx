@@ -19,8 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@unsend/ui/src/table";
-import { Button } from "@unsend/ui/src/button";
-import { CheckIcon, ClipboardCopy } from "lucide-react";
+import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 import React from "react";
 import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
@@ -90,12 +89,12 @@ export default function DomainItemPage({
                 <TableRow>
                   <TableCell className="">MX</TableCell>
                   <TableCell>
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`mail.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`feedback-smtp.${domainQuery.data?.region}.amazonses.com`}
                       className="w-[200px] overflow-hidden text-ellipsis text-nowrap"
                     />
@@ -114,12 +113,12 @@ export default function DomainItemPage({
                 <TableRow>
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`unsend._domainkey.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`p=${domainQuery.data?.publicKey}`}
                       className="w-[200px] overflow-hidden text-ellipsis"
                     />
@@ -135,12 +134,12 @@ export default function DomainItemPage({
                 <TableRow>
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`mail.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`v=spf1 include:amazonses.com ~all`}
                       className="w-[200px] overflow-hidden text-ellipsis text-nowrap"
                     />
@@ -156,12 +155,12 @@ export default function DomainItemPage({
                 <TableRow>
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`_dmarc.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">
-                    <InputWithCopyButton
+                    <TextWithCopyButton
                       value={`v=DMARC1; p=none;`}
                       className="w-[200px] overflow-hidden text-ellipsis text-nowrap"
                     />
@@ -187,40 +186,6 @@ export default function DomainItemPage({
     </div>
   );
 }
-
-const InputWithCopyButton: React.FC<{ value: string; className?: string }> = ({
-  value,
-  className,
-}) => {
-  const [isCopied, setIsCopied] = React.useState(false);
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); // Reset isCopied to false after 2 seconds
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
-
-  return (
-    <div className={"flex gap-2 items-center group"}>
-      <div className={className}>{value}</div>
-      <Button
-        variant="ghost"
-        className="hover:bg-transparent p-0 cursor-pointer text-muted-foreground opacity-0 group-hover:opacity-100"
-        onClick={copyToClipboard}
-      >
-        {isCopied ? (
-          <CheckIcon className="h-4 w-4 text-green-500" />
-        ) : (
-          <ClipboardCopy className="h-4 w-4" />
-        )}
-      </Button>
-    </div>
-  );
-};
 
 const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
   const updateDomain = api.domain.updateDomain.useMutation();
