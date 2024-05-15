@@ -108,6 +108,7 @@ export async function sendEmailThroughSes({
   subject,
   text,
   html,
+  replyTo,
   region = "us-east-1",
   configurationSetName,
 }: EmailContent & {
@@ -117,6 +118,7 @@ export async function sendEmailThroughSes({
   const sesClient = getSesClient(region);
   const command = new SendEmailCommand({
     FromEmailAddress: from,
+    ReplyToAddresses: replyTo ? [replyTo] : undefined,
     Destination: {
       ToAddresses: [to],
     },
@@ -155,10 +157,12 @@ export async function sendEmailThroughSes({
   }
 }
 
+// Need to improve this. Use some kinda library to do this
 export async function sendEmailWithAttachments({
   to,
   from,
   subject,
+  replyTo,
   // eslint-disable-next-line no-unused-vars
   text,
   html,
@@ -174,13 +178,13 @@ export async function sendEmailWithAttachments({
   const boundary = "NextPart";
   let rawEmail = `From: ${from}\n`;
   rawEmail += `To: ${to}\n`;
+  rawEmail += `Reply-To: ${replyTo}\n`;
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
   rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
   rawEmail += `--${boundary}\n`;
   rawEmail += `Content-Type: text/html; charset="UTF-8"\n\n`;
   rawEmail += `${html}\n\n`;
-
   for (const attachment of attachments) {
     const content = attachment.content; // Convert buffer to base64
     const mimeType =

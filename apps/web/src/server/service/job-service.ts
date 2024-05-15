@@ -81,6 +81,7 @@ async function executeEmail(
         to: email.to,
         from: email.from,
         subject: email.subject,
+        replyTo: email.replyTo ?? undefined,
         text: email.text ?? undefined,
         html: email.html ?? undefined,
         region: domain?.region ?? env.AWS_DEFAULT_REGION,

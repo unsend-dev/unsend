@@ -6,7 +6,8 @@ import { queueEmail } from "./job-service";
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
 ) {
-  const { to, from, subject, text, html, teamId, attachments } = emailContent;
+  const { to, from, subject, text, html, teamId, attachments, replyTo } =
+    emailContent;
 
   const fromDomain = from.split("@")[1];
 
@@ -34,6 +35,7 @@ export async function sendEmail(
       to,
       from,
       subject,
+      replyTo,
       text,
       html,
       teamId,

@@ -1,6 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
 import { handleError } from "./api-error";
+import { env } from "~/env";
 
 export function getApp() {
   const app = new OpenAPIHono().basePath("/api");
@@ -14,7 +15,7 @@ export function getApp() {
       version: "1.0.0",
       title: "Unsend API",
     },
-    servers: [{ url: `${new URL(c.req.url).origin}/api` }],
+    servers: [{ url: `${env.APP_URL}/api` }],
   }));
 
   app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
