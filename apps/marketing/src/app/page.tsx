@@ -384,7 +384,7 @@ export default function Home() {
                 { language: "python", code: pythonCode },
                 { language: "curl", code: cUrl },
               ]}
-              codeClassName="h-[55vh]  "
+              codeClassName="h-[500px]  "
             />
           </div>
           {/* </motion.div> */}
