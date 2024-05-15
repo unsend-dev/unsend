@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "date-fns";
 import { Code } from "@unsend/ui/src/code";
+import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -236,19 +237,7 @@ export default function Home() {
           </div>
           <div className="lg:w-1/2 flex flex-col  border rounded-lg p-8">
             <div className=" border-l border-dashed flex flex-col gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  damping: 15,
-                  stiffness: 100,
-                  type: "spring",
-                  delay: 0.3,
-                }}
-                viewport={{ once: true }}
-                className="flex flex-col gap-4"
-              >
+              <div className="flex flex-col gap-4">
                 <div className="flex gap-5 items-start">
                   <div className=" -ml-2.5">
                     <div
@@ -274,19 +263,8 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  damping: 15,
-                  stiffness: 100,
-                  type: "spring",
-                  delay: 0.6,
-                }}
-                viewport={{ once: true }}
-              >
+              </div>
+              <div>
                 <div className="flex gap-5 items-start">
                   <div className=" -ml-2.5">
                     <div
@@ -313,7 +291,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -337,115 +315,37 @@ export default function Home() {
             </ul>
           </div>
           <div className="lg:w-1/2">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              transition={{
-                duration: 0.3,
-                type: "spring",
-                damping: 13,
-                stiffness: 100,
-                delayChildren: 0.5,
-                staggerChildren: 0.05,
-                delay: 0.3,
-              }}
-              viewport={{ once: true }}
-              className="w-full  rounded-lg border"
-              variants={{
-                hidden: { opacity: 0, scale: 0.5 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-            >
+            <div className="w-full  rounded-lg border">
               <div className="flex gap-4 justify-between border-b p-4">
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                <div className="">
                   <Heading1 />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <Heading2 />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <Heading3 />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <AlignLeft />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <AlignCenter />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <AlignRight />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <Bold />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <Italic />
-                </motion.div>
-                <motion.div
-                  className=""
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1 },
-                  }}
-                >
+                </div>
+                <div className="">
                   <ListOrdered />
-                </motion.div>
+                </div>
               </div>
-              <motion.div
-                className="h-[200px]  p-4"
-                variants={{
-                  hidden: { opacity: 0, scale: 0.95 },
-                  visible: { opacity: 1, scale: 1 },
-                }}
-              >
+              <div className="h-[200px]  p-4">
                 <div className="">
                   <div className="text-xl text-center">Welcome to unsend!</div>
                   <p className="text-center mt-8">
@@ -453,53 +353,11 @@ export default function Home() {
                     Sendgrid and postmark.
                   </p>
                 </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-        <div className="flex gap-10 flex-col lg:flex-row px-8 lg:px-0">
-          <div className="lg:w-1/2">
-            <div className="flex flex-col gap-3">
-              <DevicePhoneMobileIcon className="h-10 w-10 text-emerald-500" />
-              <p className="text-3xl font-semibold">SMS & Push notification</p>
+              </div>
             </div>
           </div>
-          <div className="lg:w-1/2">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              transition={{
-                duration: 0.4,
-                type: "spring",
-                damping: 13,
-                stiffness: 100,
-                delayChildren: 0.4,
-                staggerChildren: 0.05,
-                delay: 0.3,
-              }}
-              viewport={{ once: true }}
-              variants={{
-                hidden: { opacity: 0, scale: 0.7 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-              className="w-full h-[15rem]  rounded-lg border flex justify-center items-center"
-            >
-              <div className="text-3xl">
-                {"Coming soon!".split("").map((l, i) => (
-                  <motion.span
-                    key={i}
-                    variants={{
-                      hidden: { opacity: 0 },
-                      visible: { opacity: 1 },
-                    }}
-                  >
-                    {l}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          </div>
         </div>
+
         <div className=" px-8 lg:px-0 mt-20">
           <p className="text-center text-3xl lg:text-6xl  ">
             Integrate in minutes
@@ -548,7 +406,7 @@ export default function Home() {
       </div>
       <div className="flex justify-between mt-20 max-w-5xl mx-auto px-4">
         <div>
-          Email: <a href="mailto:hello@unsend.dev">hello@unsend.dev</a>
+          <TextWithCopyButton value="hello@unsend.dev" />
         </div>
         <div className="flex gap-8 items-center">
           {/* <Link href="https://github.com/unsend-dev/unsend" target="_blank">
