@@ -187,35 +187,17 @@ export default function Home() {
             </ul>
           </div>
           <div className="lg:w-1/2">
-            <div className="w-full  rounded-lg border">
-              <div className="flex gap-4 justify-between border-b p-4 overflow-scroll">
-                <div className="">
-                  <Heading1 />
-                </div>
-                <div className="">
-                  <Heading2 />
-                </div>
-                <div className="">
-                  <Heading3 />
-                </div>
-                <div className="">
-                  <AlignLeft />
-                </div>
-                <div className="">
-                  <AlignCenter />
-                </div>
-                <div className="">
-                  <AlignRight />
-                </div>
-                <div className="">
-                  <Bold />
-                </div>
-                <div className="">
-                  <Italic />
-                </div>
-                <div className="">
-                  <ListOrdered />
-                </div>
+            <div className="w-full rounded-lg border">
+              <div className="flex gap-4 justify-between border-b p-4 overflow-auto">
+                <Heading1 />
+                <Heading2 />
+                <Heading3 />
+                <AlignLeft />
+                <AlignCenter />
+                <AlignRight />
+                <Bold />
+                <Italic />
+                <ListOrdered />
               </div>
               <div className="h-[200px]  p-4">
                 <div className="">
