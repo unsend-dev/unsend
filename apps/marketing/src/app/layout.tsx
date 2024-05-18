@@ -1,7 +1,7 @@
 import "@unsend/ui/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@unsend/ui/theme-provider";
+import { ThemeProvider } from "@unsend/ui";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,10 +33,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ThemeProvider attribute="class" defaultTheme="dark">
-        <body className={inter.className}>{children}</body>
-      </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
