@@ -1,81 +1,80 @@
-# Turborepo starter
+<p align="center">
+  <img style="width: 200px;height: 200px; margin: auto;" src="https://github.com/unsend-dev/unsend/assets/24666922/76268b21-0786-4f89-aa0f-e003fd0a6d60" alt="Unsend Logo">
+</p>
 
-This is an official starter Turborepo.
+<p align="center" style="margin-top: 20px">
+  <p align="center">
+  The Open Source sending infrastructure.
+  <br>
+    <a href="https://unsend.dev"><strong>Learn more »</strong></a>
+    <br />
+    <br />
+    <a href="https://discord.gg/BU8n8pJv8S">Discord</a>
+    ·
+    <a href="https://unsend.dev">Website</a>
+    ·
+    <a href="https://github.com/unsend-dev/unsend/issues">Issues</a>
+  </p>
+</p>
 
-## Using this example
+<p align="center">
+   <a href="https://discord.gg/BU8n8pJv8S"><img src="https://img.shields.io/badge/Discord-unsend-%235865F2" alt="Join Unsend on Discord"></a>
+   <a href="https://github.com/unsend-dev/unsend/stargazers"><img src="https://img.shields.io/github/stars/unsend-dev/unsend" alt="Github Stars"></a>
+   <a href="https://github.com/unsend-dev/unsend/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPLv3-purple" alt="License"></a>
+</p>
 
-Run the following command:
+<div align="center">
+  <img src="https://github.com/unsend-dev/unsend/assets/24666922/68c41a6f-8fd1-4a3e-8d9b-987dda105c22" style="width: 100%;" />
+</div>
 
-```sh
-npx create-turbo@latest
-```
+## About this project
+As most of email products out there, Unsend also uses Amazon SES under the hood to send emails. We provide an open and alternative way to send emails reliably and cheaply with a great dashboard. You can also use Unsend manage contacts and send bulk emails(newsletter, product updates etc). We will take care of the subscriptions.
 
-## What's inside?
+Currently we only support emails, but we plan to expand to other sending protocols like SMS, push notification and even whatsapp.
 
-This Turborepo includes the following packages/apps:
+We are currently in beta and trying to rollout to public slowly. If you're interested [join our waitlist](https://app.youform.io/forms/caja89vr) or drop in a message in discord.
 
-### Apps and Packages
+## Features 
+- [X] Add domains
+- [X] Transactional Mails
+- [X] Rest API
+- [X] Dashboard (Delivered, opened, clicked, bounced)
+- [ ] Marketing email
+- [ ] Webhook support
+- [ ] SMTP support
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@unsend/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@unsend/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@unsend/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Community and Next Steps 🎯
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+We're currently working on opening unsend for public beta.
 
-### Utilities
+- Check out the first source code release in this repository and test it.
+- Tell us what you think in the [Discussions](https://github.com/unsend-dev/unsend/discussions).
+- Join the [Discord server](https://discord.gg/BU8n8pJv8S) for any questions and getting to know to other community members.
+- ⭐ the repository to help us raise awareness.
+- Spread the word on Twitter.
+- Fix or create [issues](https://github.com/unsend/unsend/issues), that are needed for the first production release.
 
-This Turborepo has some additional tools already setup for you:
+## Tech Stack
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- [Next.js](https://nextjs.org/) - Framework
+- [Prisma](https://www.prisma.io/) - ORM
+- [Tailwind](https://tailwindcss.com/) - CSS
+- [shadcn/ui](https://ui.shadcn.com/) - Component Library
+- [NextAuth.js](https://next-auth.js.org/) - Authentication
+- [tRPC](https://trpc.io/) - API
+- [hono](https://hono.dev/) - Public API
 
-### Build
 
-To build all apps and packages, run the following command:
+## Local Development
 
-```
-cd my-turborepo
-pnpm build
-```
+### Requirements
 
-### Develop
+To run Documenso locally, you will need
 
-To develop all apps and packages, run the following command:
+- Node.js (v18 or above)
+- Postgres SQL Database
+- Docker (optional)
 
-```
-cd my-turborepo
-pnpm dev
-```
 
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## Self Hosting
+Docs coming soon.
