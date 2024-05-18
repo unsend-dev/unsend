@@ -19,7 +19,7 @@
 
 <p align="center">
    <a href="https://discord.gg/BU8n8pJv8S"><img src="https://img.shields.io/badge/Discord-unsend-%235865F2" alt="Join Unsend on Discord"></a>
-   <a href="https://github.com/unsend-dev/unsend/stargazers"><img src="https://img.shields.io/github/stars/unsend-dev/unsend" alt="Github Stars"></a>
+   <a href="https://github.com/unsend-dev/unsend/stargazers"><img src="https://img.shields.io/github/stars/unsend-dev%2Funsend" alt="Github Stars"></a>
    <a href="https://github.com/unsend-dev/unsend/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPLv3-purple" alt="License"></a>
 </p>
 
