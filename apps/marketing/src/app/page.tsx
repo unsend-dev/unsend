@@ -1,11 +1,7 @@
-"use client";
-
-import { motion } from "framer-motion";
 import {
   RocketLaunchIcon,
   EnvelopeIcon,
   MegaphoneIcon,
-  DevicePhoneMobileIcon,
 } from "@heroicons/react/24/solid";
 import {
   Heading1,
@@ -19,112 +15,15 @@ import {
   ListOrdered,
 } from "lucide-react";
 import { formatDate } from "date-fns";
-import { Code } from "@unsend/ui/src/code";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 import Link from "next/link";
 import Image from "next/image";
-
-const jsCode = `const requestOptions = {
-  method: "POST",
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "Authorization": "Bearer us_1a2b3c4d5e6f7f8g"
-  },
-  body: JSON.stringify({
-    "to": "test@company.com",
-    "from": "hello@unsend.dev",
-    "subject": "Unsend email",
-    "html": "<p>Unsend is the best open source product to send emails</p>"
-  }),
-};
-
-fetch("http://unsend.dev/api/v1/emails", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
-`;
-
-const pythonCode = `import requests
-import json
-
-url = "http://unsend.dev/api/v1/emails"
-
-payload = json.dumps({
-  "to": "test@company.com",
-  "from": "hello@unsend.dev",
-  "subject": "Unsend email",
-  "html": "<p>Unsend is the best open source product to send emails</p>"
-})
-headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer us_1a2b3c4d5e6f7f8g'
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)`;
-
-const rubyCode = `require 'uri'
-require 'net/http'
-require 'json'
-
-url = URI("http://unsend.dev/api/v1/emails")
-
-http = Net::HTTP.new(url.host, url.port)
-request = Net::HTTP::Post.new(url)
-request["Accept"] = 'application/json'
-request["Content-Type"] = 'application/json'
-request["Authorization"] = 'Bearer us_1a2b3c4d5e6f7f8g'
-request.body = JSON.dump({
-  "to" => "test@company.com",
-  "from" => "hello@unsend.dev",
-  "subject" => "Unsend email",
-  "html" => "<p>Unsend is the best open source product to send emails</p>"
-})
-
-response = http.request(request)
-puts response.read_body`;
-
-const phpCode = `$url = "http://unsend.dev/api/v1/emails";
-
-$payload = json_encode(array(
-  "to" => "test@company.com",
-  "from" => "hello@unsend.dev",
-  "subject" => "Unsend email",
-  "html" => "<p>Unsend is the best open source product to send emails</p>"
-));
-
-$headers = array(
-  "Accept: application/json",
-  "Content-Type: application/json",
-  "Authorization: Bearer us_1a2b3c4d5e6f7f8g"
-);
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-if (curl_errno($ch)) {
-    echo 'Error:' . curl_error($ch);
-} else {
-    echo $response;
-}`;
-
-const cUrl = `curl --location 'https://unsend.dev/v1/emails' \\
---header 'Accept: application/json' \\
---header 'Content-Type: application/json' \\
---header 'Authorization: Bearer us_44c1071bd30058322f89a09805522d7341a47b5e' \\
---data-raw '{
-    "to": "test@company.com",
-    "from": "hello@unsend.dev",
-    "subject": "Unsend email",
-    "html": "<p>Unsend is the best open source product to send emails</p>",
-}'`;
+import IntegrationCode from "./IntegrationCode";
+import {
+  GithubStarButton,
+  HeroImage,
+  JoinWaitlist,
+} from "~/components/landind-page";
 
 export default function Home() {
   return (
@@ -135,7 +34,7 @@ export default function Home() {
             <Link href="/">Unsend</Link>
           </div>
           <div className="flex gap-8 items-center">
-            {/* <Link href="https://github.com/unsend-dev/unsend" target="_blank">
+            <Link href="https://github.com/unsend-dev/unsend" target="_blank">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 496 512"
@@ -143,7 +42,7 @@ export default function Home() {
               >
                 <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
               </svg>
-            </Link> */}
+            </Link>
             <Link href="https://twitter.com/unsend_dev" target="_blank">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -182,40 +81,13 @@ export default function Home() {
             Send transactional, marketing emails, SMSes and push notifications
             effortlessly.
           </p>
-          <div className="flex justify-center mt-16 ">
-            <motion.a
-              className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex gap-2"
-              whileHover={{ scale: 1.2 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              href="https://app.youform.io/forms/caja89vr"
-              target="_blank"
-            >
-              <RocketLaunchIcon className="h-6 w-6" />
-              Join the waitlist
-            </motion.a>
+          <div className="flex justify-center mt-16 gap-8">
+            <JoinWaitlist />
+            <GithubStarButton />
           </div>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.3,
-            damping: 15,
-            stiffness: 100,
-            type: "spring",
-          }}
-          viewport={{ once: true }}
-          className="p-3 bg-neutral-900 mt-24 rounded-xl mx-2"
-        >
-          <Image
-            src="/app.webp"
-            alt="App"
-            width={1200}
-            height={800}
-            className="rounded-lg relative border "
-          ></Image>
-        </motion.div>
+          <HeroImage />
+        </div>
 
         {/* <BackgroundBeams /> */}
       </div>
@@ -316,7 +188,7 @@ export default function Home() {
           </div>
           <div className="lg:w-1/2">
             <div className="w-full  rounded-lg border">
-              <div className="flex gap-4 justify-between border-b p-4">
+              <div className="flex gap-4 justify-between border-b p-4 overflow-scroll">
                 <div className="">
                   <Heading1 />
                 </div>
@@ -376,40 +248,18 @@ export default function Home() {
             }}
           > */}
           <div className="mt-10">
-            <Code
-              codeBlocks={[
-                { language: "js", code: jsCode },
-                { language: "ruby", code: rubyCode },
-                { language: "php", code: phpCode },
-                { language: "python", code: pythonCode },
-                { language: "curl", code: cUrl },
-              ]}
-              codeClassName="h-[500px]  "
-            />
+            <IntegrationCode />
           </div>
           {/* </motion.div> */}
         </div>
       </div>
-      <div className="">
-        <div className="flex justify-center mt-40">
-          <motion.a
-            className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex gap-2"
-            whileHover={{ scale: 1.2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            href="https://app.youform.io/forms/caja89vr"
-            target="_blank"
-          >
-            <RocketLaunchIcon className="h-6 w-6" />
-            Join the waitlist
-          </motion.a>
-        </div>
-      </div>
+
       <div className="flex justify-between mt-20 max-w-5xl mx-auto px-4">
         <div>
           <TextWithCopyButton value="hello@unsend.dev" />
         </div>
         <div className="flex gap-8 items-center">
-          {/* <Link href="https://github.com/unsend-dev/unsend" target="_blank">
+          <Link href="https://github.com/unsend-dev/unsend" target="_blank">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 496 512"
@@ -417,7 +267,7 @@ export default function Home() {
             >
               <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
             </svg>
-          </Link> */}
+          </Link>
           <Link href="https://twitter.com/unsend_dev" target="_blank">
             <svg
               xmlns="http://www.w3.org/2000/svg"
