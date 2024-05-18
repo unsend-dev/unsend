@@ -28,17 +28,19 @@
 </div>
 
 ## About this project
+
 As most of email products out there, Unsend also uses Amazon SES under the hood to send emails. We provide an open and alternative way to send emails reliably and cheaply with a great dashboard. You can also use Unsend manage contacts and send bulk emails(newsletter, product updates etc). We will take care of the subscriptions.
 
 Currently we only support emails, but we plan to expand to other sending protocols like SMS, push notification and even whatsapp.
 
 We are currently in beta and trying to rollout to public slowly. If you're interested [join our waitlist](https://app.youform.io/forms/caja89vr) or drop in a message in discord.
 
-## Features 
-- [X] Add domains
-- [X] Transactional Mails
-- [X] Rest API
-- [X] Dashboard (Delivered, opened, clicked, bounced)
+## Features
+
+- [x] Add domains
+- [x] Transactional Mails
+- [x] Rest API
+- [x] Dashboard (Delivered, opened, clicked, bounced)
 - [ ] Marketing email
 - [ ] Webhook support
 - [ ] SMTP support
@@ -64,17 +66,16 @@ We're currently working on opening unsend for public beta.
 - [tRPC](https://trpc.io/) - API
 - [hono](https://hono.dev/) - Public API
 
-
 ## Local Development
 
 ### Requirements
 
-To run Documenso locally, you will need
+To run Unsend locally, you will need
 
 - Node.js (v18 or above)
 - Postgres SQL Database
 - Docker (optional)
 
-
 ## Self Hosting
+
 Docs coming soon.
