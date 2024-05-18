@@ -81,7 +81,7 @@ export default function Home() {
             Send transactional, marketing emails, SMSes and push notifications
             effortlessly.
           </p>
-          <div className="flex justify-center mt-16 gap-8">
+          <div className="flex  flex-col items-center lg:flex-row justify-center mt-16 gap-8">
             <JoinWaitlist />
             <GithubStarButton />
           </div>
