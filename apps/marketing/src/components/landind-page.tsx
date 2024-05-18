@@ -3,7 +3,7 @@ import { RocketLaunchIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-export async function JoinWaitlist() {
+export function JoinWaitlist() {
   return (
     <motion.a
       className="bg-white text-black py-2 px-6 rounded-full cursor-pointer flex justify-center gap-2 w-[220px]"
@@ -18,7 +18,7 @@ export async function JoinWaitlist() {
   );
 }
 
-export async function GithubStarButton() {
+export function GithubStarButton() {
   return (
     <motion.a
       className="border-white border py-2 px-6 rounded-full justify-center cursor-pointer flex gap-2 w-[220px]"
@@ -39,7 +39,7 @@ export async function GithubStarButton() {
   );
 }
 
-export async function HeroImage() {
+export function HeroImage() {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
