@@ -188,7 +188,7 @@ export default function Home() {
           </div>
           <div className="lg:w-1/2">
             <div className="w-full rounded-lg border">
-              <div className="flex gap-4 justify-between border-b p-4">
+              <div className="flex gap-4 justify-between border-b p-4 overflow-auto">
                 <Heading1 />
                 <Heading2 />
                 <Heading3 />
