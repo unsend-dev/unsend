@@ -16,7 +16,7 @@ export const teamRouter = createTRPCRouter({
         },
       });
 
-      if (teams) {
+      if (teams.length > 0) {
         console.log("User already has a team");
         return;
       }
