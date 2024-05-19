@@ -5,6 +5,7 @@
     "build": "turbo build",
     "build:web": "turbo build --filter=web",
     "build:marketing": "turbo build --filter=marketing",
+    "build:docs": "turbo build --filter=docs",
     "dev": "pnpm load-env -- turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
