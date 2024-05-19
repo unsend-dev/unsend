@@ -58,7 +58,8 @@ export function HeroImage() {
         alt="App"
         width={1200}
         height={800}
-        className="rounded-lg relative border "
+        className="rounded-lg relative border"
+        priority
       ></Image>
     </motion.div>
   );
