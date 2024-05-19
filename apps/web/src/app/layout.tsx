@@ -1,7 +1,7 @@
 import "@unsend/ui/styles/globals.css";
 
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@unsend/ui/theme-provider";
+import { ThemeProvider } from "@unsend/ui";
 import { Toaster } from "@unsend/ui/src/toaster";
 
 import { TRPCReactProvider } from "~/trpc/react";
