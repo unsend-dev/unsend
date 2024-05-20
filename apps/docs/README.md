@@ -1,26 +1,32 @@
-# docs
+# Mintlify Starter Kit
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
 
-Run development server:
+- Guide pages
+- Navigation
+- Customizations
+- API Reference pages
+- Use of popular components
 
-```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+### Development
+
+Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
+
+```
+npm i -g mintlify
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Run the following command at the root of your documentation (where mint.json is)
 
-## Learn More
+```
+mintlify dev
+```
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+### Publishing Changes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.vercel.app) - learn about Fumadocs
+Install our Github App to auto propagate changes from your repo to your deployment. Changes will be deployed to production automatically after pushing to the default branch. Find the link to install on your dashboard. 
+
+#### Troubleshooting
+
+- Mintlify dev isn't running - Run `mintlify install` it'll re-install dependencies.
+- Page loads as a 404 - Make sure you are running in a folder with `mint.json`

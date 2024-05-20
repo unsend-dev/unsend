@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Unsend API"
+  },
+  "servers": [
+    {
+      "url": "https://app.unsend.dev/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {},
+    "parameters": {}
+  },
+  "paths": {
+    "/v1/domains": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "description": "The ID of the domain",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the domain",
+                        "example": "example.com"
+                      },
+                      "teamId": {
+                        "type": "number",
+                        "description": "The ID of the team",
+                        "example": 1
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "NOT_STARTED",
+                          "PENDING",
+                          "SUCCESS",
+                          "FAILED",
+                          "TEMPORARY_FAILURE"
+                        ]
+                      },
+                      "region": {
+                        "type": "string",
+                        "default": "us-east-1"
+                      },
+                      "clickTracking": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "openTracking": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "publicKey": {
+                        "type": "string"
+                      },
+                      "dkimStatus": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "spfDetails": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "teamId",
+                      "status",
+                      "publicKey",
+                      "createdAt",
+                      "updatedAt"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "from": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "replyTo": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "html": {
+                    "type": "string"
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "filename": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "filename",
+                        "content"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "to",
+                  "from",
+                  "subject"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emailId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
