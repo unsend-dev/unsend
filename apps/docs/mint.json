@@ -59,6 +59,7 @@
     {
       "group": "Emails",
       "pages": [
+        "api-reference/emails/get-email",
         "api-reference/emails/send-email"
       ]
     },
@@ -73,6 +74,9 @@
     "baseUrl": "https://mintlify.com/api",
     "auth": {
       "method": "bearer"
+    },
+    "playground": {
+      "mode": "simple"
     }
   },
   "footerSocials": {

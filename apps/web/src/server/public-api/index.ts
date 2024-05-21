@@ -1,6 +1,7 @@
 import { getApp } from "./hono";
 import getDomains from "./api/domains/get-domains";
 import sendEmail from "./api/emails/send-email";
+import getEmail from "./api/emails/get-email";
 
 export const app = getApp();
 
@@ -8,6 +9,7 @@ export const app = getApp();
 getDomains(app);
 
 /**Email related APIs */
+getEmail(app);
 sendEmail(app);
 
 export default app;

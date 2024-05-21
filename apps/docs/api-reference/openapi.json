@@ -104,6 +104,102 @@
         }
       }
     },
+    "/v1/emails/{emailId}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "teamId": {
+                      "type": "number"
+                    },
+                    "to": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "html": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "text": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "emailEvents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "emailId": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "QUEUED",
+                              "SENT",
+                              "OPENED",
+                              "CLICKED",
+                              "BOUNCED",
+                              "COMPLAINED",
+                              "DELIVERED",
+                              "REJECTED",
+                              "RENDERING_FAILURE",
+                              "DELIVERY_DELAYED"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "data": {
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "emailId",
+                          "status",
+                          "createdAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "teamId",
+                    "to",
+                    "from",
+                    "subject",
+                    "html",
+                    "text",
+                    "createdAt",
+                    "updatedAt",
+                    "emailEvents"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/emails": {
       "post": {
         "requestBody": {
