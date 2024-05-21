@@ -6,6 +6,7 @@
     "build:web": "turbo build --filter=web",
     "build:marketing": "turbo build --filter=marketing",
     "dev": "pnpm load-env -- turbo dev",
+    "dev:docs": "cd apps/docs && mintlify dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:generate": "pnpm db db:generate",
@@ -20,6 +21,7 @@
     "@unsend/eslint-config": "workspace:*",
     "@unsend/typescript-config": "workspace:*",
     "dotenv-cli": "^7.4.1",
+    "mintlify": "^4.0.159",
     "prettier": "^3.2.5"
   },
   "packageManager": "pnpm@8.9.0",
