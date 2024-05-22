@@ -9,6 +9,20 @@ import { UnsendApiError } from "../../api-error";
 const route = createRoute({
   method: "get",
   path: "/v1/emails/{emailId}",
+  request: {
+    params: z.object({
+      emailId: z
+        .string()
+        .min(3)
+        .openapi({
+          param: {
+            name: "emailId",
+            in: "path",
+          },
+          example: "cuiwqdj74rygf74",
+        }),
+    }),
+  },
   responses: {
     200: {
       content: {

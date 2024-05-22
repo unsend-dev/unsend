@@ -7,14 +7,10 @@ const ErrorCode = z.enum([
   "BAD_REQUEST",
   "FORBIDDEN",
   "INTERNAL_SERVER_ERROR",
-  "USAGE_EXCEEDED",
-  "DISABLED",
   "NOT_FOUND",
   "NOT_UNIQUE",
   "RATE_LIMITED",
   "UNAUTHORIZED",
-  "PRECONDITION_FAILED",
-  "INSUFFICIENT_PERMISSIONS",
   "METHOD_NOT_ALLOWED",
 ]);
 
@@ -25,9 +21,6 @@ function codeToStatus(code: z.infer<typeof ErrorCode>): StatusCode {
     case "UNAUTHORIZED":
       return 401;
     case "FORBIDDEN":
-    case "DISABLED":
-    case "INSUFFICIENT_PERMISSIONS":
-    case "USAGE_EXCEEDED":
       return 403;
     case "NOT_FOUND":
       return 404;
@@ -35,8 +28,6 @@ function codeToStatus(code: z.infer<typeof ErrorCode>): StatusCode {
       return 405;
     case "NOT_UNIQUE":
       return 409;
-    case "PRECONDITION_FAILED":
-      return 412;
     case "RATE_LIMITED":
       return 429;
     case "INTERNAL_SERVER_ERROR":
@@ -52,12 +43,14 @@ function statusToCode(status: StatusCode): z.infer<typeof ErrorCode> {
       return "UNAUTHORIZED";
     case 403:
       return "FORBIDDEN";
-
     case 404:
       return "NOT_FOUND";
-
     case 405:
       return "METHOD_NOT_ALLOWED";
+    case 409:
+      return "NOT_UNIQUE";
+    case 429:
+      return "RATE_LIMITED";
     case 500:
       return "INTERNAL_SERVER_ERROR";
     default:

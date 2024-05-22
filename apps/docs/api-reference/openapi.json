@@ -106,6 +106,18 @@
     },
     "/v1/emails/{emailId}": {
       "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "emailId",
+            "in": "path"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Retrieve the user",

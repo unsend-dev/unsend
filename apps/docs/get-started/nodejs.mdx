@@ -1,0 +1,35 @@
+---
+title: NodeJS
+description: "Send your mail using unsend in NodeJS"
+---
+
+## Prerequisites
+
+- [Unsend API key](https://app.unsend.dev/api-keys)
+- [Verified domain](https://app.unsend.dev/domains)
+
+## Code
+
+```js server.ts
+const options = {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer us_12345",
+    "Content-Type": "application/json",
+  },
+  body: {
+    to: "jsmith@example.com",
+    from: "jsmith@example.com",
+    subject: "<string>",
+    replyTo: "<string>",
+    text: "<string>",
+    html: "<string>",
+    attachments: [{ filename: "<string>", content: "<string>" }],
+  },
+};
+
+fetch("https://app.unsend.dev/api/v1/emails", options)
+  .then((response) => response.json())
+  .then((response) => console.log(response))
+  .catch((err) => console.error(err));
+```
