@@ -1,0 +1,27 @@
+{
+  "name": "unsend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --max-warnings 0",
+    "build": "rm -rf dist && tsup index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.2",
+    "@unsend/eslint-config": "workspace:*",
+    "@unsend/typescript-config": "workspace:*",
+    "openapi-typescript": "^6.7.6",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@react-email/render": "^0.0.14",
+    "react": "^18.3.1"
+  }
+}
