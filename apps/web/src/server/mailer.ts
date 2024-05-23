@@ -1,4 +1,7 @@
 import { env } from "~/env";
+import { Unsend } from "unsend";
+
+const unsend = new Unsend(env.UNSEND_API_KEY);
 
 export async function sendSignUpEmail(
   email: string,
@@ -26,29 +29,22 @@ async function sendMail(
   html: string
 ) {
   if (env.UNSEND_API_KEY && env.UNSEND_URL) {
-    const resp = await fetch(`${env.UNSEND_URL}/emails`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${env.UNSEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "no-reply@auth.unsend.dev",
-        to: email,
-        subject,
-        text,
-        html,
-      }),
+    const resp = await unsend.emails.send({
+      to: email,
+      from: "no-reply@auth.unsend.dev",
+      subject,
+      text,
+      html,
     });
 
-    if (resp.status === 200) {
+    if (resp.data) {
       console.log("Email sent using unsend");
       return;
     } else {
       console.log(
         "Error sending email using unsend, so fallback to resend",
-        resp.status,
-        resp.statusText
+        resp.error?.code,
+        resp.error?.message
       );
     }
   } else {
