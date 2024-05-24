@@ -1,12 +1,14 @@
 {
   "name": "unsend",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --max-warnings 0",
-    "build": "rm -rf dist && tsup index.ts"
+    "build": "rm -rf dist && tsup src/index.ts --format esm,cjs --dts"
   },
   "keywords": [],
   "author": "",

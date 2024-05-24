@@ -1,0 +1,10 @@
+# Ignore all TypeScript files
+tsconfig.json
+.eslintrc.js
+tsup.config.json
+index.ts
+
+# Ignore specific directories
+src/
+types/
+.turbo/
