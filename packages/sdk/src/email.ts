@@ -1,6 +1,6 @@
 import { renderAsync } from "@react-email/render";
 import * as React from "react";
-import { Unsend } from "./unsend";
+import { Unsend } from ".";
 import { paths } from "../types/schema";
 import { ErrorResponse } from "../types";
 
