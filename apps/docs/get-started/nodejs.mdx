@@ -8,28 +8,46 @@ description: "Send your mail using unsend in NodeJS"
 - [Unsend API key](https://app.unsend.dev/api-keys)
 - [Verified domain](https://app.unsend.dev/domains)
 
-## Code
+## Using SDK
 
-```js server.ts
-const options = {
-  method: "POST",
-  headers: {
-    Authorization: "Bearer us_12345",
-    "Content-Type": "application/json",
-  },
-  body: {
-    to: "jsmith@example.com",
-    from: "jsmith@example.com",
-    subject: "<string>",
-    replyTo: "<string>",
-    text: "<string>",
-    html: "<string>",
-    attachments: [{ filename: "<string>", content: "<string>" }],
-  },
-};
+<Steps>
+  <Step title="Install SDK">
+    <CodeGroup>
+      ```bash npm
+      npm install unsend
+      ```
 
-fetch("https://app.unsend.dev/api/v1/emails", options)
-  .then((response) => response.json())
-  .then((response) => console.log(response))
-  .catch((err) => console.error(err));
-```
+      ```bash yarn
+      yarn add unsend
+      ```
+
+      ```bash pnpm
+      pnpm add unsend
+      ```
+
+      ```bash bun
+      bun add unsend
+      ```
+    </CodeGroup>
+
+  </Step>
+  <Step title="Initialize SDK">
+    Get the API key from the [Unsend dashboard](https://app.unsend.dev/api-keys) and initialize the SDK
+
+    ```javascript
+    const unsend = new Unsend({ apiKey: "us_12345" });
+    ```
+
+  </Step>
+  <Step title="Send Email">
+    ```javascript
+    unsend.emails.send({
+      to: "hello@acme.com",
+      from: "hello@company.com",
+      subject: "Unsend email",
+      html: "<p>Unsend is the best open source product to send emails</p>",
+      text: "Unsend is the best open source product to send emails",
+    });
+    ```
+  </Step>
+</Steps>

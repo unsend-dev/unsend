@@ -1,1 +1,1 @@
-export { Unsend } from "./src";
+export { Unsend } from "./src/unsend";

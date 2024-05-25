@@ -4,6 +4,7 @@ import {
   BookUser,
   CircleUser,
   Code,
+  ExternalLink,
   Globe,
   Home,
   LayoutDashboard,
@@ -77,47 +78,49 @@ export default async function AuthenticatedDashboardLayout({
                 Early access
               </span>
             </div>
-            <div className="flex-1">
-              <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-                <NavButton href="/dashboard">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </NavButton>
+            <div className="flex-1 h-full">
+              <nav className=" flex-1 h-full flex-col justify-between items-center px-2 text-sm font-medium lg:px-4">
+                <div>
+                  <NavButton href="/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </NavButton>
 
-                <NavButton href="/emails">
-                  <Mail className="h-4 w-4" />
-                  Emails
-                </NavButton>
+                  <NavButton href="/emails">
+                    <Mail className="h-4 w-4" />
+                    Emails
+                  </NavButton>
 
-                <NavButton href="/domains">
-                  <Globe className="h-4 w-4" />
-                  Domains
-                </NavButton>
+                  <NavButton href="/domains">
+                    <Globe className="h-4 w-4" />
+                    Domains
+                  </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
-                  <BookUser className="h-4 w-4" />
-                  Contacts
-                </NavButton>
+                  <NavButton href="/contacts" comingSoon>
+                    <BookUser className="h-4 w-4" />
+                    Contacts
+                  </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
-                  <Volume2 className="h-4 w-4" />
-                  Marketing
-                </NavButton>
+                  <NavButton href="/contacts" comingSoon>
+                    <Volume2 className="h-4 w-4" />
+                    Marketing
+                  </NavButton>
 
-                {/* <NavButton href="/sms" comingSoon>
-                  <MessageSquareMore className="h-4 w-4" />
-                  SMS
-                </NavButton>
-
-                <NavButton href="/sms" comingSoon>
-                  <BellRing className="h-4 w-4" />
-                  Push notification
-                </NavButton> */}
-
-                <NavButton href="/api-keys">
-                  <Code className="h-4 w-4" />
-                  Developer settings
-                </NavButton>
+                  <NavButton href="/api-keys">
+                    <Code className="h-4 w-4" />
+                    Developer settings
+                  </NavButton>
+                </div>
+                <div className=" absolute bottom-10 p-4">
+                  <Link
+                    href="https://docs.unsend.dev"
+                    target="_blank"
+                    className="flex gap-2 items-center"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span className="">Docs</span>
+                  </Link>
+                </div>
               </nav>
             </div>
             <div className="mt-auto p-4"></div>
