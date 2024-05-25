@@ -14,8 +14,12 @@ export class Unsend {
 
   // readonly domains = new Domains(this);
   readonly emails = new Emails(this);
+  url = baseUrl;
 
-  constructor(readonly key?: string) {
+  constructor(
+    readonly key?: string,
+    url?: string
+  ) {
     if (!key) {
       if (typeof process !== "undefined" && process.env) {
         this.key = process.env.UNSEND_API_KEY;
@@ -28,6 +32,10 @@ export class Unsend {
       }
     }
 
+    if (url) {
+      this.url = `${url}/api/v1`;
+    }
+
     this.headers = new Headers({
       Authorization: `Bearer ${this.key}`,
       "Content-Type": "application/json",
@@ -38,7 +46,7 @@ export class Unsend {
     path: string,
     options = {}
   ): Promise<{ data: T | null; error: ErrorResponse | null }> {
-    const response = await fetch(`${baseUrl}${path}`, options);
+    const response = await fetch(`${this.url}${path}`, options);
     const defaultError = {
       code: "INTERNAL_SERVER_ERROR",
       message: response.statusText,

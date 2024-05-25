@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Unsend",
   "logo": {
-    "dark": "/logo/logo.svg",
-    "light": "/logo/logo.svg"
+    "dark": "/logo/Logo-wordmark-dark.png",
+    "light": "/logo/Logo-wordmark.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
