@@ -27,7 +27,7 @@ export class Unsend {
 
       if (!this.key) {
         throw new Error(
-          'Missing API key. Pass it to the constructor `new Unsend("re_123")`'
+          'Missing API key. Pass it to the constructor `new Unsend("us_123")`'
         );
       }
     }
