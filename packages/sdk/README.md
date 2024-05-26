@@ -10,13 +10,13 @@
 ### NPM
 
 ```bash
-  npm install unsend
+npm install unsend
 ```
 
 ### Yarn
 
 ```bash
-  yarn add unsend
+yarn add unsend
 ```
 
 ### PNPM
