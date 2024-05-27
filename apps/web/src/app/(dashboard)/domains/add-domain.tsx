@@ -16,6 +16,7 @@ import {
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function AddDomain() {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function AddDomain() {
   const addDomainMutation = api.domain.createDomain.useMutation();
 
   const utils = api.useUtils();
+  const router = useRouter();
 
   function handleSave() {
     addDomainMutation.mutate(
@@ -30,8 +32,9 @@ export default function AddDomain() {
         name: domainName,
       },
       {
-        onSuccess: () => {
+        onSuccess: async (data) => {
           utils.domain.domains.invalidate();
+          await router.push(`/domains/${data.id}`);
           setOpen(false);
         },
       }
