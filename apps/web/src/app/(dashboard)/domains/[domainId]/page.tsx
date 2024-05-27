@@ -24,15 +24,35 @@ import React from "react";
 import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
+import { Button } from "@unsend/ui/src/button";
 
 export default function DomainItemPage({
   params,
 }: {
   params: { domainId: string };
 }) {
-  const domainQuery = api.domain.getDomain.useQuery({
-    id: Number(params.domainId),
-  });
+  const domainQuery = api.domain.getDomain.useQuery(
+    {
+      id: Number(params.domainId),
+    },
+    {
+      refetchInterval: (q) => (q?.state.data?.isVerifying ? 10000 : false),
+      refetchIntervalInBackground: true,
+    }
+  );
+
+  const verifyQuery = api.domain.startVerification.useMutation();
+
+  const handleVerify = () => {
+    verifyQuery.mutate(
+      { id: Number(params.domainId) },
+      {
+        onSettled: () => {
+          domainQuery.refetch();
+        },
+      }
+    );
+  };
 
   return (
     <div>
@@ -67,9 +87,24 @@ export default function DomainItemPage({
                 />
               </div>
             </div>
-            {domainQuery.data ? (
-              <SendTestMail domain={domainQuery.data} />
-            ) : null}
+            <div className="flex gap-4">
+              <div>
+                <Button
+                  variant="outline"
+                  onClick={handleVerify}
+                  disabled={domainQuery.data?.isVerifying}
+                >
+                  {domainQuery.data?.isVerifying
+                    ? "Verifying..."
+                    : domainQuery.data?.status === DomainStatus.SUCCESS
+                      ? "Verify again"
+                      : "Verify domain"}
+                </Button>
+              </div>
+              {domainQuery.data ? (
+                <SendTestMail domain={domainQuery.data} />
+              ) : null}
+            </div>
           </div>
 
           <div className=" border rounded-lg p-4">
@@ -155,9 +190,14 @@ export default function DomainItemPage({
                 <TableRow>
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
-                    <TextWithCopyButton
-                      value={`_dmarc.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
-                    />
+                    <div className="flex gap-2 items-center">
+                      <span className="text-sm text-muted-foreground">
+                        (optional)
+                      </span>
+                      <TextWithCopyButton
+                        value={`_dmarc.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
+                      />
+                    </div>
                   </TableCell>
                   <TableCell className="">
                     <TextWithCopyButton

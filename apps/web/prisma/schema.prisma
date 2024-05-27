@@ -115,6 +115,7 @@ model Domain {
   dmarcAdded    Boolean      @default(false)
   errorMessage  String?
   subdomain     String?
+  isVerifying   Boolean      @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   team          Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
