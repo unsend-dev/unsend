@@ -17,6 +17,15 @@ export const domainRouter = createTRPCRouter({
       return createDomain(ctx.team.id, input.name);
     }),
 
+  startVerification: teamProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.domain.update({
+        where: { id: input.id },
+        data: { isVerifying: true },
+      });
+    }),
+
   domains: teamProcedure.query(async ({ ctx }) => {
     const domains = await db.domain.findMany({
       where: {

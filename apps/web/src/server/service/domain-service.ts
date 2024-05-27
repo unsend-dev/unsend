@@ -33,7 +33,7 @@ export async function getDomain(id: number) {
     throw new Error("Domain not found");
   }
 
-  if (domain.status !== "SUCCESS") {
+  if (domain.isVerifying) {
     const domainIdentity = await ses.getDomainIdentity(
       domain.name,
       domain.region
@@ -48,27 +48,23 @@ export async function getDomain(id: number) {
     const _dmarcRecord = await getDmarcRecord(domain.name);
     const dmarcRecord = _dmarcRecord?.[0]?.[0];
 
-    console.log(domainIdentity);
-    console.log(dmarcRecord);
-
-    if (
-      domain.dkimStatus !== dkimStatus ||
-      domain.spfDetails !== spfDetails ||
-      domain.status !== verificationStatus ||
-      domain.dmarcAdded !== (dmarcRecord ? true : false)
-    ) {
-      domain = await db.domain.update({
-        where: {
-          id,
-        },
-        data: {
-          dkimStatus,
-          spfDetails,
-          status: verificationStatus ?? "NOT_STARTED",
-          dmarcAdded: dmarcRecord ? true : false,
-        },
-      });
-    }
+    domain = await db.domain.update({
+      where: {
+        id,
+      },
+      data: {
+        dkimStatus,
+        spfDetails,
+        status: verificationStatus ?? "NOT_STARTED",
+        dmarcAdded: dmarcRecord ? true : false,
+        isVerifying:
+          verificationStatus === "SUCCESS" &&
+          dkimStatus === "SUCCESS" &&
+          spfDetails === "SUCCESS"
+            ? false
+            : true,
+      },
+    });
 
     return {
       ...domain,
