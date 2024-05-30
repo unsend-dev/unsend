@@ -57,3 +57,16 @@ export async function retrieveApiKey(token: string) {
     throw error;
   }
 }
+
+export async function deleteApiKey(id: number) {
+  try {
+    await db.apiKey.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting API key:", error);
+    throw error;
+  }
+}

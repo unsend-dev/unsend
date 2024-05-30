@@ -10,6 +10,7 @@ import {
 } from "@unsend/ui/src/table";
 import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
+import DeleteApiKey from "./delete-api-key";
 
 export default function ApiList() {
   const apiKeysQuery = api.apiKey.getApiKeys.useQuery();
@@ -24,7 +25,8 @@ export default function ApiList() {
               <TableHead>Token</TableHead>
               <TableHead>Permission</TableHead>
               <TableHead>Last used</TableHead>
-              <TableHead className="rounded-tr-xl">Created at</TableHead>
+              <TableHead>Created at</TableHead>
+              <TableHead className="rounded-tr-xl">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -40,6 +42,9 @@ export default function ApiList() {
                 </TableCell>
                 <TableCell>
                   {formatDistanceToNow(apiKey.createdAt, { addSuffix: true })}
+                </TableCell>
+                <TableCell>
+                  <DeleteApiKey apiKey={apiKey} />
                 </TableCell>
               </TableRow>
             ))}
