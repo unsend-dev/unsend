@@ -14,7 +14,7 @@ import {
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
-import { CheckIcon, ClipboardCopy, Plus } from "lucide-react";
+import { CheckIcon, ClipboardCopy, Eye, EyeOff, Plus } from "lucide-react";
 import { toast } from "@unsend/ui/src/toaster";
 
 export default function AddApiKey() {
@@ -23,6 +23,7 @@ export default function AddApiKey() {
   const [apiKey, setApiKey] = useState("");
   const addDomainMutation = api.apiKey.createToken.useMutation();
   const [isCopied, setIsCopied] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const utils = api.useUtils();
 
@@ -73,20 +74,48 @@ export default function AddApiKey() {
           <DialogHeader>
             <DialogTitle>Copy API key</DialogTitle>
           </DialogHeader>
-          <div className="py-2 bg-muted rounded-lg px-2 flex items-center justify-between">
-            <p>{apiKey}</p>
-            <Button
-              variant="ghost"
-              className="hover:bg-transparent p-0 cursor-pointer  group-hover:opacity-100"
-              onClick={handleCopy}
-            >
-              {isCopied ? (
-                <CheckIcon className="h-4 w-4 text-green-500" />
+          <div className="py-1 bg-secondary rounded-lg px-4 flex items-center justify-between mt-2">
+            <div>
+              {showApiKey ? (
+                <p className="text-sm">{apiKey}</p>
               ) : (
-                <ClipboardCopy className="h-4 w-4" />
+                <div className="flex gap-1">
+                  {Array.from({ length: 30 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="w-1 h-1 bg-muted-foreground rounded-lg"
+                    />
+                  ))}
+                </div>
               )}
-            </Button>
+            </div>
+            <div className="flex gap-4">
+              <Button
+                variant="ghost"
+                className="hover:bg-transparent p-0 cursor-pointer  group-hover:opacity-100"
+                onClick={() => setShowApiKey(!showApiKey)}
+              >
+                {showApiKey ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
+              </Button>
+
+              <Button
+                variant="ghost"
+                className="hover:bg-transparent p-0 cursor-pointer  group-hover:opacity-100"
+                onClick={handleCopy}
+              >
+                {isCopied ? (
+                  <CheckIcon className="h-4 w-4 text-green-500" />
+                ) : (
+                  <ClipboardCopy className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
+          <div></div>
           <DialogFooter>
             <Button
               type="submit"
@@ -110,7 +139,7 @@ export default function AddApiKey() {
               id="name"
               placeholder="prod key"
               defaultValue=""
-              className="col-span-3"
+              className="col-span-3 mt-1"
               onChange={(e) => setName(e.target.value)}
               value={name}
             />

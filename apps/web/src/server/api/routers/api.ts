@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
-import { addApiKey } from "~/server/service/api-service";
+import { addApiKey, deleteApiKey } from "~/server/service/api-service";
 
 export const apiRouter = createTRPCRouter({
   createToken: teamProcedure
@@ -33,4 +33,10 @@ export const apiRouter = createTRPCRouter({
 
     return keys;
   }),
+
+  deleteApiKey: teamProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return deleteApiKey(input.id);
+    }),
 });
