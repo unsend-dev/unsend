@@ -23,6 +23,7 @@
     "@hono/swagger-ui": "^0.2.1",
     "@hono/zod-openapi": "^0.10.0",
     "@hookform/resolvers": "^3.3.4",
+    "@isaacs/ttlcache": "^1.4.1",
     "@prisma/client": "^5.11.0",
     "@t3-oss/env-nextjs": "^0.9.2",
     "@tanstack/react-query": "^5.25.0",
