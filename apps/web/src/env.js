@@ -40,6 +40,10 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     SES_QUEUE_LIMIT: z.string().transform((str) => parseInt(str, 10)),
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
+    API_RATE_LIMIT: z
+      .string()
+      .transform((str) => parseInt(str, 10))
+      .default(2),
   },
 
   /**
@@ -72,6 +76,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     SES_QUEUE_LIMIT: process.env.SES_QUEUE_LIMIT,
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
+    API_RATE_LIMIT: process.env.API_RATE_LIMIT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -3,7 +3,7 @@ import { cn } from "..";
 
 export const Spinner: React.FC<
   React.SVGProps<SVGSVGElement> & { innerSvgClass?: string }
-> = (props) => {
+> = ({ innerSvgClass, ...props }) => {
   return (
     <svg
       version="1.1"
@@ -18,7 +18,7 @@ export const Spinner: React.FC<
       <g
         strokeWidth="200"
         strokeLinecap="round"
-        className={cn("stroke-primary-foreground", props.innerSvgClass)}
+        className={cn("stroke-primary-foreground", innerSvgClass)}
         fill="none"
         id="spinner"
       >
