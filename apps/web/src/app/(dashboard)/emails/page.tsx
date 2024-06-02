@@ -1,10 +1,9 @@
-import dynamic from "next/dynamic";
+"use client";
 
-const EmailList = dynamic(
-  () => import("./email-list").then((mod) => mod.default),
-  { ssr: false }
-);
-export default async function EmailsPage() {
+import dynamic from "next/dynamic";
+import EmailList from "./email-list";
+
+export default function EmailsPage() {
   return (
     <div>
       <div className="flex justify-between items-center">
