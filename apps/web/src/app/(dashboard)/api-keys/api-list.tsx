@@ -11,6 +11,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
 import DeleteApiKey from "./delete-api-key";
+import Spinner from "@unsend/ui/src/spinner";
 
 export default function ApiList() {
   const apiKeysQuery = api.apiKey.getApiKeys.useQuery();
@@ -30,24 +31,35 @@ export default function ApiList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {apiKeysQuery.data?.map((apiKey) => (
-              <TableRow key={apiKey.id}>
-                <TableCell>{apiKey.name}</TableCell>
-                <TableCell>{apiKey.partialToken}</TableCell>
-                <TableCell>{apiKey.permission}</TableCell>
-                <TableCell>
-                  {apiKey.lastUsed
-                    ? formatDistanceToNow(apiKey.lastUsed)
-                    : "Never"}
-                </TableCell>
-                <TableCell>
-                  {formatDistanceToNow(apiKey.createdAt, { addSuffix: true })}
-                </TableCell>
-                <TableCell>
-                  <DeleteApiKey apiKey={apiKey} />
+            {apiKeysQuery.isLoading ? (
+              <TableRow className="h-32">
+                <TableCell colSpan={6} className="text-center py-4">
+                  <Spinner
+                    className="w-6 h-6 mx-auto"
+                    innerSvgClass="stroke-primary"
+                  />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              apiKeysQuery.data?.map((apiKey) => (
+                <TableRow key={apiKey.id}>
+                  <TableCell>{apiKey.name}</TableCell>
+                  <TableCell>{apiKey.partialToken}</TableCell>
+                  <TableCell>{apiKey.permission}</TableCell>
+                  <TableCell>
+                    {apiKey.lastUsed
+                      ? formatDistanceToNow(apiKey.lastUsed)
+                      : "Never"}
+                  </TableCell>
+                  <TableCell>
+                    {formatDistanceToNow(apiKey.createdAt, { addSuffix: true })}
+                  </TableCell>
+                  <TableCell>
+                    <DeleteApiKey apiKey={apiKey} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
