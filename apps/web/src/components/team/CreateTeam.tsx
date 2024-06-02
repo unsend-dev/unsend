@@ -26,6 +26,7 @@ const FormSchema = z.object({
 
 export default function CreateTeam() {
   const createTeam = api.team.createTeam.useMutation();
+  const utils = api.useUtils();
 
   const router = useRouter();
 
@@ -39,6 +40,7 @@ export default function CreateTeam() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     createTeam.mutate(data, {
       onSuccess: () => {
+        utils.team.invalidate();
         router.replace("/dashboard");
       },
     });
