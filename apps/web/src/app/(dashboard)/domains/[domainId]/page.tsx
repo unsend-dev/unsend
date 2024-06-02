@@ -25,6 +25,7 @@ import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
 import { Button } from "@unsend/ui/src/button";
+import Link from "next/link";
 
 export default function DomainItemPage({
   params,
@@ -68,8 +69,10 @@ export default function DomainItemPage({
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/domains" className="text-lg">
-                      Domains
+                    <BreadcrumbLink asChild>
+                      <Link href="/domains" className="text-lg">
+                        Domains
+                      </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="text-lg" />
