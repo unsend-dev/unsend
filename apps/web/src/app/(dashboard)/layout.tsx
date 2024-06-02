@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
   BookOpenText,
   BookUser,
   CircleUser,
   Code,
-  ExternalLink,
   Globe,
   Home,
   LayoutDashboard,
@@ -30,20 +28,13 @@ import {
 } from "@unsend/ui/src/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 
-import { getServerAuthSession } from "~/server/auth";
 import { NavButton } from "./nav-button";
-import { db } from "~/server/db";
-import { SessionProvider } from "next-auth/react";
 import { DashboardProvider } from "~/providers/dashboard-provider";
 import { NextAuthProvider } from "~/providers/next-auth";
 
-export const metadata = {
-  title: "Unsend",
-  description: "Open source sending infrastructure for developers",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
-};
+export const dynamic = "force-static";
 
-export default async function AuthenticatedDashboardLayout({
+export default function AuthenticatedDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
