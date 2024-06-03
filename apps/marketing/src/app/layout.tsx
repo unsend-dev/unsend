@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       {process.env.NODE_ENV === "production" && (
         <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
       )}
