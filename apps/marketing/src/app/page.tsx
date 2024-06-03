@@ -1,8 +1,4 @@
-import {
-  RocketLaunchIcon,
-  EnvelopeIcon,
-  MegaphoneIcon,
-} from "@heroicons/react/24/solid";
+import { EnvelopeIcon, MegaphoneIcon } from "@heroicons/react/24/solid";
 import {
   Heading1,
   Heading2,
@@ -17,7 +13,6 @@ import {
 import { formatDate } from "date-fns";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 import Link from "next/link";
-import Image from "next/image";
 import IntegrationCode from "./IntegrationCode";
 import {
   GithubStarButton,
@@ -126,7 +121,10 @@ export default function Home() {
                         Sent
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-2">
+                    <div
+                      className="text-xs text-muted-foreground mt-2"
+                      suppressHydrationWarning
+                    >
                       {formatDate(Date.now() - 100000, "MMM dd, hh:mm a")}
                     </div>
                     <div className="mt-1 text-primary/80">
@@ -155,7 +153,10 @@ export default function Home() {
                         Delivered
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-2">
+                    <div
+                      className="text-xs text-muted-foreground mt-2"
+                      suppressHydrationWarning
+                    >
                       {formatDate(new Date(), "MMM dd, hh:mm a")}
                     </div>
                     <div className="mt-1 text-primary/80">
