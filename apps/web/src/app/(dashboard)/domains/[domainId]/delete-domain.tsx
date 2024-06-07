@@ -12,22 +12,51 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@unsend/ui/src/dialog";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@unsend/ui/src/form";
+
 import { api } from "~/trpc/react";
 import React, { useState } from "react";
 import { Domain } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { toast } from "@unsend/ui/src/toaster";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const domainSchema = z.object({
+  domain: z.string(),
+});
 
 export const DeleteDomain: React.FC<{ domain: Domain }> = ({ domain }) => {
   const [open, setOpen] = useState(false);
   const [domainName, setDomainName] = useState("");
   const deleteDomainMutation = api.domain.deleteDomain.useMutation();
 
+  const domainForm = useForm<z.infer<typeof domainSchema>>({
+    resolver: zodResolver(domainSchema),
+  });
+
   const utils = api.useUtils();
 
   const router = useRouter();
 
-  function handleSave() {
+  async function onDomainDelete(values: z.infer<typeof domainSchema>) {
+    if (values.domain !== domain.name) {
+      domainForm.setError("domain", {
+        message: "Domain name does not match",
+      });
+      return;
+    }
+
     deleteDomainMutation.mutate(
       {
         id: domain.id,
@@ -62,30 +91,41 @@ export const DeleteDomain: React.FC<{ domain: Domain }> = ({ domain }) => {
             You can't reverse this.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-2">
-          <Label htmlFor="name" className="text-right">
-            Type <span className="text-primary">{domain.name}</span> to confirm
-          </Label>
-          <Input
-            id="name"
-            defaultValue=""
-            className="mt-2"
-            onChange={(e) => setDomainName(e.target.value)}
-            value={domainName}
-          />
-        </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            variant="destructive"
-            onClick={handleSave}
-            disabled={
-              deleteDomainMutation.isPending || domainName !== domain.name
-            }
+        <Form {...domainForm}>
+          <form
+            onSubmit={domainForm.handleSubmit(onDomainDelete)}
+            className="space-y-4"
           >
-            {deleteDomainMutation.isPending ? "Deleting..." : "Delete"}
-          </Button>
-        </DialogFooter>
+            <FormField
+              control={domainForm.control}
+              name="domain"
+              render={({ field, formState }) => (
+                <FormItem>
+                  <FormLabel>Domain</FormLabel>
+                  <FormControl>
+                    <Input placeholder="subdomain.example.com" {...field} />
+                  </FormControl>
+                  {formState.errors.domain ? (
+                    <FormMessage />
+                  ) : (
+                    <FormDescription className=" text-transparent">
+                      .
+                    </FormDescription>
+                  )}
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                variant="destructive"
+                disabled={deleteDomainMutation.isPending}
+              >
+                {deleteDomainMutation.isPending ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
