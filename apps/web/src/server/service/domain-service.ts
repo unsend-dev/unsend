@@ -7,6 +7,12 @@ import { db } from "~/server/db";
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
 export async function createDomain(teamId: number, name: string) {
+  const domainStr = tldts.getDomain(name);
+
+  if (!domainStr) {
+    throw new Error("Invalid domain");
+  }
+
   const subdomain = tldts.getSubdomain(name);
   const publicKey = await ses.addDomain(name);
 
