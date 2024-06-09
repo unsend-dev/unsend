@@ -40,6 +40,12 @@ export default function ApiList() {
                   />
                 </TableCell>
               </TableRow>
+            ) : apiKeysQuery.data?.length === 0 ? (
+              <TableRow className="h-32">
+                <TableCell colSpan={6} className="text-center py-4">
+                  <p>No API keys added</p>
+                </TableCell>
+              </TableRow>
             ) : (
               apiKeysQuery.data?.map((apiKey) => (
                 <TableRow key={apiKey.id}>

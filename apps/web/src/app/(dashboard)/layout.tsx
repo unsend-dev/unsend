@@ -8,6 +8,7 @@ import {
   Home,
   LayoutDashboard,
   LineChart,
+  LogOut,
   Mail,
   Menu,
   Package,
@@ -28,7 +29,7 @@ import {
 } from "@unsend/ui/src/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 
-import { NavButton } from "./nav-button";
+import { LogoutButton, NavButton } from "./nav-button";
 import { DashboardProvider } from "~/providers/dashboard-provider";
 import { NextAuthProvider } from "~/providers/next-auth";
 
@@ -89,15 +90,16 @@ export default function AuthenticatedDashboardLayout({
                       Developer settings
                     </NavButton>
                   </div>
-                  <div className=" absolute bottom-10 p-4">
+                  <div className=" absolute bottom-10 p-4 flex flex-col gap-2">
                     <Link
                       href="https://docs.unsend.dev"
                       target="_blank"
-                      className="flex gap-2 items-center"
+                      className="flex gap-2 items-center hover:text-primary text-muted-foreground"
                     >
                       <BookOpenText className="h-4 w-4" />
                       <span className="">Docs</span>
                     </Link>
+                    <LogoutButton />
                   </div>
                 </nav>
               </div>

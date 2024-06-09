@@ -1,7 +1,14 @@
 import { env } from "~/env";
 import { Unsend } from "unsend";
 
-const unsend = new Unsend(env.UNSEND_API_KEY);
+let unsend: Unsend | undefined;
+
+const getClient = () => {
+  if (!unsend) {
+    unsend = new Unsend(env.UNSEND_API_KEY);
+  }
+  return unsend;
+};
 
 export async function sendSignUpEmail(
   email: string,
@@ -28,10 +35,10 @@ async function sendMail(
   text: string,
   html: string
 ) {
-  if (env.UNSEND_API_KEY && env.UNSEND_URL) {
-    const resp = await unsend.emails.send({
+  if (env.UNSEND_API_KEY && env.UNSEND_URL && env.FROM_EMAIL) {
+    const resp = await getClient().emails.send({
       to: email,
-      from: "no-reply@auth.unsend.dev",
+      from: env.FROM_EMAIL,
       subject,
       text,
       html,

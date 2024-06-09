@@ -34,16 +34,17 @@ export const env = createEnv({
     AWS_SECRET_KEY: z.string(),
     APP_URL: z.string().optional(),
     SNS_TOPIC: z.string(),
-    UNSEND_API_KEY: z.string(),
-    UNSEND_URL: z.string(),
-    GOOGLE_CLIENT_ID: z.string(),
-    GOOGLE_CLIENT_SECRET: z.string(),
+    UNSEND_API_KEY: z.string().optional(),
+    UNSEND_URL: z.string().optional(),
+    GOOGLE_CLIENT_ID: z.string().optional(),
+    GOOGLE_CLIENT_SECRET: z.string().optional(),
     SES_QUEUE_LIMIT: z.string().transform((str) => parseInt(str, 10)),
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
     API_RATE_LIMIT: z
       .string()
       .transform((str) => parseInt(str, 10))
       .default(2),
+    FROM_EMAIL: z.string().optional(),
   },
 
   /**
@@ -53,6 +54,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_IS_CLOUD: z.string().transform((str) => str === "true"),
   },
 
   /**
@@ -77,12 +79,13 @@ export const env = createEnv({
     SES_QUEUE_LIMIT: process.env.SES_QUEUE_LIMIT,
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
+    NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
    * useful for Docker builds.
    */
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+  skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
   /**
    * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
    * `SOME_VAR=''` will throw an error.
