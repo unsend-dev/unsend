@@ -45,6 +45,7 @@ export const env = createEnv({
       .transform((str) => parseInt(str, 10))
       .default(2),
     FROM_EMAIL: z.string().optional(),
+    ADMIN_EMAIL: z.string().optional(),
   },
 
   /**
@@ -80,6 +81,7 @@ export const env = createEnv({
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

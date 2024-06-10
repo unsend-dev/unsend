@@ -19,6 +19,26 @@ model AppSetting {
   value String
 }
 
+model SesSetting {
+  id                   String   @id @default(cuid())
+  region               String   @unique
+  idPrefix             String
+  topic                String
+  topicArn             String?
+  callbackUrl          String
+  callbackSuccess      Boolean  @default(false)
+  configGeneral        String?
+  configGeneralSuccess Boolean  @default(false)
+  configClick          String?
+  configClickSuccess   Boolean  @default(false)
+  configOpen           String?
+  configOpenSuccess    Boolean  @default(false)
+  configFull           String?
+  configFullSuccess    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
 // Necessary for Next auth
 model Account {
   id                       String  @id @default(cuid())
