@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
+  AuthOptions,
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
@@ -37,6 +38,42 @@ declare module "next-auth" {
 }
 
 /**
+ * Auth providers
+ */
+
+const providers: Provider[] = [
+  GitHubProvider({
+    clientId: env.GITHUB_ID,
+    clientSecret: env.GITHUB_SECRET,
+    allowDangerousEmailAccountLinking: true,
+  }),
+];
+
+if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    })
+  );
+}
+
+if (env.FROM_EMAIL) {
+  providers.push(
+    EmailProvider({
+      from: env.FROM_EMAIL,
+      async sendVerificationRequest({ identifier: email, url, token }) {
+        await sendSignUpEmail(email, token, url);
+      },
+      async generateVerificationToken() {
+        return Math.random().toString(36).substring(2, 7).toLowerCase();
+      },
+    })
+  );
+}
+
+/**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
  * @see https://next-auth.js.org/configuration/options
@@ -56,36 +93,18 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-  providers: [
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-    GitHubProvider({
-      clientId: env.GITHUB_ID,
-      clientSecret: env.GITHUB_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-    GoogleProvider({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-    EmailProvider({
-      from: "no-reply@splitpro.app",
-      async sendVerificationRequest({ identifier: email, url, token }) {
-        await sendSignUpEmail(email, token, url);
-      },
-      async generateVerificationToken() {
-        return Math.random().toString(36).substring(2, 7).toLowerCase();
-      },
-    }),
-  ],
+  events: {
+    createUser: async ({ user }) => {
+      // No waitlist for self hosting
+      if (!env.NEXT_PUBLIC_IS_CLOUD) {
+        await db.user.update({
+          where: { id: user.id },
+          data: { isBetaUser: true },
+        });
+      }
+    },
+  },
+  providers,
 };
 
 /**
@@ -97,6 +116,7 @@ export const getServerAuthSession = () => getServerSession(authOptions);
 
 import { createHash } from "crypto";
 import { sendSignUpEmail } from "./mailer";
+import { Provider } from "next-auth/providers/index";
 
 /**
  * Hashes a token using SHA-256.

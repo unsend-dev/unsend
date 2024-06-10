@@ -10,6 +10,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -122,4 +123,14 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
+});
+
+/**
+ * To manage application settings, for hosted version, authenticated users will be considered as admin
+ */
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (env.NEXT_PUBLIC_IS_CLOUD && ctx.session.user.email !== env.ADMIN_EMAIL) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next();
 });

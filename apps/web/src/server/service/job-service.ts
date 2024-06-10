@@ -15,7 +15,7 @@ const boss = new pgBoss({
 });
 let started = false;
 
-async function getBoss() {
+export async function getBoss() {
   if (!started) {
     await boss.start();
     await boss.work(

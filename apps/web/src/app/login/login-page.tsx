@@ -22,6 +22,7 @@ import {
   REGEXP_ONLY_DIGITS_AND_CHARS,
 } from "@unsend/ui/src/input-otp";
 import { Input } from "@unsend/ui/src/input";
+import { env } from "~/env";
 
 const emailSchema = z.object({
   email: z
@@ -93,108 +94,129 @@ export default function LoginPage() {
             </svg>
             Continue with Github
           </Button>
-          <Button
-            className="w-[350px]"
-            size="lg"
-            onClick={() => signIn("google")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 488 512"
-              className="h-6 w-6 stroke-black fill-black mr-4"
+          {env.NEXT_PUBLIC_IS_CLOUD ? (
+            <Button
+              className="w-[350px]"
+              size="lg"
+              onClick={() => signIn("google")}
             >
-              <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
-            </svg>
-            Continue with Google
-          </Button>
-          <div className=" flex w-[350px]  items-center justify-between gap-2">
-            <p className=" z-10 ml-[175px] -translate-x-1/2 bg-background px-4 text-sm">
-              or
-            </p>
-            <div className="absolute h-[1px] w-[350px]  bg-gradient-to-r from-zinc-800 via-zinc-300 to-zinc-800"></div>
-          </div>
-          {emailStatus === "success" ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 488 512"
+                className="h-6 w-6 stroke-black fill-black mr-4"
+              >
+                <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
+              </svg>
+              Continue with Google
+            </Button>
+          ) : null}
+          {env.NEXT_PUBLIC_IS_CLOUD ? (
             <>
-              <p className=" w-[350px] text-center text-sm">
-                We have sent an email with the OTP. Please check your inbox
-              </p>
-              <Form {...otpForm}>
-                <form
-                  onSubmit={otpForm.handleSubmit(onOTPSubmit)}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={otpForm.control}
-                    name="otp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <InputOTP
-                            className="w-[350px]"
-                            maxLength={5}
-                            pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-                            inputMode="text"
-                            {...field}
-                          >
-                            <InputOTPGroup>
-                              <InputOTPSlot className="w-[70px]" index={0} />
-                              <InputOTPSlot className="w-[70px]" index={1} />
-                              <InputOTPSlot className="w-[70px]" index={2} />
-                              <InputOTPSlot className="w-[70px]" index={3} />
-                              <InputOTPSlot className="w-[70px]" index={4} />
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </FormControl>
+              <div className=" flex w-[350px]  items-center justify-between gap-2">
+                <p className=" z-10 ml-[175px] -translate-x-1/2 bg-background px-4 text-sm">
+                  or
+                </p>
+                <div className="absolute h-[1px] w-[350px]  bg-gradient-to-r from-zinc-800 via-zinc-300 to-zinc-800"></div>
+              </div>
+              {emailStatus === "success" ? (
+                <>
+                  <p className=" w-[350px] text-center text-sm">
+                    We have sent an email with the OTP. Please check your inbox
+                  </p>
+                  <Form {...otpForm}>
+                    <form
+                      onSubmit={otpForm.handleSubmit(onOTPSubmit)}
+                      className="space-y-4"
+                    >
+                      <FormField
+                        control={otpForm.control}
+                        name="otp"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <InputOTP
+                                className="w-[350px]"
+                                maxLength={5}
+                                pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                                inputMode="text"
+                                {...field}
+                              >
+                                <InputOTPGroup>
+                                  <InputOTPSlot
+                                    className="w-[70px]"
+                                    index={0}
+                                  />
+                                  <InputOTPSlot
+                                    className="w-[70px]"
+                                    index={1}
+                                  />
+                                  <InputOTPSlot
+                                    className="w-[70px]"
+                                    index={2}
+                                  />
+                                  <InputOTPSlot
+                                    className="w-[70px]"
+                                    index={3}
+                                  />
+                                  <InputOTPSlot
+                                    className="w-[70px]"
+                                    index={4}
+                                  />
+                                </InputOTPGroup>
+                              </InputOTP>
+                            </FormControl>
 
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <Button className="mt-6 w-[350px] bg-white hover:bg-gray-100 focus:bg-gray-100">
-                    Submit
-                  </Button>
-                </form>
-              </Form>
+                      <Button className="mt-6 w-[350px] bg-white hover:bg-gray-100 focus:bg-gray-100">
+                        Submit
+                      </Button>
+                    </form>
+                  </Form>
+                </>
+              ) : (
+                <>
+                  <Form {...emailForm}>
+                    <form
+                      onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+                      className="space-y-4"
+                    >
+                      <FormField
+                        control={emailForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your email"
+                                className=" w-[350px]"
+                                type="email"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        className=" w-[350px] bg-white hover:bg-gray-100 focus:bg-gray-100"
+                        type="submit"
+                        disabled={emailStatus === "sending"}
+                      >
+                        {emailStatus === "sending"
+                          ? "Sending..."
+                          : "Send magic link"}
+                      </Button>
+                    </form>
+                  </Form>
+                </>
+              )}
             </>
-          ) : (
-            <>
-              <Form {...emailForm}>
-                <form
-                  onSubmit={emailForm.handleSubmit(onEmailSubmit)}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={emailForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your email"
-                            className=" w-[350px]"
-                            type="email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    className=" w-[350px] bg-white hover:bg-gray-100 focus:bg-gray-100"
-                    type="submit"
-                    disabled={emailStatus === "sending"}
-                  >
-                    {emailStatus === "sending"
-                      ? "Sending..."
-                      : "Send magic link"}
-                  </Button>
-                </form>
-              </Form>
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </main>
