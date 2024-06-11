@@ -1,18 +1,25 @@
-import { APP_SETTINGS } from "./constants";
+import { SesSettingsService } from "~/server/service/ses-settings-service";
 
 export function getConfigurationSetName(
   clickTracking: boolean,
-  openTracking: boolean
+  openTracking: boolean,
+  region: string
 ) {
-  if (clickTracking && openTracking) {
-    return APP_SETTINGS.SES_CONFIGURATION_FULL;
-  }
-  if (clickTracking) {
-    return APP_SETTINGS.SES_CONFIGURATION_CLICK_TRACKING;
-  }
-  if (openTracking) {
-    return APP_SETTINGS.SES_CONFIGURATION_OPEN_TRACKING;
+  const setting = SesSettingsService.getSetting(region);
+
+  if (!setting) {
+    throw new Error(`No SES setting found for region: ${region}`);
   }
 
-  return APP_SETTINGS.SES_CONFIGURATION_GENERAL;
+  if (clickTracking && openTracking) {
+    return setting.configFull;
+  }
+  if (clickTracking) {
+    return setting.configClick;
+  }
+  if (openTracking) {
+    return setting.configOpen;
+  }
+
+  return setting.configGeneral;
 }

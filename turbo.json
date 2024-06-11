@@ -24,7 +24,6 @@
         "AWS_SECRET_KEY",
         "AWS_ACCESS_KEY",
         "APP_URL",
-        "SNS_TOPIC",
         "NEXTAUTH_SECRET",
         "NODE_ENV",
         "VERCEL_URL",

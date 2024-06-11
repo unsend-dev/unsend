@@ -13,7 +13,6 @@ import { generateKeyPairSync } from "crypto";
 import mime from "mime-types";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
-import { APP_SETTINGS } from "~/utils/constants";
 
 function getSesClient(region = "us-east-1") {
   return new SESv2Client({
@@ -61,7 +60,6 @@ export async function addDomain(domain: string, region = "us-east-1") {
       DomainSigningSelector: "unsend",
       DomainSigningPrivateKey: privateKey,
     },
-    ConfigurationSetName: APP_SETTINGS.SES_CONFIGURATION_GENERAL,
   });
   const response = await sesClient.send(command);
 

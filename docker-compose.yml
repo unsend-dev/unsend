@@ -42,12 +42,11 @@ services:
       - GITHUB_ID=${GITHUB_ID:?err}
       - GITHUB_SECRET=${GITHUB_SECRET:?err}
       - APP_URL=${APP_URL:-${NEXTAUTH_URL}}
-      - SNS_TOPIC=${SNS_TOPIC:?err}
       - NEXT_PUBLIC_IS_CLOUD=${NEXT_PUBLIC_IS_CLOUD:-false}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - SES_QUEUE_LIMIT=${SES_QUEUE_LIMIT:-1}
-      - API_RATE_LIMIT=${API_RATE_LIMIT:-1}
+      - SES_QUEUE_LIMIT=${SES_QUEUE_LIMIT:1}
+      - API_RATE_LIMIT=${API_RATE_LIMIT:1}
     depends_on:
       postgres:
         condition: service_healthy

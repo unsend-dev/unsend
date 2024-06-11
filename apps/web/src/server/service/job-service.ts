@@ -73,6 +73,17 @@ async function executeEmail(
     ? JSON.parse(email.attachments)
     : [];
 
+  const configurationSetName = getConfigurationSetName(
+    domain?.clickTracking ?? false,
+    domain?.openTracking ?? false,
+    domain?.region ?? env.AWS_DEFAULT_REGION
+  );
+
+  if (!configurationSetName) {
+    console.log(`[EmailJob]: Configuration set not found, skipping`);
+    return;
+  }
+
   const messageId = attachments.length
     ? await sendEmailWithAttachments({
         to: email.to,
@@ -81,10 +92,7 @@ async function executeEmail(
         text: email.text ?? undefined,
         html: email.html ?? undefined,
         region: domain?.region ?? env.AWS_DEFAULT_REGION,
-        configurationSetName: getConfigurationSetName(
-          domain?.clickTracking ?? false,
-          domain?.openTracking ?? false
-        ),
+        configurationSetName,
         attachments,
       })
     : await sendEmailThroughSes({
@@ -95,10 +103,7 @@ async function executeEmail(
         text: email.text ?? undefined,
         html: email.html ?? undefined,
         region: domain?.region ?? env.AWS_DEFAULT_REGION,
-        configurationSetName: getConfigurationSetName(
-          domain?.clickTracking ?? false,
-          domain?.openTracking ?? false
-        ),
+        configurationSetName,
         attachments,
       });
 

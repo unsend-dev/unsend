@@ -1,8 +1,7 @@
 import { db } from "~/server/db";
-import { AppSettingsService } from "~/server/service/app-settings-service";
 import { parseSesHook } from "~/server/service/ses-hook-parser";
+import { SesSettingsService } from "~/server/service/ses-settings-service";
 import { SnsNotificationMessage } from "~/types/aws-types";
-import { APP_SETTINGS } from "~/utils/constants";
 
 export async function GET(req: Request) {
   console.log("GET", req);
@@ -87,11 +86,9 @@ function isFromUnsend({ fromUnsend }: { fromUnsend: boolean }) {
 // A simple check to ensure that the event is from the correct topic
 async function checkEventValidity(message: SnsNotificationMessage) {
   const { TopicArn } = message;
-  const configuredTopicArn = await AppSettingsService.getSetting(
-    APP_SETTINGS.SNS_TOPIC_ARN
-  );
+  const configuredTopicArn = SesSettingsService.getTopicArns();
 
-  if (TopicArn !== configuredTopicArn) {
+  if (configuredTopicArn.includes(TopicArn)) {
     return false;
   }
 

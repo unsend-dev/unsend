@@ -7,6 +7,7 @@ import { Toaster } from "@unsend/ui/src/toaster";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Metadata } from "next";
 import { getBoss } from "~/server/service/job-service";
+import { SesSettingsService } from "~/server/service/ses-settings-service";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,8 +28,10 @@ export default async function RootLayout({
   /**
    * Because I don't know a better way to call this during server startup.
    * This is a temporary fix to ensure that the boss is running.
+   * And cache the SesSettings
    */
   // await getBoss();
+  await SesSettingsService.init();
 
   return (
     <html lang="en">

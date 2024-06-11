@@ -6,7 +6,7 @@ import * as sns from "~/server/aws/sns";
 import * as ses from "~/server/aws/ses";
 import { EventType } from "@aws-sdk/client-sesv2";
 
-const nanoid = customAlphabet("1234567890abcdef", 10);
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 10);
 
 const GENERAL_EVENTS: EventType[] = [
   "BOUNCE",
@@ -21,12 +21,17 @@ const GENERAL_EVENTS: EventType[] = [
 
 export class SesSettingsService {
   private static cache: Record<string, SesSetting> = {};
+  private static topicArns: Array<string> = [];
 
   public static getSetting(region = env.AWS_DEFAULT_REGION): SesSetting | null {
     if (this.cache[region]) {
       return this.cache[region] as SesSetting;
     }
     return null;
+  }
+
+  public static getTopicArns() {
+    return this.topicArns;
   }
 
   public static getAllSettings() {
@@ -54,7 +59,7 @@ export class SesSettingsService {
 
     if (!unsendUrlValidation.isValid) {
       throw new Error(
-        `Unsend URL ${unsendUrl} is not valid, status: ${unsendUrlValidation.code} ${unsendUrlValidation.error}`
+        `Unsend URL: ${unsendUrl} is not valid, status: ${unsendUrlValidation.code} ${unsendUrlValidation.error}`
       );
     }
 
@@ -71,19 +76,24 @@ export class SesSettingsService {
 
     await createSettingInAws(setting);
 
-    this.invalidateCache();
+    await this.invalidateCache();
   }
 
   public static async init() {
+    if (Object.keys(this.cache).length === 0) {
+      await this.invalidateCache();
+    }
+  }
+
+  static async invalidateCache() {
+    this.cache = {};
     const settings = await db.sesSetting.findMany();
     settings.forEach((setting) => {
       this.cache[setting.region] = setting;
+      if (setting.topicArn) {
+        this.topicArns.push(setting.topicArn);
+      }
     });
-  }
-
-  static invalidateCache() {
-    this.cache = {};
-    this.init();
   }
 }
 
