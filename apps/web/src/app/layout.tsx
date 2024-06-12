@@ -28,7 +28,7 @@ export default async function RootLayout({
    * Because I don't know a better way to call this during server startup.
    * This is a temporary fix to ensure that the boss is running.
    */
-  await getBoss();
+  // await getBoss();
 
   return (
     <html lang="en">
