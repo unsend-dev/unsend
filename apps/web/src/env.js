@@ -46,6 +46,7 @@ export const env = createEnv({
       .default(2),
     FROM_EMAIL: z.string().optional(),
     ADMIN_EMAIL: z.string().optional(),
+    DISCORD_WEBHOOK_URL: z.string().optional(),
   },
 
   /**
@@ -82,6 +83,7 @@ export const env = createEnv({
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

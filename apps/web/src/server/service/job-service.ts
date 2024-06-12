@@ -7,6 +7,7 @@ import {
   sendEmailWithAttachments,
 } from "~/server/aws/ses";
 import { getConfigurationSetName } from "~/utils/ses-utils";
+import { sendToDiscord } from "./notification-service";
 
 const boss = new pgBoss({
   connectionString: env.DATABASE_URL,
@@ -27,6 +28,15 @@ export async function getBoss() {
       },
       executeEmail
     );
+
+    boss.on("error", async (error) => {
+      console.error(error);
+      sendToDiscord(
+        `Error in pg-boss: ${error.name} \n ${error.cause}\n ${error.message}\n  ${error.stack}`
+      );
+      await boss.stop();
+      started = false;
+    });
     started = true;
   }
   return boss;
