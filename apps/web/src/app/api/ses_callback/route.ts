@@ -13,10 +13,6 @@ export async function POST(req: Request) {
 
   console.log(data, data.Message);
 
-  if (isFromUnsend(data)) {
-    return Response.json({ data: "success" });
-  }
-
   const isEventValid = await checkEventValidity(data);
 
   console.log("isEventValid: ", isEventValid);
@@ -71,24 +67,17 @@ async function handleSubscription(message: any) {
     },
   });
 
+  SesSettingsService.invalidateCache();
+
   return Response.json({ data: "Success" });
-}
-
-// A simple check to ensure that the event is from the correct topic
-function isFromUnsend({ fromUnsend }: { fromUnsend: boolean }) {
-  if (fromUnsend) {
-    return true;
-  }
-
-  return false;
 }
 
 // A simple check to ensure that the event is from the correct topic
 async function checkEventValidity(message: SnsNotificationMessage) {
   const { TopicArn } = message;
-  const configuredTopicArn = SesSettingsService.getTopicArns();
+  const configuredTopicArn = await SesSettingsService.getTopicArns();
 
-  if (configuredTopicArn.includes(TopicArn)) {
+  if (!configuredTopicArn.includes(TopicArn)) {
     return false;
   }
 

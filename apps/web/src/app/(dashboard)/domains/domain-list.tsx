@@ -95,9 +95,7 @@ const DomainItem: React.FC<{ domain: Domain }> = ({ domain }) => {
             <div>
               <p className="text-sm text-muted-foreground">Region</p>
 
-              <p className="text-sm flex items-center gap-2">
-                <span className="text-2xl">🇺🇸</span> {domain.region}
-              </p>
+              <p className="text-sm flex items-center gap-2">{domain.region}</p>
             </div>
           </div>
           <div className="flex flex-col gap-6">

@@ -1,7 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { PublicAPIApp } from "~/server/public-api/hono";
 import { getTeamFromToken } from "~/server/public-api/auth";
-import { sendEmail } from "~/server/service/email-service";
 import { db } from "~/server/db";
 import { EmailStatus } from "@prisma/client";
 import { UnsendApiError } from "../../api-error";
@@ -30,7 +29,10 @@ const route = createRoute({
           schema: z.object({
             id: z.string(),
             teamId: z.number(),
-            to: z.string(),
+            to: z.string().or(z.array(z.string())),
+            replyTo: z.string().or(z.array(z.string())).optional(),
+            cc: z.string().or(z.array(z.string())).optional(),
+            bcc: z.string().or(z.array(z.string())).optional(),
             from: z.string(),
             subject: z.string(),
             html: z.string().nullable(),

@@ -14,7 +14,7 @@ import mime from "mime-types";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
 
-function getSesClient(region = "us-east-1") {
+function getSesClient(region: string) {
   return new SESv2Client({
     region: region,
     credentials: {
@@ -50,7 +50,7 @@ function generateKeyPair() {
   return { privateKey: base64PrivateKey, publicKey: base64PublicKey };
 }
 
-export async function addDomain(domain: string, region = "us-east-1") {
+export async function addDomain(domain: string, region: string) {
   const sesClient = getSesClient(region);
 
   const { privateKey, publicKey } = generateKeyPair();
@@ -82,7 +82,7 @@ export async function addDomain(domain: string, region = "us-east-1") {
   return publicKey;
 }
 
-export async function deleteDomain(domain: string, region = "us-east-1") {
+export async function deleteDomain(domain: string, region: string) {
   const sesClient = getSesClient(region);
   const command = new DeleteEmailIdentityCommand({
     EmailIdentity: domain,
@@ -91,7 +91,7 @@ export async function deleteDomain(domain: string, region = "us-east-1") {
   return response.$metadata.httpStatusCode === 200;
 }
 
-export async function getDomainIdentity(domain: string, region = "us-east-1") {
+export async function getDomainIdentity(domain: string, region: string) {
   const sesClient = getSesClient(region);
   const command = new GetEmailIdentityCommand({
     EmailIdentity: domain,
@@ -104,21 +104,29 @@ export async function sendEmailThroughSes({
   to,
   from,
   subject,
+  cc,
+  bcc,
   text,
   html,
   replyTo,
-  region = "us-east-1",
+  region,
   configurationSetName,
-}: EmailContent & {
-  region?: string;
+}: Partial<EmailContent> & {
+  region: string;
   configurationSetName: string;
+  cc?: string[];
+  bcc?: string[];
+  replyTo?: string[];
+  to?: string[];
 }) {
   const sesClient = getSesClient(region);
   const command = new SendEmailCommand({
     FromEmailAddress: from,
-    ReplyToAddresses: replyTo ? [replyTo] : undefined,
+    ReplyToAddresses: replyTo ? replyTo : undefined,
     Destination: {
-      ToAddresses: [to],
+      ToAddresses: to,
+      CcAddresses: cc,
+      BccAddresses: bcc,
     },
     Content: {
       // EmailContent
@@ -151,7 +159,7 @@ export async function sendEmailThroughSes({
     return response.MessageId;
   } catch (error) {
     console.error("Failed to send email", error);
-    throw new Error("Failed to send email");
+    throw error;
   }
 }
 
@@ -161,21 +169,29 @@ export async function sendEmailWithAttachments({
   from,
   subject,
   replyTo,
+  cc,
+  bcc,
   // eslint-disable-next-line no-unused-vars
   text,
   html,
   attachments,
-  region = "us-east-1",
+  region,
   configurationSetName,
-}: EmailContent & {
-  region?: string;
+}: Partial<EmailContent> & {
+  region: string;
   configurationSetName: string;
   attachments: { filename: string; content: string }[];
+  cc?: string[];
+  bcc?: string[];
+  replyTo?: string[];
+  to?: string[];
 }) {
   const sesClient = getSesClient(region);
   const boundary = "NextPart";
   let rawEmail = `From: ${from}\n`;
-  rawEmail += `To: ${to}\n`;
+  rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
+  rawEmail += `Cc: ${cc ? cc.join(", ") : ""}\n`;
+  rawEmail += `Bcc: ${bcc ? bcc.join(", ") : ""}\n`;
   rawEmail += `Reply-To: ${replyTo}\n`;
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
@@ -219,7 +235,7 @@ export async function addWebhookConfiguration(
   configName: string,
   topicArn: string,
   eventTypes: EventType[],
-  region = "us-east-1"
+  region: string
 ) {
   const sesClient = getSesClient(region);
 

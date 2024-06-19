@@ -6,8 +6,18 @@ import { queueEmail } from "./job-service";
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
 ) {
-  const { to, from, subject, text, html, teamId, attachments, replyTo } =
-    emailContent;
+  const {
+    to,
+    from,
+    subject,
+    text,
+    html,
+    teamId,
+    attachments,
+    replyTo,
+    cc,
+    bcc,
+  } = emailContent;
 
   const fromDomain = from.split("@")[1];
 
@@ -32,10 +42,16 @@ export async function sendEmail(
 
   const email = await db.email.create({
     data: {
-      to,
+      to: Array.isArray(to) ? to : [to],
       from,
       subject,
-      replyTo,
+      replyTo: replyTo
+        ? Array.isArray(replyTo)
+          ? replyTo
+          : [replyTo]
+        : undefined,
+      cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+      bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
       text,
       html,
       teamId,

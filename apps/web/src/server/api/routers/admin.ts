@@ -6,6 +6,7 @@ import { SesSettingsService } from "~/server/service/ses-settings-service";
 
 export const adminRouter = createTRPCRouter({
   getSesSettings: adminProcedure.query(async () => {
+    //await SesSettingsService.init();
     return SesSettingsService.getAllSettings();
   }),
 

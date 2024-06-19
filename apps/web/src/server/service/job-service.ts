@@ -73,7 +73,7 @@ async function executeEmail(
     ? JSON.parse(email.attachments)
     : [];
 
-  const configurationSetName = getConfigurationSetName(
+  const configurationSetName = await getConfigurationSetName(
     domain?.clickTracking ?? false,
     domain?.openTracking ?? false,
     domain?.region ?? env.AWS_DEFAULT_REGION
@@ -84,31 +84,49 @@ async function executeEmail(
     return;
   }
 
-  const messageId = attachments.length
-    ? await sendEmailWithAttachments({
-        to: email.to,
-        from: email.from,
-        subject: email.subject,
-        text: email.text ?? undefined,
-        html: email.html ?? undefined,
-        region: domain?.region ?? env.AWS_DEFAULT_REGION,
-        configurationSetName,
-        attachments,
-      })
-    : await sendEmailThroughSes({
-        to: email.to,
-        from: email.from,
-        subject: email.subject,
-        replyTo: email.replyTo ?? undefined,
-        text: email.text ?? undefined,
-        html: email.html ?? undefined,
-        region: domain?.region ?? env.AWS_DEFAULT_REGION,
-        configurationSetName,
-        attachments,
-      });
+  console.log(`[EmailJob]: Sending email ${email.id}`);
+  try {
+    const messageId = attachments.length
+      ? await sendEmailWithAttachments({
+          to: email.to,
+          from: email.from,
+          subject: email.subject,
+          text: email.text ?? undefined,
+          html: email.html ?? undefined,
+          region: domain?.region ?? env.AWS_DEFAULT_REGION,
+          configurationSetName,
+          attachments,
+        })
+      : await sendEmailThroughSes({
+          to: email.to,
+          from: email.from,
+          subject: email.subject,
+          replyTo: email.replyTo ?? undefined,
+          text: email.text ?? undefined,
+          html: email.html ?? undefined,
+          region: domain?.region ?? env.AWS_DEFAULT_REGION,
+          configurationSetName,
+          attachments,
+        });
 
-  await db.email.update({
-    where: { id: email.id },
-    data: { sesEmailId: messageId, attachments: undefined },
-  });
+    // Delete attachments after sending the email
+    await db.email.update({
+      where: { id: email.id },
+      data: { sesEmailId: messageId, attachments: undefined },
+    });
+  } catch (error: any) {
+    await db.emailEvent.create({
+      data: {
+        emailId: email.id,
+        status: "FAILED",
+        data: {
+          error: error.toString(),
+        },
+      },
+    });
+    await db.email.update({
+      where: { id: email.id },
+      data: { latestStatus: "FAILED" },
+    });
+  }
 }

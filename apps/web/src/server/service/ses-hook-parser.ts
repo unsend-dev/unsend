@@ -2,6 +2,8 @@ import { EmailStatus } from "@prisma/client";
 import { SesEvent, SesEventDataKey } from "~/types/aws-types";
 import { db } from "../db";
 
+const STATUS_LIST = Object.values(EmailStatus);
+
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
 
@@ -30,21 +32,12 @@ export async function parseSesHook(data: SesEvent) {
       id: email.id,
     },
     data: {
-      latestStatus: mailStatus,
+      latestStatus: getLatestStatus(email.latestStatus, mailStatus),
     },
   });
 
-  await db.emailEvent.upsert({
-    where: {
-      emailId_status: {
-        emailId: email.id,
-        status: mailStatus,
-      },
-    },
-    update: {
-      data: mailData as any,
-    },
-    create: {
+  await db.emailEvent.create({
+    data: {
       emailId: email.id,
       status: mailStatus,
       data: mailData as any,
@@ -88,4 +81,13 @@ function getEmailData(data: SesEvent) {
   } else {
     return data[eventType.toLowerCase() as SesEventDataKey];
   }
+}
+
+function getLatestStatus(
+  currentEmailStatus: EmailStatus,
+  incomingStatus: EmailStatus
+) {
+  const index = STATUS_LIST.indexOf(currentEmailStatus);
+  const incomingIndex = STATUS_LIST.indexOf(incomingStatus);
+  return STATUS_LIST[Math.max(index, incomingIndex)] ?? incomingStatus;
 }

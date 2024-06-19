@@ -1,11 +1,11 @@
 import { SesSettingsService } from "~/server/service/ses-settings-service";
 
-export function getConfigurationSetName(
+export async function getConfigurationSetName(
   clickTracking: boolean,
   openTracking: boolean,
   region: string
 ) {
-  const setting = SesSettingsService.getSetting(region);
+  const setting = await SesSettingsService.getSetting(region);
 
   if (!setting) {
     throw new Error(`No SES setting found for region: ${region}`);
