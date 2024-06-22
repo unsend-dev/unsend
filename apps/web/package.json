@@ -13,7 +13,8 @@
     "db:push": "prisma db push --skip-generate",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:migrate-reset": "prisma migrate reset"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.4.0",
@@ -32,9 +33,11 @@
     "@trpc/react-query": "next",
     "@trpc/server": "next",
     "@unsend/ui": "workspace:*",
+    "bullmq": "^5.8.2",
     "date-fns": "^3.6.0",
     "hono": "^4.2.2",
     "install": "^0.13.0",
+    "ioredis": "^5.4.1",
     "lucide-react": "^0.359.0",
     "mime-types": "^2.1.35",
     "nanoid": "^5.0.7",

@@ -3,12 +3,23 @@ import { env } from "~/env";
 
 import { createTRPCRouter, adminProcedure } from "~/server/api/trpc";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
+import { getAccount } from "~/server/aws/ses";
 
 export const adminRouter = createTRPCRouter({
   getSesSettings: adminProcedure.query(async () => {
-    //await SesSettingsService.init();
     return SesSettingsService.getAllSettings();
   }),
+
+  getQuotaForRegion: adminProcedure
+    .input(
+      z.object({
+        region: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const acc = await getAccount(input.region);
+      return acc.SendQuota?.MaxSendRate;
+    }),
 
   addSesSettings: adminProcedure
     .input(

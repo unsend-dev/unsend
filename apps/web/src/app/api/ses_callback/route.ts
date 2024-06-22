@@ -3,8 +3,7 @@ import { parseSesHook } from "~/server/service/ses-hook-parser";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
 import { SnsNotificationMessage } from "~/types/aws-types";
 
-export async function GET(req: Request) {
-  console.log("GET", req);
+export async function GET() {
   return Response.json({ data: "Hello" });
 }
 

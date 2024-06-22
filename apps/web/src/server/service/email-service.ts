@@ -1,7 +1,7 @@
 import { EmailContent } from "~/types";
 import { db } from "../db";
 import { UnsendApiError } from "~/server/public-api/api-error";
-import { queueEmail } from "./job-service";
+import { EmailQueueService } from "./email-queue-service";
 
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
@@ -60,7 +60,24 @@ export async function sendEmail(
     },
   });
 
-  queueEmail(email.id);
+  try {
+    await EmailQueueService.queueEmail(email.id, domain.region);
+  } catch (error: any) {
+    await db.emailEvent.create({
+      data: {
+        emailId: email.id,
+        status: "FAILED",
+        data: {
+          error: error.toString(),
+        },
+      },
+    });
+    await db.email.update({
+      where: { id: email.id },
+      data: { latestStatus: "FAILED" },
+    });
+    throw error;
+  }
 
   return email;
 }

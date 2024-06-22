@@ -21,6 +21,7 @@ import { toast } from "@unsend/ui/src/toaster";
 const FormSchema = z.object({
   region: z.string(),
   unsendUrl: z.string().url(),
+  sendRate: z.number(),
 });
 
 type SesSettingsProps = {
@@ -46,13 +47,15 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
   onSuccess,
 }) => {
   const addSesSettings = api.admin.addSesSettings.useMutation();
+
   const utils = api.useUtils();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      region: "us-east-1",
+      region: "",
       unsendUrl: "",
+      sendRate: 1,
     },
   });
 
@@ -84,6 +87,12 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
     });
   }
 
+  const onRegionInputOutOfFocus = async () => {
+    const region = form.getValues("region");
+    const quota = await utils.admin.getQuotaForRegion.fetch({ region });
+    form.setValue("sendRate", quota ?? 1);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -97,7 +106,15 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
             <FormItem>
               <FormLabel>Region</FormLabel>
               <FormControl>
-                <Input placeholder="Region" className="w-full" {...field} />
+                <Input
+                  placeholder="us-east-1"
+                  className="w-full"
+                  {...field}
+                  onBlur={() => {
+                    onRegionInputOutOfFocus();
+                    field.onBlur();
+                  }}
+                />
               </FormControl>
               {formState.errors.region ? (
                 <FormMessage />
@@ -126,6 +143,25 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
                 <FormDescription>
                   This url should be accessible from the internet. Will be
                   called from SES
+                </FormDescription>
+              )}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="sendRate"
+          render={({ field, formState }) => (
+            <FormItem>
+              <FormLabel>Send Rate</FormLabel>
+              <FormControl>
+                <Input placeholder="1" className="w-full" {...field} />
+              </FormControl>
+              {formState.errors.sendRate ? (
+                <FormMessage />
+              ) : (
+                <FormDescription>
+                  The number of emails to send per second.
                 </FormDescription>
               )}
             </FormItem>

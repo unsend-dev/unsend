@@ -25,7 +25,7 @@ services:
 
   unsend:
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
     image: unsend
     container_name: unsend
     restart: always

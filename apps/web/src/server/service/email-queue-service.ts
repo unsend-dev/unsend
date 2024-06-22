@@ -1,57 +1,61 @@
-import pgBoss from "pg-boss";
+import { Job, Queue, Worker } from "bullmq";
+import IORedis from "ioredis";
 import { env } from "~/env";
 import { EmailAttachment } from "~/types";
-import { db } from "~/server/db";
-import {
-  sendEmailThroughSes,
-  sendEmailWithAttachments,
-} from "~/server/aws/ses";
 import { getConfigurationSetName } from "~/utils/ses-utils";
-import { sendToDiscord } from "./notification-service";
+import { db } from "../db";
+import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 
-const boss = new pgBoss({
-  connectionString: env.DATABASE_URL,
-  archiveCompletedAfterSeconds: 60 * 60 * 24, // 24 hours
-  deleteAfterDays: 7, // 7 days
-});
-let started = false;
+const connection = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
 
-export async function getBoss() {
-  if (!started) {
-    await boss.start();
-    await boss.work(
-      "send_email",
-      {
-        teamConcurrency: env.SES_QUEUE_LIMIT,
-        teamSize: env.SES_QUEUE_LIMIT,
-        teamRefill: true,
+export class EmailQueueService {
+  private static initialized = false;
+  private static regionQueue = new Map<string, Queue>();
+  private static regionWorker = new Map<string, Worker>();
+
+  public static initializeQueue(region: string, quota: number) {
+    console.log(`[EmailQueueService]: Initializing queue for region ${region}`);
+
+    const queueName = `${region}-transaction`;
+
+    const queue = new Queue(queueName, { connection });
+
+    const worker = new Worker(queueName, executeEmail, {
+      limiter: {
+        max: quota,
+        duration: 1000,
       },
-      executeEmail
-    );
-
-    boss.on("error", async (error) => {
-      console.error(error);
-      sendToDiscord(
-        `Error in pg-boss: ${error.name} \n ${error.cause}\n ${error.message}\n  ${error.stack}`
-      );
-      await boss.stop();
-      started = false;
+      concurrency: quota,
+      connection,
     });
-    started = true;
+
+    this.regionQueue.set(region, queue);
+    this.regionWorker.set(region, worker);
   }
-  return boss;
+
+  public static async queueEmail(emailId: string, region: string) {
+    if (!this.initialized) {
+      await this.init();
+    }
+    const queue = this.regionQueue.get(region);
+    if (!queue) {
+      throw new Error(`Queue for region ${region} not found`);
+    }
+    queue.add("send-email", { emailId, timestamp: Date.now() });
+  }
+
+  public static async init() {
+    const sesSettings = await db.sesSetting.findMany();
+    for (const sesSetting of sesSettings) {
+      this.initializeQueue(sesSetting.region, sesSetting.sesEmailRateLimit);
+    }
+    this.initialized = true;
+  }
 }
 
-export async function queueEmail(emailId: string) {
-  const boss = await getBoss();
-  await boss.send("send_email", { emailId, timestamp: Date.now() });
-}
-
-async function executeEmail(
-  job: pgBoss.Job<{ emailId: string; timestamp: number }>
-) {
+async function executeEmail(job: Job<{ emailId: string; timestamp: number }>) {
   console.log(
-    `[EmailJob]: Executing email job ${job.data.emailId}, time elapsed: ${Date.now() - job.data.timestamp}ms`
+    `[EmailQueueService]: Executing email job ${job.data.emailId}, time elapsed: ${Date.now() - job.data.timestamp}ms`
   );
 
   const email = await db.email.findUnique({
@@ -65,7 +69,7 @@ async function executeEmail(
     : null;
 
   if (!email) {
-    console.log(`[EmailJob]: Email not found, skipping`);
+    console.log(`[EmailQueueService]: Email not found, skipping`);
     return;
   }
 
@@ -80,11 +84,11 @@ async function executeEmail(
   );
 
   if (!configurationSetName) {
-    console.log(`[EmailJob]: Configuration set not found, skipping`);
+    console.log(`[EmailQueueService]: Configuration set not found, skipping`);
     return;
   }
 
-  console.log(`[EmailJob]: Sending email ${email.id}`);
+  console.log(`[EmailQueueService]: Sending email ${email.id}`);
   try {
     const messageId = attachments.length
       ? await sendEmailWithAttachments({

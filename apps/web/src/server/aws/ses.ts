@@ -8,6 +8,7 @@ import {
   CreateConfigurationSetEventDestinationCommand,
   CreateConfigurationSetCommand,
   EventType,
+  GetAccountCommand,
 } from "@aws-sdk/client-sesv2";
 import { generateKeyPairSync } from "crypto";
 import mime from "mime-types";
@@ -229,6 +230,13 @@ export async function sendEmailWithAttachments({
     console.error("Failed to send email with attachments", error);
     throw new Error("Failed to send email with attachments");
   }
+}
+
+export async function getAccount(region: string) {
+  const client = getSesClient(region);
+  const input = new GetAccountCommand({});
+  const response = await client.send(input);
+  return response;
 }
 
 export async function addWebhookConfiguration(

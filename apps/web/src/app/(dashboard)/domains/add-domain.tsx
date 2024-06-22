@@ -49,6 +49,10 @@ export default function AddDomain() {
 
   const domainForm = useForm<z.infer<typeof domainSchema>>({
     resolver: zodResolver(domainSchema),
+    defaultValues: {
+      region: "",
+      domain: "",
+    },
   });
 
   const utils = api.useUtils();
@@ -130,16 +134,17 @@ export default function AddDomain() {
                       onValueChange={field.onChange}
                       value={field.value}
                       disabled={regionQuery.isLoading}
-                      defaultValue={regionQuery.data?.[0]}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a verified email to display" />
+                          <SelectValue placeholder="Select region" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {regionQuery.data?.map((region) => (
-                          <SelectItem value={region}>{region}</SelectItem>
+                          <SelectItem value={region} key={region}>
+                            {region}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

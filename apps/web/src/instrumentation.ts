@@ -1,3 +1,5 @@
+let initialized = false;
+
 /**
  * Add things here to be executed during server startup.
  *
@@ -5,10 +7,13 @@
  */
 export async function register() {
   // eslint-disable-next-line turbo/no-undeclared-env-vars
-  if (process.env.NEXT_RUNTIME === "nodejs") {
+  if (process.env.NEXT_RUNTIME === "nodejs" && !initialized) {
     console.log("Registering instrumentation");
-    const { getBoss } = await import("~/server/service/job-service");
+    const { EmailQueueService } = await import(
+      "~/server/service/email-queue-service"
+    );
 
-    await getBoss();
+    await EmailQueueService.init();
+    initialized = true;
   }
 }
