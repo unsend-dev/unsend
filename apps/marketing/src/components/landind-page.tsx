@@ -53,14 +53,14 @@ export function HeroImage() {
       viewport={{ once: true }}
       className="p-3 bg-neutral-900 mt-24 rounded-xl mx-2"
     >
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/app.webp"
         alt="App"
         width={1200}
         height={800}
         className="rounded-lg relative border"
-        priority
-      ></Image>
+      />
     </motion.div>
   );
 }
