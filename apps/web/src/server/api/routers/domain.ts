@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  teamProcedure,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import { db } from "~/server/db";
 import {
   createDomain,
@@ -9,12 +13,18 @@ import {
   updateDomain,
 } from "~/server/service/domain-service";
 import { sendEmail } from "~/server/service/email-service";
+import { SesSettingsService } from "~/server/service/ses-settings-service";
 
 export const domainRouter = createTRPCRouter({
+  getAvailableRegions: protectedProcedure.query(async () => {
+    const settings = await SesSettingsService.getAllSettings();
+    return settings.map((setting) => setting.region);
+  }),
+
   createDomain: teamProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ name: z.string(), region: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return createDomain(ctx.team.id, input.name);
+      return createDomain(ctx.team.id, input.name, input.region);
     }),
 
   startVerification: teamProcedure
@@ -93,9 +103,9 @@ export const domainRouter = createTRPCRouter({
           teamId: team.id,
           to: user.email,
           from: `hello@${domain.name}`,
-          subject: "Test mail",
-          text: "Hello this is a test mail",
-          html: "<p>Hello this is a test mail</p>",
+          subject: "Unsend test email",
+          text: "hello,\n\nUnsend is the best open source sending platform\n\ncheck out https://unsend.dev",
+          html: "<p>hello,</p><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
         });
       }
     ),

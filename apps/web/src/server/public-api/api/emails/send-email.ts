@@ -12,10 +12,12 @@ const route = createRoute({
       content: {
         "application/json": {
           schema: z.object({
-            to: z.string().email(),
-            from: z.string().email(),
+            to: z.string().or(z.array(z.string())),
+            from: z.string(),
             subject: z.string(),
-            replyTo: z.string().optional(),
+            replyTo: z.string().or(z.array(z.string())).optional(),
+            cc: z.string().or(z.array(z.string())).optional(),
+            bcc: z.string().or(z.array(z.string())).optional(),
             text: z.string().optional(),
             html: z.string().optional(),
             attachments: z

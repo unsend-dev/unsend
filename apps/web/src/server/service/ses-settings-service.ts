@@ -5,8 +5,9 @@ import { customAlphabet } from "nanoid";
 import * as sns from "~/server/aws/sns";
 import * as ses from "~/server/aws/ses";
 import { EventType } from "@aws-sdk/client-sesv2";
+import { EmailQueueService } from "./email-queue-service";
 
-const nanoid = customAlphabet("1234567890abcdef", 10);
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 10);
 
 const GENERAL_EVENTS: EventType[] = [
   "BOUNCE",
@@ -21,15 +22,26 @@ const GENERAL_EVENTS: EventType[] = [
 
 export class SesSettingsService {
   private static cache: Record<string, SesSetting> = {};
+  private static topicArns: Array<string> = [];
+  private static initialized = false;
 
-  public static getSetting(region = env.AWS_DEFAULT_REGION): SesSetting | null {
+  public static async getSetting(
+    region = env.AWS_DEFAULT_REGION
+  ): Promise<SesSetting | null> {
+    await this.checkInitialized();
     if (this.cache[region]) {
       return this.cache[region] as SesSetting;
     }
     return null;
   }
 
-  public static getAllSettings() {
+  public static async getTopicArns() {
+    await this.checkInitialized();
+    return this.topicArns;
+  }
+
+  public static async getAllSettings() {
+    await this.checkInitialized();
     return Object.values(this.cache);
   }
 
@@ -46,15 +58,20 @@ export class SesSettingsService {
     region: string;
     unsendUrl: string;
   }) {
+    await this.checkInitialized();
     if (this.cache[region]) {
       throw new Error(`SesSetting for region ${region} already exists`);
     }
 
-    const unsendUrlValidation = await isValidUnsendUrl(unsendUrl);
+    const parsedUrl = unsendUrl.endsWith("/")
+      ? unsendUrl.substring(0, unsendUrl.length - 1)
+      : unsendUrl;
+
+    const unsendUrlValidation = await isValidUnsendUrl(parsedUrl);
 
     if (!unsendUrlValidation.isValid) {
       throw new Error(
-        `Unsend URL ${unsendUrl} is not valid, status: ${unsendUrlValidation.code} ${unsendUrlValidation.error}`
+        `Unsend URL: ${unsendUrl} is not valid, status: ${unsendUrlValidation.code} message:${unsendUrlValidation.error}`
       );
     }
 
@@ -63,27 +80,34 @@ export class SesSettingsService {
     const setting = await db.sesSetting.create({
       data: {
         region,
-        callbackUrl: `${unsendUrl}/api/ses_callback`,
+        callbackUrl: `${parsedUrl}/api/ses_callback`,
         topic: `${idPrefix}-${region}-unsend`,
         idPrefix,
       },
     });
 
     await createSettingInAws(setting);
+    EmailQueueService.initializeQueue(region, setting.sesEmailRateLimit);
 
-    this.invalidateCache();
+    await this.invalidateCache();
   }
 
-  public static async init() {
+  public static async checkInitialized() {
+    if (!this.initialized) {
+      await this.invalidateCache();
+      this.initialized = true;
+    }
+  }
+
+  static async invalidateCache() {
+    this.cache = {};
     const settings = await db.sesSetting.findMany();
     settings.forEach((setting) => {
       this.cache[setting.region] = setting;
+      if (setting.topicArn) {
+        this.topicArns.push(setting.topicArn);
+      }
     });
-  }
-
-  static invalidateCache() {
-    this.cache = {};
-    this.init();
   }
 }
 
@@ -95,18 +119,13 @@ async function createSettingInAws(setting: SesSetting) {
  * Creates a new topic in AWS and subscribes the callback URL to it
  */
 async function registerTopicInAws(setting: SesSetting) {
-  const topicArn = await sns.createTopic(setting.topic);
+  const topicArn = await sns.createTopic(setting.topic, setting.region);
 
   if (!topicArn) {
     throw new Error("Failed to create SNS topic");
   }
 
-  await sns.subscribeEndpoint(
-    topicArn,
-    `${setting.callbackUrl}/api/ses_callback`
-  );
-
-  return await db.sesSetting.update({
+  const _setting = await db.sesSetting.update({
     where: {
       id: setting.id,
     },
@@ -114,6 +133,17 @@ async function registerTopicInAws(setting: SesSetting) {
       topicArn,
     },
   });
+
+  // Invalidate the cache to update the topicArn list
+  SesSettingsService.invalidateCache();
+
+  await sns.subscribeEndpoint(
+    topicArn,
+    `${setting.callbackUrl}`,
+    setting.region
+  );
+
+  return _setting;
 }
 
 /**
@@ -133,28 +163,32 @@ async function registerConfigurationSet(setting: SesSetting) {
   const generalStatus = await ses.addWebhookConfiguration(
     configGeneral,
     setting.topicArn,
-    GENERAL_EVENTS
+    GENERAL_EVENTS,
+    setting.region
   );
 
   const configClick = `${setting.idPrefix}-${setting.region}-unsend-click`;
   const clickStatus = await ses.addWebhookConfiguration(
     configClick,
     setting.topicArn,
-    [...GENERAL_EVENTS, "CLICK"]
+    [...GENERAL_EVENTS, "CLICK"],
+    setting.region
   );
 
   const configOpen = `${setting.idPrefix}-${setting.region}-unsend-open`;
   const openStatus = await ses.addWebhookConfiguration(
     configOpen,
     setting.topicArn,
-    [...GENERAL_EVENTS, "OPEN"]
+    [...GENERAL_EVENTS, "OPEN"],
+    setting.region
   );
 
   const configFull = `${setting.idPrefix}-${setting.region}-unsend-full`;
   const fullStatus = await ses.addWebhookConfiguration(
     configFull,
     setting.topicArn,
-    [...GENERAL_EVENTS, "CLICK", "OPEN"]
+    [...GENERAL_EVENTS, "CLICK", "OPEN"],
+    setting.region
   );
 
   return await db.sesSetting.update({
@@ -175,10 +209,10 @@ async function registerConfigurationSet(setting: SesSetting) {
 }
 
 async function isValidUnsendUrl(url: string) {
+  console.log("Checking if URL is valid", url);
   try {
     const response = await fetch(`${url}/api/ses_callback`, {
-      method: "POST",
-      body: JSON.stringify({ fromUnsend: true }),
+      method: "GET",
     });
     return {
       isValid: response.status === 200,
@@ -186,6 +220,7 @@ async function isValidUnsendUrl(url: string) {
       error: response.statusText,
     };
   } catch (e) {
+    console.log("Error checking if URL is valid", e);
     return {
       isValid: false,
       code: 500,

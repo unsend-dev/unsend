@@ -26,6 +26,7 @@ import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
 import { Button } from "@unsend/ui/src/button";
 import Link from "next/link";
+import { toast } from "@unsend/ui/src/toaster";
 
 export default function DomainItemPage({
   params,
@@ -245,7 +246,8 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
       { id: domain.id, clickTracking: !clickTracking },
       {
         onSuccess: () => {
-          utils.domain.domains.invalidate();
+          utils.domain.invalidate();
+          toast.success("Click tracking updated");
         },
       }
     );
@@ -257,7 +259,8 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
       { id: domain.id, openTracking: !openTracking },
       {
         onSuccess: () => {
-          utils.domain.domains.invalidate();
+          utils.domain.invalidate();
+          toast.success("Open tracking updated");
         },
       }
     );

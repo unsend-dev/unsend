@@ -190,6 +190,7 @@ const EmailIcon: React.FC<{ status: EmailStatus }> = ({ status }) => {
         // </div>
       );
     case "BOUNCED":
+    case "FAILED":
       return (
         // <div className="border border-red-600/60 p-2 rounded-lg bg-red-500/10">
         <MailX className="w-6 h-6 text-red-900" />
