@@ -12,6 +12,7 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
       badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
       break;
     case "BOUNCED":
+    case "FAILED":
       badgeColor = "bg-red-500/10 text-red-600 border-red-600/10";
       break;
     case "CLICKED":
@@ -51,6 +52,7 @@ export const EmailStatusIcon: React.FC<{ status: EmailStatus }> = ({
       insideColor = "bg-emerald-500";
       break;
     case "BOUNCED":
+    case "FAILED":
       outsideColor = "bg-red-500/30";
       insideColor = "bg-red-500";
       break;

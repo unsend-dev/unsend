@@ -25,6 +25,7 @@ declare module "next-auth" {
     user: {
       id: number;
       isBetaUser: boolean;
+      isAdmin: boolean;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -34,6 +35,7 @@ declare module "next-auth" {
   interface User {
     id: number;
     isBetaUser: boolean;
+    isAdmin: boolean;
   }
 }
 
@@ -86,6 +88,7 @@ export const authOptions: NextAuthOptions = {
         ...session.user,
         id: user.id,
         isBetaUser: user.isBetaUser,
+        isAdmin: user.email === env.ADMIN_EMAIL,
       },
     }),
   },

@@ -11,13 +11,16 @@ import { ClipboardCopy, Check } from "lucide-react";
 import { useState } from "react";
 import { cn } from "../lib/utils";
 
-type Language = "js" | "ruby" | "php" | "python" | "curl";
+export type Language = "js" | "ruby" | "php" | "python" | "curl";
+
+export type CodeBlock = {
+  language: Language;
+  title?: string;
+  code: string;
+};
 
 type CodeProps = {
-  codeBlocks: {
-    language: Language;
-    code: string;
-  }[];
+  codeBlocks: CodeBlock[];
   codeClassName?: string;
 };
 
@@ -57,7 +60,7 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks, codeClassName }) => {
                   value={block.language}
                   className="data-[state=active]:bg-accent py-0.5 px-4 "
                 >
-                  {block.language}
+                  {block.title || block.language}
                 </TabsTrigger>
               ))}
             </div>

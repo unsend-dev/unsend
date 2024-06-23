@@ -8,7 +8,7 @@ CREATE TYPE "DomainStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SUCCESS', 'FAILED
 CREATE TYPE "ApiPermission" AS ENUM ('FULL', 'SENDING');
 
 -- CreateEnum
-CREATE TYPE "EmailStatus" AS ENUM ('SENT', 'OPENED', 'CLICKED', 'BOUNCED', 'COMPLAINED', 'DELIVERED', 'REJECTED', 'RENDERING_FAILURE', 'DELIVERY_DELAYED');
+CREATE TYPE "EmailStatus" AS ENUM ('QUEUED', 'SENT', 'OPENED', 'CLICKED', 'BOUNCED', 'COMPLAINED', 'DELIVERED', 'REJECTED', 'RENDERING_FAILURE', 'DELIVERY_DELAYED', 'FAILED');
 
 -- CreateTable
 CREATE TABLE "AppSetting" (
@@ -16,6 +16,30 @@ CREATE TABLE "AppSetting" (
     "value" TEXT NOT NULL,
 
     CONSTRAINT "AppSetting_pkey" PRIMARY KEY ("key")
+);
+
+-- CreateTable
+CREATE TABLE "SesSetting" (
+    "id" TEXT NOT NULL,
+    "region" TEXT NOT NULL,
+    "idPrefix" TEXT NOT NULL,
+    "topic" TEXT NOT NULL,
+    "topicArn" TEXT,
+    "callbackUrl" TEXT NOT NULL,
+    "callbackSuccess" BOOLEAN NOT NULL DEFAULT false,
+    "configGeneral" TEXT,
+    "configGeneralSuccess" BOOLEAN NOT NULL DEFAULT false,
+    "configClick" TEXT,
+    "configClickSuccess" BOOLEAN NOT NULL DEFAULT false,
+    "configOpen" TEXT,
+    "configOpenSuccess" BOOLEAN NOT NULL DEFAULT false,
+    "configFull" TEXT,
+    "configFullSuccess" BOOLEAN NOT NULL DEFAULT false,
+    "sesEmailRateLimit" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SesSetting_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -61,6 +85,7 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "isBetaUser" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -97,6 +122,7 @@ CREATE TABLE "Domain" (
     "dmarcAdded" BOOLEAN NOT NULL DEFAULT false,
     "errorMessage" TEXT,
     "subdomain" TEXT,
+    "isVerifying" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -122,27 +148,37 @@ CREATE TABLE "ApiKey" (
 CREATE TABLE "Email" (
     "id" TEXT NOT NULL,
     "sesEmailId" TEXT,
-    "to" TEXT NOT NULL,
     "from" TEXT NOT NULL,
+    "to" TEXT[],
+    "replyTo" TEXT[],
+    "cc" TEXT[],
+    "bcc" TEXT[],
     "subject" TEXT NOT NULL,
     "text" TEXT,
     "html" TEXT,
-    "latestStatus" "EmailStatus" NOT NULL DEFAULT 'SENT',
+    "latestStatus" "EmailStatus" NOT NULL DEFAULT 'QUEUED',
     "teamId" INTEGER NOT NULL,
     "domainId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "attachments" TEXT,
 
     CONSTRAINT "Email_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "EmailEvent" (
+    "id" TEXT NOT NULL,
     "emailId" TEXT NOT NULL,
     "status" "EmailStatus" NOT NULL,
     "data" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "EmailEvent_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SesSetting_region_key" ON "SesSetting"("region");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
@@ -170,9 +206,6 @@ CREATE UNIQUE INDEX "ApiKey_tokenHash_key" ON "ApiKey"("tokenHash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Email_sesEmailId_key" ON "Email"("sesEmailId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "EmailEvent_emailId_status_key" ON "EmailEvent"("emailId", "status");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

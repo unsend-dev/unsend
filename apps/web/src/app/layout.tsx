@@ -6,7 +6,6 @@ import { Toaster } from "@unsend/ui/src/toaster";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { Metadata } from "next";
-import { getBoss } from "~/server/service/job-service";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,12 +23,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  /**
-   * Because I don't know a better way to call this during server startup.
-   * This is a temporary fix to ensure that the boss is running.
-   */
-  // await getBoss();
-
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>

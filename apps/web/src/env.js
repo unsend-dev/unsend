@@ -1,3 +1,4 @@
+import { EmailStatus } from "@prisma/client";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
@@ -32,21 +33,19 @@ export const env = createEnv({
     GITHUB_SECRET: z.string(),
     AWS_ACCESS_KEY: z.string(),
     AWS_SECRET_KEY: z.string(),
-    APP_URL: z.string().optional(),
-    SNS_TOPIC: z.string(),
     UNSEND_API_KEY: z.string().optional(),
     UNSEND_URL: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
-    SES_QUEUE_LIMIT: z.string().transform((str) => parseInt(str, 10)),
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
     API_RATE_LIMIT: z
       .string()
       .transform((str) => parseInt(str, 10))
-      .default(2),
+      .default(1),
     FROM_EMAIL: z.string().optional(),
     ADMIN_EMAIL: z.string().optional(),
     DISCORD_WEBHOOK_URL: z.string().optional(),
+    REDIS_URL: z.string(),
   },
 
   /**
@@ -72,18 +71,16 @@ export const env = createEnv({
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
     AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
-    APP_URL: process.env.APP_URL,
-    SNS_TOPIC: process.env.SNS_TOPIC,
     UNSEND_API_KEY: process.env.UNSEND_API_KEY,
     UNSEND_URL: process.env.UNSEND_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    SES_QUEUE_LIMIT: process.env.SES_QUEUE_LIMIT,
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
+    REDIS_URL: process.env.REDIS_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

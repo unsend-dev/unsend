@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "https://app.unsend.dev/api"
+      "url": "https://test.ossapps.dev/api"
     }
   ],
   "components": {
@@ -111,7 +111,7 @@
             "schema": {
               "type": "string",
               "minLength": 3,
-              "example": "1212121"
+              "example": "cuiwqdj74rygf74"
             },
             "required": true,
             "name": "emailId",
@@ -133,7 +133,56 @@
                       "type": "number"
                     },
                     "to": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "replyTo": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "cc": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "bcc": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     },
                     "from": {
                       "type": "string"
@@ -222,8 +271,19 @@
                 "type": "object",
                 "properties": {
                   "to": {
-                    "type": "string",
-                    "format": "email"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "email"
+                        }
+                      }
+                    ]
                   },
                   "from": {
                     "type": "string",
@@ -233,7 +293,49 @@
                     "type": "string"
                   },
                   "replyTo": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "email"
+                        }
+                      }
+                    ]
+                  },
+                  "cc": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "email"
+                        }
+                      }
+                    ]
+                  },
+                  "bcc": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "email"
+                        }
+                      }
+                    ]
                   },
                   "text": {
                     "type": "string"

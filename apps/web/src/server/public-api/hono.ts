@@ -15,7 +15,7 @@ export function getApp() {
       version: "1.0.0",
       title: "Unsend API",
     },
-    servers: [{ url: `${env.APP_URL}/api` }],
+    servers: [{ url: `${env.NEXTAUTH_URL}/api` }],
   }));
 
   app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {

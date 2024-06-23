@@ -44,3 +44,14 @@ export const BOUNCE_ERROR_MESSAGES = {
       "Unsend received an attachment rejected bounce. You may be able to successfully send to this recipient if you remove or change the attachment.",
   },
 };
+
+export const COMPLAINT_ERROR_MESSAGES = {
+  abuse: "Indicates unsolicited email or some other kind of email abuse.",
+  "auth-failure": "Email authentication failure report.",
+  fraud: "Indicates some kind of fraud or phishing activity.",
+  "not-spam":
+    "Indicates that the entity providing the report does not consider the message to be spam. This may be used to correct a message that was incorrectly tagged or categorized as spam.",
+  other:
+    "Indicates any other feedback that does not fit into other registered types.",
+  virus: "Reports that a virus is found in the originating message.",
+};

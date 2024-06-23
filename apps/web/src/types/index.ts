@@ -1,10 +1,12 @@
 export type EmailContent = {
-  to: string;
+  to: string | string[];
   from: string;
   subject: string;
   text?: string;
   html?: string;
-  replyTo?: string;
+  replyTo?: string | string[];
+  cc?: string | string[];
+  bcc?: string | string[];
   attachments?: Array<EmailAttachment>;
 };
 

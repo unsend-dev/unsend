@@ -4,6 +4,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV SKIP_ENV_VALIDATION="true"
 ENV DOCKER_OUTPUT 1
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_IS_CLOUD="false"
 
 RUN corepack enable
 
@@ -14,7 +15,7 @@ RUN apk update
 WORKDIR /app
 # Replace <your-major-version> with the major version installed in your repository. For example:
 # RUN yarn global add turbo@^2
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json start.sh ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY ./apps/web ./apps/web
 COPY ./packages ./packages
 RUN pnpm add turbo@^1.12.5 -g
@@ -71,6 +72,6 @@ RUN ln -s /app/node_modules/prisma/build/index.js ./node_modules/.bin/prisma
 # set this so it throws error where starting server
 ENV SKIP_ENV_VALIDATION="false"
 
-COPY  start.sh ./
+COPY  ./docker/start.sh ./start.sh
 
 CMD ["sh", "start.sh"]

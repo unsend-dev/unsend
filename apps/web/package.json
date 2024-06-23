@@ -13,7 +13,8 @@
     "db:push": "prisma db push --skip-generate",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:migrate-reset": "prisma migrate reset"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.4.0",
@@ -32,9 +33,11 @@
     "@trpc/react-query": "next",
     "@trpc/server": "next",
     "@unsend/ui": "workspace:*",
+    "bullmq": "^5.8.2",
     "date-fns": "^3.6.0",
     "hono": "^4.2.2",
     "install": "^0.13.0",
+    "ioredis": "^5.4.1",
     "lucide-react": "^0.359.0",
     "mime-types": "^2.1.35",
     "nanoid": "^5.0.7",
@@ -51,6 +54,7 @@
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tldts": "^6.1.16",
+    "ua-parser-js": "^1.0.38",
     "unsend": "workspace:*",
     "zod": "^3.22.4"
   },
@@ -61,6 +65,7 @@
     "@types/node": "^20.11.20",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
+    "@types/ua-parser-js": "^0.7.39",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@unsend/eslint-config": "workspace:*",

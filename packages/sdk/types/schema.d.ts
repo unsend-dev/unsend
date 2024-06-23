@@ -60,7 +60,10 @@ export interface paths {
             "application/json": {
               id: string;
               teamId: number;
-              to: string;
+              to: string | string[];
+              replyTo?: string | string[];
+              cc?: string | string[];
+              bcc?: string | string[];
               from: string;
               subject: string;
               html: string | null;
@@ -85,12 +88,13 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /** Format: email */
-            to: string;
+            to: string | string[];
             /** Format: email */
             from: string;
             subject: string;
-            replyTo?: string;
+            replyTo?: string | string[];
+            cc?: string | string[];
+            bcc?: string | string[];
             text?: string;
             html?: string;
             attachments?: {

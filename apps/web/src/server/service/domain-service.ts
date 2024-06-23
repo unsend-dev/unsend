@@ -3,18 +3,29 @@ import util from "util";
 import * as tldts from "tldts";
 import * as ses from "~/server/aws/ses";
 import { db } from "~/server/db";
+import { SesSettingsService } from "./ses-settings-service";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
-export async function createDomain(teamId: number, name: string) {
+export async function createDomain(
+  teamId: number,
+  name: string,
+  region: string
+) {
   const domainStr = tldts.getDomain(name);
 
   if (!domainStr) {
     throw new Error("Invalid domain");
   }
 
+  const setting = await SesSettingsService.getSetting(region);
+
+  if (!setting) {
+    throw new Error("Ses setting not found");
+  }
+
   const subdomain = tldts.getSubdomain(name);
-  const publicKey = await ses.addDomain(name);
+  const publicKey = await ses.addDomain(name, region);
 
   const domain = await db.domain.create({
     data: {
@@ -22,6 +33,7 @@ export async function createDomain(teamId: number, name: string) {
       publicKey,
       teamId,
       subdomain,
+      region,
     },
   });
 

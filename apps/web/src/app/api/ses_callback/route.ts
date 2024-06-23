@@ -1,11 +1,11 @@
 import { db } from "~/server/db";
-import { AppSettingsService } from "~/server/service/app-settings-service";
 import { parseSesHook } from "~/server/service/ses-hook-parser";
+import { SesSettingsService } from "~/server/service/ses-settings-service";
 import { SnsNotificationMessage } from "~/types/aws-types";
-import { APP_SETTINGS } from "~/utils/constants";
 
-export async function GET(req: Request) {
-  console.log("GET", req);
+export const dynamic = "force-dynamic";
+
+export async function GET() {
   return Response.json({ data: "Hello" });
 }
 
@@ -13,10 +13,6 @@ export async function POST(req: Request) {
   const data = await req.json();
 
   console.log(data, data.Message);
-
-  if (isFromUnsend(data)) {
-    return Response.json({ data: "success" });
-  }
 
   const isEventValid = await checkEventValidity(data);
 
@@ -72,26 +68,17 @@ async function handleSubscription(message: any) {
     },
   });
 
+  SesSettingsService.invalidateCache();
+
   return Response.json({ data: "Success" });
-}
-
-// A simple check to ensure that the event is from the correct topic
-function isFromUnsend({ fromUnsend }: { fromUnsend: boolean }) {
-  if (fromUnsend) {
-    return true;
-  }
-
-  return false;
 }
 
 // A simple check to ensure that the event is from the correct topic
 async function checkEventValidity(message: SnsNotificationMessage) {
   const { TopicArn } = message;
-  const configuredTopicArn = await AppSettingsService.getSetting(
-    APP_SETTINGS.SNS_TOPIC_ARN
-  );
+  const configuredTopicArn = await SesSettingsService.getTopicArns();
 
-  if (TopicArn !== configuredTopicArn) {
+  if (!configuredTopicArn.includes(TopicArn)) {
     return false;
   }
 

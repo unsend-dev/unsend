@@ -35,6 +35,7 @@ model SesSetting {
   configOpenSuccess    Boolean  @default(false)
   configFull           String?
   configFullSuccess    Boolean  @default(false)
+  sesEmailRateLimit    Int      @default(1)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }
@@ -162,23 +163,26 @@ model ApiKey {
 enum EmailStatus {
   QUEUED
   SENT
+  BOUNCED
+  DELIVERED
   OPENED
   CLICKED
-  BOUNCED
   COMPLAINED
-  DELIVERED
   REJECTED
   RENDERING_FAILURE
   DELIVERY_DELAYED
+  FAILED
 }
 
 model Email {
   id           String       @id @default(cuid())
   sesEmailId   String?      @unique
-  to           String
   from         String
+  to           String[]
+  replyTo      String[]
+  cc           String[]
+  bcc          String[]
   subject      String
-  replyTo      String?
   text         String?
   html         String?
   latestStatus EmailStatus  @default(QUEUED)
@@ -192,11 +196,10 @@ model Email {
 }
 
 model EmailEvent {
+  id        String      @id @default(cuid())
   emailId   String
   status    EmailStatus
   data      Json?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
-
-  @@unique([emailId, status])
 }

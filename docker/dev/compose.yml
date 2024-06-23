@@ -1,0 +1,29 @@
+name: unsend-dev
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: unsend-db-dev
+    restart: always
+    environment:
+      - POSTGRES_USER=unsend
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=unsend
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "54320:5432"
+
+  redis:
+    image: redis:7
+    container_name: unsend-redis-dev
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    command: ["redis-server", "--maxmemory-policy", "noeviction"]
+
+volumes:
+  database:
+  redis:
