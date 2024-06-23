@@ -14,6 +14,8 @@ import { Domain } from "@prisma/client";
 import { toast } from "@unsend/ui/src/toaster";
 import { SendHorizonal } from "lucide-react";
 import { Code } from "@unsend/ui/src/code";
+import { useSession } from "next-auth/react";
+import { getSendTestEmailCode } from "~/lib/constants/example-codes";
 
 const jsCode = `const requestOptions = {
   method: "POST",
@@ -112,6 +114,8 @@ export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
   const sendTestEmailFromDomainMutation =
     api.domain.sendTestEmailFromDomain.useMutation();
 
+  const { data: session } = useSession();
+
   const utils = api.useUtils();
 
   function handleSendTestEmail() {
@@ -145,12 +149,14 @@ export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
           <DialogTitle>Send test email</DialogTitle>
         </DialogHeader>
         <Code
-          codeBlocks={[
-            { language: "js", code: jsCode },
-            { language: "ruby", code: rubyCode },
-            { language: "php", code: phpCode },
-            { language: "python", code: pythonCode },
-          ]}
+          codeBlocks={getSendTestEmailCode({
+            from: `hello@${domain.name}`,
+            to: session?.user?.email || "",
+            subject: "Unsend test email",
+            body: "hello,\\n\\nUnsend is the best open source sending platform",
+            bodyHtml:
+              "<p>hello,</p><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
+          })}
           codeClassName="max-w-[38rem] h-[20rem]"
         />
         <div className="flex justify-end w-full">
