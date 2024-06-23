@@ -3,6 +3,8 @@ import { parseSesHook } from "~/server/service/ses-hook-parser";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
 import { SnsNotificationMessage } from "~/types/aws-types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return Response.json({ data: "Hello" });
 }

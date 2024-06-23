@@ -3,7 +3,7 @@ name: unsend-dev
 services:
   postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: unsend-db-dev
     restart: always
     environment:
       - POSTGRES_USER=unsend
@@ -16,7 +16,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: redis
+    container_name: unsend-redis-dev
     restart: always
     ports:
       - "6379:6379"

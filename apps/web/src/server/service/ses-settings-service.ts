@@ -125,13 +125,7 @@ async function registerTopicInAws(setting: SesSetting) {
     throw new Error("Failed to create SNS topic");
   }
 
-  await sns.subscribeEndpoint(
-    topicArn,
-    `${setting.callbackUrl}`,
-    setting.region
-  );
-
-  return await db.sesSetting.update({
+  const _setting = await db.sesSetting.update({
     where: {
       id: setting.id,
     },
@@ -139,6 +133,17 @@ async function registerTopicInAws(setting: SesSetting) {
       topicArn,
     },
   });
+
+  // Invalidate the cache to update the topicArn list
+  SesSettingsService.invalidateCache();
+
+  await sns.subscribeEndpoint(
+    topicArn,
+    `${setting.callbackUrl}`,
+    setting.region
+  );
+
+  return _setting;
 }
 
 /**

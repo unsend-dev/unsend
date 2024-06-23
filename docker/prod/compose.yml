@@ -3,7 +3,7 @@ name: unsend-prod
 services:
   postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: unsend-db-prod
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER:?err}
@@ -14,19 +14,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    # ports:
+    #   - "5432:5432"
     volumes:
       - database:/var/lib/postgresql/data
 
-    # You don't need to expose this port to the host since, docker compose creates an internal network
-    # through which both of these containers could talk to each other using their container_name as hostname
-    # But if you want to connect this to a querying tool to debug you can definitely uncomment this
+  redis:
+    image: redis:7
+    container_name: unsend-redis-prod
+    restart: always
     # ports:
-    #   - "5432:5432"
+    #   - "6379:6379"
+    volumes:
+      - cache:/data
+    command: ["redis-server", "--maxmemory-policy", "noeviction"]
 
   unsend:
-    build:
-      dockerfile: ./Dockerfile
-    image: unsend
+    image: unsend/unsend:latest
     container_name: unsend
     restart: always
     ports:
@@ -41,15 +45,15 @@ services:
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:?err}
       - GITHUB_ID=${GITHUB_ID:?err}
       - GITHUB_SECRET=${GITHUB_SECRET:?err}
-      - APP_URL=${APP_URL:-${NEXTAUTH_URL}}
+      - REDIS_URL=${REDIS_URL:?err}
       - NEXT_PUBLIC_IS_CLOUD=${NEXT_PUBLIC_IS_CLOUD:-false}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - SES_QUEUE_LIMIT=${SES_QUEUE_LIMIT:1}
-      - API_RATE_LIMIT=${API_RATE_LIMIT:1}
+      - API_RATE_LIMIT=${API_RATE_LIMIT:-1}
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
 
 volumes:
   database:
+  cache:

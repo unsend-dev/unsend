@@ -34,10 +34,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@unsend/ui/src/select";
+import { toast } from "@unsend/ui/src/toaster";
 
 const domainSchema = z.object({
-  region: z.string({ required_error: "Region is required" }),
-  domain: z.string({ required_error: "Domain is required" }),
+  region: z.string({ required_error: "Region is required" }).min(1, {
+    message: "Region is required",
+  }),
+  domain: z.string({ required_error: "Domain is required" }).min(1, {
+    message: "Domain is required",
+  }),
 });
 
 export default function AddDomain() {
@@ -78,6 +83,9 @@ export default function AddDomain() {
           utils.domain.domains.invalidate();
           await router.push(`/domains/${data.id}`);
           setOpen(false);
+        },
+        onError: async (error) => {
+          toast.error(error.message);
         },
       }
     );
@@ -155,7 +163,6 @@ export default function AddDomain() {
                         Select the region from where the email is sent{" "}
                       </FormDescription>
                     )}
-                    <FormMessage />
                   </FormItem>
                 )}
               />

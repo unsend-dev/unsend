@@ -1,12 +1,10 @@
 import { Job, Queue, Worker } from "bullmq";
-import IORedis from "ioredis";
 import { env } from "~/env";
 import { EmailAttachment } from "~/types";
 import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
-
-const connection = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
+import { getRedis } from "../redis";
 
 export class EmailQueueService {
   private static initialized = false;
@@ -14,6 +12,7 @@ export class EmailQueueService {
   private static regionWorker = new Map<string, Worker>();
 
   public static initializeQueue(region: string, quota: number) {
+    const connection = getRedis();
     console.log(`[EmailQueueService]: Initializing queue for region ${region}`);
 
     const queueName = `${region}-transaction`;
