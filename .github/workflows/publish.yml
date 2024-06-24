@@ -56,9 +56,9 @@ jobs:
             -t "unsend/unsend-$BUILD_PLATFORM:latest" \
             -t "unsend/unsend-$BUILD_PLATFORM:$GIT_SHA" \
             -t "unsend/unsend-$BUILD_PLATFORM:$APP_VERSION" \
-            -t "ghcr.io/unsend/unsend-$BUILD_PLATFORM:latest" \
-            -t "ghcr.io/unsend/unsend-$BUILD_PLATFORM:$GIT_SHA" \
-            -t "ghcr.io/unsend/unsend-$BUILD_PLATFORM:$APP_VERSION" \
+            -t "ghcr.io/unsend-dev/unsend-$BUILD_PLATFORM:latest" \
+            -t "ghcr.io/unsend-dev/unsend-$BUILD_PLATFORM:$GIT_SHA" \
+            -t "ghcr.io/unsend-dev/unsend-$BUILD_PLATFORM:$APP_VERSION" \
             .
 
       - name: Push the docker image to DockerHub
@@ -67,7 +67,7 @@ jobs:
           BUILD_PLATFORM: ${{ matrix.platform == 'linux/arm64' && 'arm64' || 'amd64' }}
 
       - name: Push the docker image to GitHub Container Registry
-        run: docker push --all-tags "ghcr.io/unsend/unsend-$BUILD_PLATFORM"
+        run: docker push --all-tags "ghcr.io/unsend-dev/unsend-$BUILD_PLATFORM"
         env:
           BUILD_PLATFORM: ${{ matrix.platform == 'linux/arm64' && 'arm64' || 'amd64' }}
 
@@ -124,20 +124,20 @@ jobs:
           GIT_SHA="$(git rev-parse HEAD)"
 
           docker manifest create \
-            ghcr.io/unsend/unsend:latest \
-            --amend ghcr.io/unsend/unsend-amd64:latest \
-            --amend ghcr.io/unsend/unsend-arm64:latest \
+            ghcr.io/unsend-dev/unsend:latest \
+            --amend ghcr.io/unsend-dev/unsend-amd64:latest \
+            --amend ghcr.io/unsend-dev/unsend-arm64:latest \
 
           docker manifest create \
-            ghcr.io/unsend/unsend:$GIT_SHA \
-            --amend ghcr.io/unsend/unsend-amd64:$GIT_SHA \
-            --amend ghcr.io/unsend/unsend-arm64:$GIT_SHA \
+            ghcr.io/unsend-dev/unsend:$GIT_SHA \
+            --amend ghcr.io/unsend-dev/unsend-amd64:$GIT_SHA \
+            --amend ghcr.io/unsend-dev/unsend-arm64:$GIT_SHA \
 
           docker manifest create \
-            ghcr.io/unsend/unsend:$APP_VERSION \
-            --amend ghcr.io/unsend/unsend-amd64:$APP_VERSION \
-            --amend ghcr.io/unsend/unsend-arm64:$APP_VERSION \
+            ghcr.io/unsend-dev/unsend:$APP_VERSION \
+            --amend ghcr.io/unsend-dev/unsend-amd64:$APP_VERSION \
+            --amend ghcr.io/unsend-dev/unsend-arm64:$APP_VERSION \
 
-          docker manifest push ghcr.io/unsend/unsend:latest
-          docker manifest push ghcr.io/unsend/unsend:$GIT_SHA
-          docker manifest push ghcr.io/unsend/unsend:$APP_VERSION
+          docker manifest push ghcr.io/unsend-dev/unsend:latest
+          docker manifest push ghcr.io/unsend-dev/unsend:$GIT_SHA
+          docker manifest push ghcr.io/unsend-dev/unsend:$APP_VERSION
