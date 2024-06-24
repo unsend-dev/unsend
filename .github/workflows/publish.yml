@@ -4,8 +4,12 @@ on:
   release:
     types:
       - released
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run the action on"
+        default: "main"
+        required: true
 
 jobs:
   build_and_publish_platform_containers:
