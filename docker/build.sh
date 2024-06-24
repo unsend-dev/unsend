@@ -20,7 +20,7 @@ docker build -f "$SCRIPT_DIR/Dockerfile" \
     -t "unsend/unsend:latest" \
     -t "unsend/unsend:$GIT_SHA" \
     -t "unsend/unsend:$APP_VERSION" \
-    -t "ghcr.io/unsend/unsend:latest" \
-    -t "ghcr.io/unsend/unsend:$GIT_SHA" \
-    -t "ghcr.io/unsend/unsend:$APP_VERSION" \
+    -t "ghcr.io/unsend-dev/unsend:latest" \
+    -t "ghcr.io/unsend-dev/unsend:$GIT_SHA" \
+    -t "ghcr.io/unsend-dev/unsend:$APP_VERSION" \
     "$MONOREPO_ROOT"
