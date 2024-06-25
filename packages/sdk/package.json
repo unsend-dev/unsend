@@ -1,6 +1,6 @@
 {
   "name": "unsend",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

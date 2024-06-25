@@ -73,7 +73,7 @@ export interface paths {
               emailEvents: ({
                   emailId: string;
                   /** @enum {string} */
-                  status: "QUEUED" | "SENT" | "OPENED" | "CLICKED" | "BOUNCED" | "COMPLAINED" | "DELIVERED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERY_DELAYED";
+                  status: "QUEUED" | "SENT" | "BOUNCED" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERY_DELAYED" | "FAILED";
                   createdAt: string;
                   data?: unknown;
                 })[];
@@ -89,7 +89,6 @@ export interface paths {
         content: {
           "application/json": {
             to: string | string[];
-            /** Format: email */
             from: string;
             subject: string;
             replyTo?: string | string[];

@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "https://test.ossapps.dev/api"
+      "url": "https://app.unsend.dev/api"
     }
   ],
   "components": {
@@ -217,14 +217,15 @@
                             "enum": [
                               "QUEUED",
                               "SENT",
+                              "BOUNCED",
+                              "DELIVERED",
                               "OPENED",
                               "CLICKED",
-                              "BOUNCED",
                               "COMPLAINED",
-                              "DELIVERED",
                               "REJECTED",
                               "RENDERING_FAILURE",
-                              "DELIVERY_DELAYED"
+                              "DELIVERY_DELAYED",
+                              "FAILED"
                             ]
                           },
                           "createdAt": {
@@ -273,21 +274,18 @@
                   "to": {
                     "anyOf": [
                       {
-                        "type": "string",
-                        "format": "email"
+                        "type": "string"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "format": "email"
+                          "type": "string"
                         }
                       }
                     ]
                   },
                   "from": {
-                    "type": "string",
-                    "format": "email"
+                    "type": "string"
                   },
                   "subject": {
                     "type": "string"
@@ -295,14 +293,12 @@
                   "replyTo": {
                     "anyOf": [
                       {
-                        "type": "string",
-                        "format": "email"
+                        "type": "string"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "format": "email"
+                          "type": "string"
                         }
                       }
                     ]
@@ -310,14 +306,12 @@
                   "cc": {
                     "anyOf": [
                       {
-                        "type": "string",
-                        "format": "email"
+                        "type": "string"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "format": "email"
+                          "type": "string"
                         }
                       }
                     ]
@@ -325,14 +319,12 @@
                   "bcc": {
                     "anyOf": [
                       {
-                        "type": "string",
-                        "format": "email"
+                        "type": "string"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "format": "email"
+                          "type": "string"
                         }
                       }
                     ]
