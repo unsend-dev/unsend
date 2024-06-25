@@ -10,8 +10,6 @@ const rateLimitCache = new TTLCache({
   max: env.API_RATE_LIMIT,
 });
 
-console.log(env.DATABASE_URL);
-
 /**
  * Gets the team from the token. Also will check if the token is valid.
  */
