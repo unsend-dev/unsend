@@ -22,7 +22,7 @@ model AppSetting {
 model SesSetting {
   id                   String   @id @default(cuid())
   region               String   @unique
-  idPrefix             String
+  idPrefix             String   @unique
   topic                String
   topicArn             String?
   callbackUrl          String
@@ -149,7 +149,8 @@ enum ApiPermission {
 
 model ApiKey {
   id           Int           @id @default(autoincrement())
-  tokenHash    String        @unique
+  clientId     String        @unique
+  tokenHash    String
   partialToken String
   name         String
   permission   ApiPermission @default(SENDING)

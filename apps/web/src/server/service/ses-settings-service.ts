@@ -1,13 +1,11 @@
 import { SesSetting } from "@prisma/client";
 import { db } from "../db";
 import { env } from "~/env";
-import { customAlphabet } from "nanoid";
 import * as sns from "~/server/aws/sns";
 import * as ses from "~/server/aws/ses";
 import { EventType } from "@aws-sdk/client-sesv2";
 import { EmailQueueService } from "./email-queue-service";
-
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 10);
+import { smallNanoid } from "../nanoid";
 
 const GENERAL_EVENTS: EventType[] = [
   "BOUNCE",
@@ -75,7 +73,7 @@ export class SesSettingsService {
       );
     }
 
-    const idPrefix = nanoid(10);
+    const idPrefix = smallNanoid(10);
 
     const setting = await db.sesSetting.create({
       data: {

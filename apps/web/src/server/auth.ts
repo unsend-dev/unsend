@@ -1,6 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
-  AuthOptions,
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
@@ -9,7 +8,9 @@ import { type Adapter } from "next-auth/adapters";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
+import { Provider } from "next-auth/providers/index";
 
+import { sendSignUpEmail } from "~/server/mailer";
 import { env } from "~/env";
 import { db } from "~/server/db";
 
@@ -116,17 +117,3 @@ export const authOptions: NextAuthOptions = {
  * @see https://next-auth.js.org/configuration/nextjs
  */
 export const getServerAuthSession = () => getServerSession(authOptions);
-
-import { createHash } from "crypto";
-import { sendSignUpEmail } from "./mailer";
-import { Provider } from "next-auth/providers/index";
-
-/**
- * Hashes a token using SHA-256.
- *
- * @param {string} token - The token to be hashed.
- * @returns {string} The hashed token.
- */
-export function hashToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}

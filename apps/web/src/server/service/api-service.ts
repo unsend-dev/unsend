@@ -1,7 +1,8 @@
 import { ApiPermission } from "@prisma/client";
 import { db } from "../db";
 import { randomBytes } from "crypto";
-import { hashToken } from "../auth";
+import { smallNanoid } from "../nanoid";
+import { createSecureHash, verifySecureHash } from "../crypto";
 
 export async function addApiKey({
   name,
@@ -13,8 +14,11 @@ export async function addApiKey({
   teamId: number;
 }) {
   try {
-    const token = `us_${randomBytes(20).toString("hex")}`;
-    const hashedToken = hashToken(token);
+    const clientId = smallNanoid(10);
+    const token = randomBytes(16).toString("hex");
+    const hashedToken = await createSecureHash(token);
+
+    const apiKey = `us_${clientId}_${token}`;
 
     await db.apiKey.create({
       data: {
@@ -22,39 +26,46 @@ export async function addApiKey({
         permission: permission,
         teamId,
         tokenHash: hashedToken,
-        partialToken: `${token.slice(0, 8)}...${token.slice(-5)}`,
+        partialToken: `${apiKey.slice(0, 6)}...${apiKey.slice(-3)}`,
+        clientId,
       },
     });
-    return token;
+    return apiKey;
   } catch (error) {
     console.error("Error adding API key:", error);
     throw error;
   }
 }
 
-export async function retrieveApiKey(token: string) {
-  const hashedToken = hashToken(token);
+export async function getTeamAndApiKey(apiKey: string) {
+  const [, clientId, token] = apiKey.split("_") as [string, string, string];
+
+  const apiKeyRow = await db.apiKey.findUnique({
+    where: {
+      clientId,
+    },
+  });
+
+  if (!apiKeyRow) {
+    return null;
+  }
 
   try {
-    const apiKey = await db.apiKey.findUnique({
+    const isValid = await verifySecureHash(token, apiKeyRow.tokenHash);
+    if (!isValid) {
+      return null;
+    }
+
+    const team = await db.team.findUnique({
       where: {
-        tokenHash: hashedToken,
-      },
-      select: {
-        id: true,
-        name: true,
-        permission: true,
-        teamId: true,
-        partialToken: true,
+        id: apiKeyRow.teamId,
       },
     });
-    if (!apiKey) {
-      throw new Error("API Key not found");
-    }
-    return apiKey;
+
+    return { team, apiKey: apiKeyRow };
   } catch (error) {
-    console.error("Error retrieving API key:", error);
-    throw error;
+    console.error("Error verifying API key:", error);
+    return null;
   }
 }
 
