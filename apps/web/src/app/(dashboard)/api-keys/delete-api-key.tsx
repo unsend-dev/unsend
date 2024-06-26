@@ -2,32 +2,56 @@
 
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
-import { Label } from "@unsend/ui/src/label";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@unsend/ui/src/dialog";
 import { api } from "~/trpc/react";
 import React, { useState } from "react";
-import { ApiKey, Domain } from "@prisma/client";
+import { ApiKey } from "@prisma/client";
 import { toast } from "@unsend/ui/src/toaster";
 import { Trash2 } from "lucide-react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@unsend/ui/src/form";
+
+const apiKeySchema = z.object({
+  name: z.string(),
+});
 
 export const DeleteApiKey: React.FC<{
   apiKey: Partial<ApiKey> & { id: number };
 }> = ({ apiKey }) => {
   const [open, setOpen] = useState(false);
-  const [domainName, setDomainName] = useState("");
   const deleteApiKeyMutation = api.apiKey.deleteApiKey.useMutation();
 
   const utils = api.useUtils();
 
-  function handleSave() {
+  const apiKeyForm = useForm<z.infer<typeof apiKeySchema>>({
+    resolver: zodResolver(apiKeySchema),
+  });
+
+  async function onDomainDelete(values: z.infer<typeof apiKeySchema>) {
+    if (values.name !== apiKey.name) {
+      apiKeyForm.setError("name", {
+        message: "Name does not match",
+      });
+      return;
+    }
+
     deleteApiKeyMutation.mutate(
       {
         id: apiKey.id,
@@ -41,6 +65,8 @@ export const DeleteApiKey: React.FC<{
       }
     );
   }
+
+  const name = apiKeyForm.watch("name");
 
   return (
     <Dialog
@@ -62,29 +88,44 @@ export const DeleteApiKey: React.FC<{
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">
-          <Label htmlFor="name" className="text-right">
-            Type <span className="text-primary">{apiKey.name}</span> to confirm
-          </Label>
-          <Input
-            id="name"
-            defaultValue=""
-            className="mt-2"
-            onChange={(e) => setDomainName(e.target.value)}
-            value={domainName}
-          />
+          <Form {...apiKeyForm}>
+            <form
+              onSubmit={apiKeyForm.handleSubmit(onDomainDelete)}
+              className="space-y-4"
+            >
+              <FormField
+                control={apiKeyForm.control}
+                name="name"
+                render={({ field, formState }) => (
+                  <FormItem>
+                    <FormLabel>name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    {formState.errors.name ? (
+                      <FormMessage />
+                    ) : (
+                      <FormDescription className=" text-transparent">
+                        .
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={
+                    deleteApiKeyMutation.isPending || apiKey.name !== name
+                  }
+                >
+                  {deleteApiKeyMutation.isPending ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            variant="destructive"
-            onClick={handleSave}
-            disabled={
-              deleteApiKeyMutation.isPending || apiKey.name !== domainName
-            }
-          >
-            {deleteApiKeyMutation.isPending ? "Deleting..." : "Delete"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
