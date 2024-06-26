@@ -16,27 +16,52 @@ import { api } from "~/trpc/react";
 import { useState } from "react";
 import { CheckIcon, ClipboardCopy, Eye, EyeOff, Plus } from "lucide-react";
 import { toast } from "@unsend/ui/src/toaster";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@unsend/ui/src/form";
+
+const apiKeySchema = z.object({
+  name: z.string({ required_error: "Name is required" }).min(1, {
+    message: "Name is required",
+  }),
+});
 
 export default function AddApiKey() {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const addDomainMutation = api.apiKey.createToken.useMutation();
+  const createApiKeyMutation = api.apiKey.createToken.useMutation();
   const [isCopied, setIsCopied] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
 
   const utils = api.useUtils();
 
-  function handleSave() {
-    addDomainMutation.mutate(
+  const apiKeyForm = useForm<z.infer<typeof apiKeySchema>>({
+    resolver: zodResolver(apiKeySchema),
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  function handleSave(values: z.infer<typeof apiKeySchema>) {
+    createApiKeyMutation.mutate(
       {
-        name,
+        name: values.name,
         permission: "FULL",
       },
       {
         onSuccess: (data) => {
           utils.apiKey.invalidate();
           setApiKey(data);
+          apiKeyForm.reset();
         },
       }
     );
@@ -53,8 +78,8 @@ export default function AddApiKey() {
   function copyAndClose() {
     handleCopy();
     setApiKey("");
-    setName("");
     setOpen(false);
+    setShowApiKey(false);
     toast.success("API key copied to clipboard");
   }
 
@@ -70,7 +95,7 @@ export default function AddApiKey() {
         </Button>
       </DialogTrigger>
       {apiKey ? (
-        <DialogContent>
+        <DialogContent key={apiKey}>
           <DialogHeader>
             <DialogTitle>Copy API key</DialogTitle>
           </DialogHeader>
@@ -80,7 +105,7 @@ export default function AddApiKey() {
                 <p className="text-sm">{apiKey}</p>
               ) : (
                 <div className="flex gap-1">
-                  {Array.from({ length: 30 }).map((_, index) => (
+                  {Array.from({ length: 40 }).map((_, index) => (
                     <div
                       key={index}
                       className="w-1 h-1 bg-muted-foreground rounded-lg"
@@ -120,7 +145,7 @@ export default function AddApiKey() {
             <Button
               type="submit"
               onClick={copyAndClose}
-              disabled={addDomainMutation.isPending}
+              disabled={createApiKeyMutation.isPending}
             >
               Close
             </Button>
@@ -132,27 +157,42 @@ export default function AddApiKey() {
             <DialogTitle>Create a new API key</DialogTitle>
           </DialogHeader>
           <div className="py-2">
-            <Label htmlFor="name" className="text-right">
-              API key name
-            </Label>
-            <Input
-              id="name"
-              placeholder="prod key"
-              defaultValue=""
-              className="col-span-3 mt-1"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
+            <Form {...apiKeyForm}>
+              <form
+                onSubmit={apiKeyForm.handleSubmit(handleSave)}
+                className="space-y-8"
+              >
+                <FormField
+                  control={apiKeyForm.control}
+                  name="name"
+                  render={({ field, formState }) => (
+                    <FormItem>
+                      <FormLabel>API key name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="prod key" {...field} />
+                      </FormControl>
+                      {formState.errors.name ? (
+                        <FormMessage />
+                      ) : (
+                        <FormDescription>
+                          Use a name to easily identify this API key.
+                        </FormDescription>
+                      )}
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    className=" w-[100px] bg-white hover:bg-gray-100 focus:bg-gray-100"
+                    type="submit"
+                    disabled={createApiKeyMutation.isPending}
+                  >
+                    {createApiKeyMutation.isPending ? "Creating..." : "Create"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </div>
-          <DialogFooter>
-            <Button
-              type="submit"
-              onClick={handleSave}
-              disabled={addDomainMutation.isPending}
-            >
-              Save changes
-            </Button>
-          </DialogFooter>
         </DialogContent>
       )}
     </Dialog>

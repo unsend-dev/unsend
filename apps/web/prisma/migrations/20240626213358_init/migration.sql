@@ -8,7 +8,7 @@ CREATE TYPE "DomainStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SUCCESS', 'FAILED
 CREATE TYPE "ApiPermission" AS ENUM ('FULL', 'SENDING');
 
 -- CreateEnum
-CREATE TYPE "EmailStatus" AS ENUM ('QUEUED', 'SENT', 'OPENED', 'CLICKED', 'BOUNCED', 'COMPLAINED', 'DELIVERED', 'REJECTED', 'RENDERING_FAILURE', 'DELIVERY_DELAYED', 'FAILED');
+CREATE TYPE "EmailStatus" AS ENUM ('QUEUED', 'SENT', 'DELIVERY_DELAYED', 'BOUNCED', 'REJECTED', 'RENDERING_FAILURE', 'DELIVERED', 'OPENED', 'CLICKED', 'COMPLAINED', 'FAILED');
 
 -- CreateTable
 CREATE TABLE "AppSetting" (
@@ -132,6 +132,7 @@ CREATE TABLE "Domain" (
 -- CreateTable
 CREATE TABLE "ApiKey" (
     "id" SERIAL NOT NULL,
+    "clientId" TEXT NOT NULL,
     "tokenHash" TEXT NOT NULL,
     "partialToken" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -181,6 +182,9 @@ CREATE TABLE "EmailEvent" (
 CREATE UNIQUE INDEX "SesSetting_region_key" ON "SesSetting"("region");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "SesSetting_idPrefix_key" ON "SesSetting"("idPrefix");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
 -- CreateIndex
@@ -202,7 +206,7 @@ CREATE UNIQUE INDEX "TeamUser_teamId_userId_key" ON "TeamUser"("teamId", "userId
 CREATE UNIQUE INDEX "Domain_name_key" ON "Domain"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApiKey_tokenHash_key" ON "ApiKey"("tokenHash");
+CREATE UNIQUE INDEX "ApiKey_clientId_key" ON "ApiKey"("clientId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Email_sesEmailId_key" ON "Email"("sesEmailId");

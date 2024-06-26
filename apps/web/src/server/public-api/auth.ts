@@ -1,9 +1,9 @@
 import TTLCache from "@isaacs/ttlcache";
 import { Context } from "hono";
-import { hashToken } from "../auth";
 import { db } from "../db";
 import { UnsendApiError } from "./api-error";
 import { env } from "~/env";
+import { getTeamAndApiKey } from "../service/api-service";
 
 const rateLimitCache = new TTLCache({
   ttl: 1000, // 1 second
@@ -34,17 +34,16 @@ export const getTeamFromToken = async (c: Context) => {
 
   checkRateLimit(token);
 
-  const hashedToken = hashToken(token);
+  const teamAndApiKey = await getTeamAndApiKey(token);
 
-  const team = await db.team.findFirst({
-    where: {
-      apiKeys: {
-        some: {
-          tokenHash: hashedToken,
-        },
-      },
-    },
-  });
+  if (!teamAndApiKey) {
+    throw new UnsendApiError({
+      code: "FORBIDDEN",
+      message: "Invalid API token",
+    });
+  }
+
+  const { team, apiKey } = teamAndApiKey;
 
   if (!team) {
     throw new UnsendApiError({
@@ -57,7 +56,7 @@ export const getTeamFromToken = async (c: Context) => {
   db.apiKey
     .update({
       where: {
-        tokenHash: hashedToken,
+        id: apiKey.id,
       },
       data: {
         lastUsed: new Date(),
