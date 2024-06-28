@@ -96,4 +96,4 @@ Checkout the [Self hosting](https://docs.unsend.dev/get-started/self-hosting) gu
 
 Also
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/xtfXWj?referralCode=oaAwvp)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/QbMnwX?referralCode=oaAwvp)

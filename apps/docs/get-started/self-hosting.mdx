@@ -75,11 +75,6 @@ Add the following environment variables.
   NEXTAUTH_SECRET="<your-unsend-secret>"
 ```
 
-<Tip>
-  Follow this for detailed steps: [Create AWS
-  credentials](/get-started/create-aws-credentials)
-</Tip>
-
   </Step>
 </Steps>
 
@@ -97,7 +92,9 @@ Follow this guide to setup your docker instance: [Set up docker](/get-started/se
 
 This option is very easy. Click on the below button and click "Deploy now". Add a custom domain etc.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/xtfXWj?referralCode=oaAwvp)
+Updating image is easy, click on the 3 dots and redeploy. This will pull the latest image.
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/QbMnwX?referralCode=oaAwvp)
 
 Your unsend instance is now live now.
 
@@ -107,4 +104,24 @@ In order to send emails, you need to select an region in aws. Use a region where
 
 You can check available regions [here](https://docs.aws.amazon.com/general/latest/gr/ses.html)
 
-Once you logged in to unsend, it will prompt you add ses configuration
+Once you logged in to unsend, it will prompt you add ses configuration.
+
+- Add the region
+- Add the callback url, which is basically the app url. Note this should be accesible from internet. This is how you get the delivery status of the emails.
+- You don't need to update the send rate, it's automatically based on your account.
+
+![github app](/images/ses-settings/add-ses-settings.png)
+
+<Warning>Don't forget to get the SES account out of sandbox mode.</Warning>
+
+![github app](/images/ses-settings/sandbox.png)
+
+## Next steps
+
+You're all set up now.
+
+- Setup a domain.
+- Create an API key.
+- Start sending emails.
+
+If you have any questions, please join [#self-host](https://discord.gg/gbsvjb9MqV) on discord.
