@@ -40,8 +40,8 @@ export const env = createEnv({
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
     API_RATE_LIMIT: z
       .string()
-      .transform((str) => parseInt(str, 10))
-      .default(1),
+      .default("1")
+      .transform((str) => parseInt(str, 10)),
     FROM_EMAIL: z.string().optional(),
     ADMIN_EMAIL: z.string().optional(),
     DISCORD_WEBHOOK_URL: z.string().optional(),
@@ -55,7 +55,10 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_IS_CLOUD: z.string().transform((str) => str === "true"),
+    NEXT_PUBLIC_IS_CLOUD: z
+      .string()
+      .default("false")
+      .transform((str) => str === "true"),
   },
 
   /**
