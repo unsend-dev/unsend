@@ -66,6 +66,7 @@ We're currently working on opening unsend for public beta.
 - [NextAuth.js](https://next-auth.js.org/) - Authentication
 - [tRPC](https://trpc.io/) - API
 - [hono](https://hono.dev/) - Public API
+- [Redis](https://redis.io/) - Queue
 
 ## Local Development
 
@@ -77,6 +78,22 @@ To run Unsend locally, you will need
 - Postgres SQL Database
 - Docker (optional)
 
+## Docker
+
+We provide a Docker container for Unsend, which is published on both DockerHub and GitHub Container Registry.
+
+DockerHub: [https://hub.docker.com/r/unsend/unsend](https://hub.docker.com/r/unsend/unsend)
+GitHub Container Registry: [https://ghcr.io/unsend-dev/unsend](https://ghcr.io/unsend-dev/unsend)
+You can pull the Docker image from either of these registries and run it with your preferred container hosting provider.
+
+Please note that you will need to provide environment variables for connecting to the database, redis, aws and so forth.
+
+For detailed instructions on how to configure and run the Docker container, please refer to the Docker [Docker README](./docker/README.md) in the docker directory.
+
 ## Self Hosting
 
-Docs coming soon.
+Checkout the [Self hosting](https://docs.unsend.dev/get-started/self-hosting) guide to learn how to self-host Unsend.
+
+Also
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/xtfXWj?referralCode=oaAwvp)
