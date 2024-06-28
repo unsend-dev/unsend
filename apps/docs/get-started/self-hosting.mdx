@@ -1,0 +1,127 @@
+---
+title: Self hosting Unsend
+description: "An end-to-end guide on how to self-host Unsend. An opensource sending infrastructure for developers."
+icon: server
+---
+
+## Prerequisites
+
+- A [Github](https://github.com) account
+- An [AWS](https://aws.amazon.com) account
+
+If you have any questions join [#self-host](https://discord.gg/gbsvjb9MqV) on discord.
+
+## Step 1: Environment variables
+
+Unsend depends on AWS ses to send emails and SNS to receive email status. Along with that it also depends on Postgres as a database and Redis for queue. Copy the `.env.selfhost.example` file to `.env` and fill in the values.
+
+<Steps>
+  <Step title="AWS credentials">
+  tl;dr: Login to your AWS console and create a new user with programmatic access. Attach the `AmazonSNSFullAccess` and `AmazonSESFullAccess` policies to the user. Then create a new access key for the user.
+
+Add the following environment variables.
+
+    ```env
+    AWS_ACCESS_KEY_ID=<access-key-id>
+    AWS_SECRET_ACCESS_KEY=<secret-access-key>
+    ```
+
+<Tip>
+  Follow this for detailed steps: [Create AWS
+  credentials](/get-started/create-aws-credentials)
+</Tip>
+
+  </Step>
+  <Step title="Github app credentials for login">
+  Usend uses github authentication for login.
+
+Use this link to [create an github app](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps)
+
+Callback URL : `https://<your-unsend-instance>/api/auth/callback/github`
+
+![github app](/images/github-callback.png)
+
+Add the following environment variables.
+
+```env
+GITHUB_ID="<your-github-client-id>"
+GITHUB_SECRET="<your-github-client-secret>"
+```
+
+  <Info>If you want email/password login, please help us out with the [code](https://github.com/unsend-dev/unsend) </Info>  
+  </Step>
+  <Step title="Database & Redis">
+  Unsend uses Postgres as a database and Redis as a queue. You need to create a new database and add the following environment variables.
+
+If you're using docker-compose or our railway template, it's all automatically done for you.
+
+```env
+DATABASE_URL="postgres://<username>:<password>@<host>:<port>/<database-name>"
+REDIS_URL="redis://<username>:<password>@<host>:<port>"
+```
+
+  </Step>
+  <Step title="Next auth url and secret">
+  Url is the app url you're going to use and secret is random string. You can generate a random secret using this command.
+
+```sh
+openssl rand -base64 32
+```
+
+Add the following environment variables.
+
+```env
+  NEXTAUTH_URL="https://<your-unsend-instance>"
+  NEXTAUTH_SECRET="<your-unsend-secret>"
+```
+
+  </Step>
+</Steps>
+
+## Step 2: Setting up the app
+
+You can use any platforms that supports docker. You can also use the railway template. In this example I'll be using railway. If you have any questions drop in the [discord channel](https://discord.gg/gbsvjb9MqV) and i'll try to help you out
+
+### Docker
+
+Follow this guide to setup your docker instance: [Set up docker](/get-started/set-up-docker)
+
+[![Docker image](https://img.shields.io/badge/dockerhub-images-important.svg?logo=Docker)](https://hub.docker.com/r/unsend/unsend)
+
+### Railway
+
+This option is very easy. Click on the below button and click "Deploy now". Add a custom domain etc.
+
+Updating image is easy, click on the 3 dots and redeploy. This will pull the latest image.
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/QbMnwX?referralCode=oaAwvp)
+
+Your unsend instance is now live now.
+
+## Step 3: Setting up a region
+
+In order to send emails, you need to select an region in aws. Use a region where your users are located / where unsend is hosted. If you're confused just use `us-east-1`.
+
+You can check available regions [here](https://docs.aws.amazon.com/general/latest/gr/ses.html)
+
+Once you logged in to unsend, it will prompt you add ses configuration.
+
+- Add the region
+- Add the callback url, which is basically the app url. Note this should be accesible from internet. This is how you get the delivery status of the emails.
+- You don't need to update the send rate, it's automatically based on your account.
+
+![github app](/images/ses-settings/add-ses-settings.png)
+
+<Warning>Don't forget to get the SES account out of sandbox mode.</Warning>
+
+![github app](/images/ses-settings/sandbox.png)
+
+## Next steps
+
+You're all set up now.
+
+- Setup a domain.
+- Create an API key.
+- Start sending emails.
+
+If you have any questions, please join [#self-host](https://discord.gg/gbsvjb9MqV) on discord.

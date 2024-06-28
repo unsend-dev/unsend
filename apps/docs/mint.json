@@ -45,10 +45,11 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Getting Started",
       "pages": [
         "introduction",
-        "get-started/nodejs"
+        "get-started/nodejs",
+        "get-started/self-hosting"
       ]
     },
     {
