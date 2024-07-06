@@ -9,7 +9,7 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
@@ -124,6 +124,26 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     },
   });
 });
+
+export const contactBookProcedure = teamProcedure
+  .input(
+    z.object({
+      contactBookId: z.string(),
+    })
+  )
+  .use(async ({ ctx, next, input }) => {
+    const contactBook = await db.contactBook.findUnique({
+      where: { id: input.contactBookId },
+    });
+    if (!contactBook) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Contact book not found",
+      });
+    }
+
+    return next({ ctx: { ...ctx, contactBook } });
+  });
 
 /**
  * To manage application settings, for hosted version, authenticated users will be considered as admin

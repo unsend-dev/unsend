@@ -66,14 +66,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Domains
                 </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
+                <NavButton href="/contacts">
                   <BookUser className="h-4 w-4" />
                   Contacts
                 </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
+                <NavButton href="/campaigns" comingSoon>
                   <Volume2 className="h-4 w-4" />
-                  Marketing
+                  Campaigns
                 </NavButton>
 
                 <NavButton href="/api-keys">

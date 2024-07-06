@@ -90,14 +90,16 @@ model User {
 }
 
 model Team {
-  id        Int        @id @default(autoincrement())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  teamUsers TeamUser[]
-  domains   Domain[]
-  apiKeys   ApiKey[]
-  emails    Email[]
+  id           Int           @id @default(autoincrement())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  teamUsers    TeamUser[]
+  domains      Domain[]
+  apiKeys      ApiKey[]
+  emails       Email[]
+  contactBooks ContactBook[]
+  campaigns    Campaign[]
 }
 
 enum Role {
@@ -204,4 +206,57 @@ model EmailEvent {
   data      Json?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
+}
+
+model ContactBook {
+  id         String    @id @default(cuid())
+  name       String
+  teamId     Int
+  properties Json
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  contacts   Contact[]
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  email         String   @unique
+  subscribed    Boolean  @default(true)
+  properties    Json
+  contactBookId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  contactBook ContactBook @relation(fields: [contactBookId], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id            String   @id @default(cuid())
+  name          String
+  teamId        Int
+  from          String
+  cc            String[]
+  bcc           String[]
+  replyTo       String[]
+  domainId      Int
+  subject       String
+  previewText   String?
+  html          String?
+  content       String?
+  contactBookId String?
+  total         Int
+  sent          Int
+  delivered     Int
+  opened        Int
+  clicked       Int
+  unsubscribed  Int
+  bounced       Int
+  complained    Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
