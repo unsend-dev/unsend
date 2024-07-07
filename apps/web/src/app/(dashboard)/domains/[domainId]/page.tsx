@@ -117,8 +117,8 @@ export default function DomainItemPage({
               <TableHeader className="">
                 <TableRow className="">
                   <TableHead className="rounded-tl-xl">Type</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Content</TableHead>
                   <TableHead className="">TTL</TableHead>
                   <TableHead className="">Priority</TableHead>
                   <TableHead className="rounded-tr-xl">Status</TableHead>
