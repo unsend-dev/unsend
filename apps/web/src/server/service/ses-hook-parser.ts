@@ -27,6 +27,13 @@ export async function parseSesHook(data: SesEvent) {
     return false;
   }
 
+  if (
+    email.latestStatus === mailStatus &&
+    mailStatus === EmailStatus.DELIVERY_DELAYED
+  ) {
+    return true;
+  }
+
   await db.email.update({
     where: {
       id: email.id,
