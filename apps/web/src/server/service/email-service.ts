@@ -19,7 +19,10 @@ export async function sendEmail(
     bcc,
   } = emailContent;
 
-  const fromDomain = from.split("@")[1];
+  let fromDomain = from.split("@")[1];
+  if (fromDomain?.endsWith(">")) {
+    fromDomain = fromDomain.slice(0, -1);
+  }
 
   const domain = await db.domain.findFirst({
     where: { teamId, name: fromDomain },
