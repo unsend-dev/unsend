@@ -72,7 +72,7 @@ We're currently working on opening unsend for public beta.
 
 Follow our detailed guide to run Unsend locally
 
-[http://localhost:3002/get-started/local](http://localhost:3002/get-started/local)
+[https://docs.unsend.dev/get-started/local](https://docs.unsend.dev/get-started/local)
 
 ## Docker
 
