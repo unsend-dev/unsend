@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.2.2",
+    "@prisma/extension-optimize": "^0.10.0",
     "@types/eslint": "^8.56.2",
     "@types/mime-types": "^2.1.4",
     "@types/node": "^20.11.20",
