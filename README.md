@@ -70,13 +70,9 @@ We're currently working on opening unsend for public beta.
 
 ## Local Development
 
-### Requirements
+Follow our detailed guide to run Unsend locally
 
-To run Unsend locally, you will need
-
-- Node.js (v18 or above)
-- Postgres SQL Database
-- Docker (optional)
+[http://localhost:3002/get-started/local](http://localhost:3002/get-started/local)
 
 ## Docker
 
