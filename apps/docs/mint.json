@@ -49,6 +49,7 @@
       "pages": [
         "introduction",
         "get-started/nodejs",
+        "get-started/local",
         "get-started/self-hosting"
       ]
     },
