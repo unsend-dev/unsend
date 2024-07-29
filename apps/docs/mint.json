@@ -54,6 +54,12 @@
       ]
     },
     {
+      "group": "Community SDKs",
+      "pages": [
+        "community-sdk/python"
+      ]
+    },
+    {
       "group": "API Reference",
       "pages": [
         "api-reference/introduction"
