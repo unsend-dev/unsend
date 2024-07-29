@@ -26,7 +26,7 @@ Change the URL accordingly if you are using self self-hosted version of Unsend. 
 from unsendcommunity import Unsend
 
 # Initialize the Unsend client
-api_key = 'us_cpm5q0d77f_bea486174ee656b6d5f12d415871185c'
+api_key = 'your-api-key'
 client = Unsend(key=api_key, url='https://app.unsend.dev')
 
 ```
@@ -61,12 +61,12 @@ The sample response of ``get_email`` is shown below:
 ```bash
 {
   "data": {
-    "id": "clz6iydbu000d8kmcjnf4aimv",
+    "id": "your-email-id",
     "teamId": 1,
     "to": [
-      "harsh121102@gmail.com"
+      "yourmail@example.com"
     ],
-    "from": "hello@mail.harshbhat.me",
+    "from": "hello@mail.example.com",
     "subject": "Unsend test email",
     "html": "<p>hello,</p><p>Unsend is the best open source sending platform</p><p>check out <a href='https://unsend.dev'>unsend.dev</a></p>",
     "text": "hello,\n\nUnsend is the best open source sending platform",
@@ -74,11 +74,11 @@ The sample response of ``get_email`` is shown below:
     "updatedAt": "2024-07-29T05:04:27.130Z",
     "emailEvents": [
       {
-        "emailId": "clz6iydbu000d8kmcjnf4aimv",
+        "emailId": "your-email-id",
         "status": "FAILED",
         "createdAt": "2024-07-29T05:04:27.124Z",
         "data": {
-          "error": "MessageRejected: Email address is not verified. The following identities failed the check in region US-EAST-1: harsh121102@gmail.com"
+          "error": "MessageRejected: Email address is not verified. The following identities failed the check in region US-EAST-1: example@gmail.com"
         }
       }
     ]
@@ -104,13 +104,13 @@ Sample response of the ``get_domain`` method
   "data": [
     {
       "id": 1,
-      "name": "mail.harshbhat.me",
+      "name": "mail.domain.com",
       "teamId": 1,
       "status": "SUCCESS",
       "region": "us-east-1",
       "clickTracking": false,
       "openTracking": false,
-      "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5dFn1FdRfU1243apb5aMtxVSihb0QJdoJopzr3JmKLQSsyrnwKdX7sfQ8v9Az0Xh0GTIyTUGVwHQdxM79gewSn7MyCVzteGBzoQMpuMzDaIoP5lprvxap1D1iosMJYztGdAM4694R+GuU+XSI/0OasDDlYYo7Ua8gYO8LLAHrxQrtvUOgCvbOQYfkz6zQUu9B0Zba+xNp04klHHcB32Ik2Tn6oWFTpvxbTpfFXOq94uB1TxqeBeEGAdMaQu/PpiB8eumKhxHwIA3vJeYfJ3YbLzI+NbnBAlAEMXOmrX59KvVaEKgtTHIQ//yT8gkDtasGvO6uengi8D53MkLO6/ScwIDAQAB",
+      "publicKey": "your-public-key",
       "dkimStatus": "SUCCESS",
       "spfDetails": "SUCCESS",
       "dmarcAdded": false,
