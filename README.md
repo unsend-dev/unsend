@@ -79,7 +79,9 @@ Follow our detailed guide to run Unsend locally
 We provide a Docker container for Unsend, which is published on both DockerHub and GitHub Container Registry.
 
 DockerHub: [https://hub.docker.com/r/unsend/unsend](https://hub.docker.com/r/unsend/unsend)
+
 GitHub Container Registry: [https://ghcr.io/unsend-dev/unsend](https://ghcr.io/unsend-dev/unsend)
+
 You can pull the Docker image from either of these registries and run it with your preferred container hosting provider.
 
 Please note that you will need to provide environment variables for connecting to the database, redis, aws and so forth.
