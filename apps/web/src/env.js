@@ -46,6 +46,10 @@ export const env = createEnv({
     ADMIN_EMAIL: z.string().optional(),
     DISCORD_WEBHOOK_URL: z.string().optional(),
     REDIS_URL: z.string(),
+    ENABLE_PRISMA_CLIENT: z
+      .string()
+      .default("false")
+      .transform((str) => str === "true"),  // Converts string "true" to boolean true
   },
 
   /**
@@ -84,6 +88,7 @@ export const env = createEnv({
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
     REDIS_URL: process.env.REDIS_URL,
+    ENABLE_PRISMA_CLIENT: process.env.ENABLE_PRISMA_CLIENT,  // Add this line
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
