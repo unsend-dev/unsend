@@ -78,3 +78,12 @@
     @apply h-full;
   }
 }
+
+/* .app,
+::before,
+::after {
+  @apply border-border;
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+} */

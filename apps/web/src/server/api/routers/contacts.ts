@@ -1,9 +1,27 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
-import { addApiKey, deleteApiKey } from "~/server/service/api-service";
+import {
+  contactBookProcedure,
+  createTRPCRouter,
+  teamProcedure,
+} from "~/server/api/trpc";
+import * as contactService from "~/server/service/contact-service";
 
 export const contactsRouter = createTRPCRouter({
+  getContactBooks: teamProcedure.query(async ({ ctx: { db, team } }) => {
+    return db.contactBook.findMany({
+      where: {
+        teamId: team.id,
+      },
+      include: {
+        _count: {
+          select: { contacts: true },
+        },
+      },
+    });
+  }),
+
   createContactBook: teamProcedure
     .input(
       z.object({
@@ -21,5 +39,130 @@ export const contactsRouter = createTRPCRouter({
       });
 
       return contactBook;
+    }),
+
+  getContactBookDetails: contactBookProcedure.query(
+    async ({ ctx: { contactBook, db } }) => {
+      const [totalContacts, unsubscribedContacts] = await Promise.all([
+        db.contact.count({
+          where: { contactBookId: contactBook.id },
+        }),
+        db.contact.count({
+          where: { contactBookId: contactBook.id, subscribed: false },
+        }),
+      ]);
+
+      return {
+        ...contactBook,
+        totalContacts,
+        unsubscribedContacts,
+      };
+    }
+  ),
+
+  updateContactBook: contactBookProcedure
+    .input(
+      z.object({
+        contactBookId: z.string(),
+        name: z.string().optional(),
+        properties: z.record(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ ctx: { db }, input }) => {
+      const { contactBookId, ...data } = input;
+      return db.contactBook.update({
+        where: { id: contactBookId },
+        data,
+      });
+    }),
+
+  deleteContactBook: contactBookProcedure
+    .input(z.object({ contactBookId: z.string() }))
+    .mutation(async ({ ctx: { db }, input }) => {
+      return db.contactBook.delete({ where: { id: input.contactBookId } });
+    }),
+
+  contacts: contactBookProcedure
+    .input(
+      z.object({
+        page: z.number().optional(),
+        subscribed: z.boolean().optional(),
+      })
+    )
+    .query(async ({ ctx: { db }, input }) => {
+      const page = input.page || 1;
+      const limit = 30;
+      const offset = (page - 1) * limit;
+
+      const whereConditions: Prisma.ContactFindManyArgs["where"] = {
+        contactBookId: input.contactBookId,
+        ...(input.subscribed !== undefined
+          ? { subscribed: input.subscribed }
+          : {}),
+      };
+
+      const countP = db.contact.count({ where: whereConditions });
+
+      const contactsP = db.contact.findMany({
+        where: whereConditions,
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          subscribed: true,
+          createdAt: true,
+          contactBookId: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: offset,
+        take: limit,
+      });
+
+      const [contacts, count] = await Promise.all([contactsP, countP]);
+
+      return { contacts, totalPage: Math.ceil(count / limit) };
+    }),
+
+  addContacts: contactBookProcedure
+    .input(
+      z.object({
+        contacts: z.array(
+          z.object({
+            email: z.string(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            properties: z.record(z.string()).optional(),
+            subscribed: z.boolean().optional(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx: { contactBook }, input }) => {
+      return contactService.bulkAddContacts(contactBook.id, input.contacts);
+    }),
+
+  updateContact: contactBookProcedure
+    .input(
+      z.object({
+        contactId: z.string(),
+        email: z.string().optional(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        properties: z.record(z.string()).optional(),
+        subscribed: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { contactId, ...contact } = input;
+      return contactService.updateContact(contactId, contact);
+    }),
+
+  deleteContact: contactBookProcedure
+    .input(z.object({ contactId: z.string() }))
+    .mutation(async ({ input }) => {
+      return contactService.deleteContact(input.contactId);
     }),
 });

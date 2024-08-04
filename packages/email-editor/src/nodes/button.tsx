@@ -75,7 +75,7 @@ export function ButtonComponent(props: NodeViewProps) {
         <PopoverContent
           align="start"
           side="top"
-          className="space-y-2 light"
+          className="space-y-2 light border-gray-200"
           sideOffset={10}
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
@@ -88,6 +88,7 @@ export function ButtonComponent(props: NodeViewProps) {
                 text: e.target.value,
               });
             }}
+            className="light"
           />
           <Input
             placeholder="Add link here"

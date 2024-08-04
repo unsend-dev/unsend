@@ -14,7 +14,7 @@ import { cn } from "@unsend/ui/lib/utils";
 
 import { extensions } from "./extensions";
 import LinkMenu from "./menus/LinkMenu";
-import { Editor as TipTapEditor } from "@tiptap/core";
+import { Content, Editor as TipTapEditor } from "@tiptap/core";
 
 const content = `<h2>Hello World!</h2>
 
@@ -63,9 +63,10 @@ unsend.emails.send({
 
 export type EditorProps = {
   onUpdate?: (content: TipTapEditor) => void;
+  initialContent?: Content;
 };
 
-export const Editor: React.FC<EditorProps> = ({ onUpdate }) => {
+export const Editor: React.FC<EditorProps> = ({ onUpdate, initialContent }) => {
   const menuContainerRef = useRef(null);
 
   const editor = useEditor({
@@ -89,7 +90,7 @@ export const Editor: React.FC<EditorProps> = ({ onUpdate }) => {
     onUpdate: ({ editor }) => {
       onUpdate?.(editor);
     },
-    content,
+    content: initialContent,
   });
 
   return (

@@ -26,50 +26,51 @@ import {
   FormLabel,
   FormMessage,
 } from "@unsend/ui/src/form";
-import { ContactBook } from "@prisma/client";
+import { Contact } from "@prisma/client";
 
-const contactBookSchema = z.object({
-  name: z.string(),
+const contactSchema = z.object({
+  email: z.string().email(),
 });
 
-export const DeleteContactBook: React.FC<{
-  contactBook: Partial<ContactBook> & { id: string };
-}> = ({ contactBook }) => {
+export const DeleteContact: React.FC<{
+  contact: Partial<Contact> & { id: string; contactBookId: string };
+}> = ({ contact }) => {
   const [open, setOpen] = useState(false);
-  const deleteContactBookMutation =
-    api.contacts.deleteContactBook.useMutation();
+  const deleteContactMutation = api.contacts.deleteContact.useMutation();
 
   const utils = api.useUtils();
 
-  const contactBookForm = useForm<z.infer<typeof contactBookSchema>>({
-    resolver: zodResolver(contactBookSchema),
+  const contactForm = useForm<z.infer<typeof contactSchema>>({
+    resolver: zodResolver(contactSchema),
   });
 
-  async function onContactBookDelete(
-    values: z.infer<typeof contactBookSchema>
-  ) {
-    if (values.name !== contactBook.name) {
-      contactBookForm.setError("name", {
-        message: "Name does not match",
+  async function onContactDelete(values: z.infer<typeof contactSchema>) {
+    if (values.email !== contact.email) {
+      contactForm.setError("email", {
+        message: "Email does not match",
       });
       return;
     }
 
-    deleteContactBookMutation.mutate(
+    deleteContactMutation.mutate(
       {
-        contactBookId: contactBook.id,
+        contactId: contact.id,
+        contactBookId: contact.contactBookId,
       },
       {
         onSuccess: () => {
-          utils.contacts.getContactBooks.invalidate();
+          utils.contacts.contacts.invalidate();
           setOpen(false);
-          toast.success(`Contact book deleted`);
+          toast.success(`Contact deleted`);
+        },
+        onError: (e) => {
+          toast.error(`Contact not deleted: ${e.message}`);
         },
       }
     );
   }
 
-  const name = contactBookForm.watch("name");
+  const email = contactForm.watch("email");
 
   return (
     <Dialog
@@ -83,31 +84,29 @@ export const DeleteContactBook: React.FC<{
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Contact Book</DialogTitle>
+          <DialogTitle>Delete Contact</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">
-              {contactBook.name}
-            </span>
-            ? You can't reverse this.
+            <span className="font-semibold text-primary">{contact.email}</span>?
+            You can't reverse this.
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">
-          <Form {...contactBookForm}>
+          <Form {...contactForm}>
             <form
-              onSubmit={contactBookForm.handleSubmit(onContactBookDelete)}
+              onSubmit={contactForm.handleSubmit(onContactDelete)}
               className="space-y-4"
             >
               <FormField
-                control={contactBookForm.control}
-                name="name"
+                control={contactForm.control}
+                name="email"
                 render={({ field, formState }) => (
                   <FormItem>
-                    <FormLabel>name</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    {formState.errors.name ? (
+                    {formState.errors.email ? (
                       <FormMessage />
                     ) : (
                       <FormDescription className=" text-transparent">
@@ -122,13 +121,10 @@ export const DeleteContactBook: React.FC<{
                   type="submit"
                   variant="destructive"
                   disabled={
-                    deleteContactBookMutation.isPending ||
-                    contactBook.name !== name
+                    deleteContactMutation.isPending || contact.email !== email
                   }
                 >
-                  {deleteContactBookMutation.isPending
-                    ? "Deleting..."
-                    : "Delete"}
+                  {deleteContactMutation.isPending ? "Deleting..." : "Delete"}
                 </Button>
               </div>
             </form>
@@ -139,4 +135,4 @@ export const DeleteContactBook: React.FC<{
   );
 };
 
-export default DeleteContactBook;
+export default DeleteContact;

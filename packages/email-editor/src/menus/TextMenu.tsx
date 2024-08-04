@@ -295,7 +295,7 @@ export function TextMenu(props: TextMenuProps) {
   return (
     <BubbleMenu
       {...bubbleMenuProps}
-      className="flex gap-1 rounded-md border  bg-white  shadow-md items-center"
+      className="flex gap-1 rounded-md border border-gray-200 bg-white shadow-md items-center"
     >
       <ContentTypePicker options={contentTypePickerOptions} />
       <EditLinkPopover
@@ -327,7 +327,7 @@ export function TextMenu(props: TextMenuProps) {
         <PopoverContent
           side="bottom"
           align="start"
-          className="bg-white text-slate-900 w-52 px-1"
+          className="bg-white text-slate-900 w-52 px-1 border border-gray-200"
           sideOffset={16}
         >
           {textColors.map((color) => (
@@ -416,7 +416,7 @@ function EditLinkPopover({ onSetLink }: EditLinkPopoverType) {
       <PopoverContent
         side="bottom"
         align="start"
-        className="bg-white text-slate-900 px-1 w-[17rem] py-1"
+        className="bg-white text-slate-900 px-1 w-[17rem] py-1 border border-gray-200"
         sideOffset={16}
       >
         <LinkEditorPanel onSetLink={onSetLink} />

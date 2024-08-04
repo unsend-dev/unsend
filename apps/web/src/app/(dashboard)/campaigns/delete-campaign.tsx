@@ -26,50 +26,47 @@ import {
   FormLabel,
   FormMessage,
 } from "@unsend/ui/src/form";
-import { ContactBook } from "@prisma/client";
+import { Campaign } from "@prisma/client";
 
-const contactBookSchema = z.object({
+const campaignSchema = z.object({
   name: z.string(),
 });
 
-export const DeleteContactBook: React.FC<{
-  contactBook: Partial<ContactBook> & { id: string };
-}> = ({ contactBook }) => {
+export const DeleteCampaign: React.FC<{
+  campaign: Partial<Campaign> & { id: string };
+}> = ({ campaign }) => {
   const [open, setOpen] = useState(false);
-  const deleteContactBookMutation =
-    api.contacts.deleteContactBook.useMutation();
+  const deleteCampaignMutation = api.campaign.deleteCampaign.useMutation();
 
   const utils = api.useUtils();
 
-  const contactBookForm = useForm<z.infer<typeof contactBookSchema>>({
-    resolver: zodResolver(contactBookSchema),
+  const campaignForm = useForm<z.infer<typeof campaignSchema>>({
+    resolver: zodResolver(campaignSchema),
   });
 
-  async function onContactBookDelete(
-    values: z.infer<typeof contactBookSchema>
-  ) {
-    if (values.name !== contactBook.name) {
-      contactBookForm.setError("name", {
+  async function onCampaignDelete(values: z.infer<typeof campaignSchema>) {
+    if (values.name !== campaign.name) {
+      campaignForm.setError("name", {
         message: "Name does not match",
       });
       return;
     }
 
-    deleteContactBookMutation.mutate(
+    deleteCampaignMutation.mutate(
       {
-        contactBookId: contactBook.id,
+        campaignId: campaign.id,
       },
       {
         onSuccess: () => {
-          utils.contacts.getContactBooks.invalidate();
+          utils.campaign.getCampaigns.invalidate();
           setOpen(false);
-          toast.success(`Contact book deleted`);
+          toast.success(`Campaign deleted`);
         },
       }
     );
   }
 
-  const name = contactBookForm.watch("name");
+  const name = campaignForm.watch("name");
 
   return (
     <Dialog
@@ -83,23 +80,21 @@ export const DeleteContactBook: React.FC<{
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Contact Book</DialogTitle>
+          <DialogTitle>Delete Campaign</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">
-              {contactBook.name}
-            </span>
-            ? You can't reverse this.
+            <span className="font-semibold text-primary">{campaign.name}</span>?
+            You can't reverse this.
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">
-          <Form {...contactBookForm}>
+          <Form {...campaignForm}>
             <form
-              onSubmit={contactBookForm.handleSubmit(onContactBookDelete)}
+              onSubmit={campaignForm.handleSubmit(onCampaignDelete)}
               className="space-y-4"
             >
               <FormField
-                control={contactBookForm.control}
+                control={campaignForm.control}
                 name="name"
                 render={({ field, formState }) => (
                   <FormItem>
@@ -122,13 +117,10 @@ export const DeleteContactBook: React.FC<{
                   type="submit"
                   variant="destructive"
                   disabled={
-                    deleteContactBookMutation.isPending ||
-                    contactBook.name !== name
+                    deleteCampaignMutation.isPending || campaign.name !== name
                   }
                 >
-                  {deleteContactBookMutation.isPending
-                    ? "Deleting..."
-                    : "Delete"}
+                  {deleteCampaignMutation.isPending ? "Deleting..." : "Delete"}
                 </Button>
               </div>
             </form>
@@ -139,4 +131,4 @@ export const DeleteContactBook: React.FC<{
   );
 };
 
-export default DeleteContactBook;
+export default DeleteCampaign;

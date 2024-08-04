@@ -12,9 +12,11 @@ import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
 import Spinner from "@unsend/ui/src/spinner";
 import DeleteContactBook from "./delete-contact-book";
+import Link from "next/link";
+import EditContactBook from "./edit-contact-book";
 
 export default function ContactBooksList() {
-  const apiKeysQuery = api.contacts.getContactBooks.useQuery();
+  const contactBooksQuery = api.contacts.getContactBooks.useQuery();
 
   return (
     <div className="mt-10">
@@ -29,7 +31,7 @@ export default function ContactBooksList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {apiKeysQuery.isLoading ? (
+            {contactBooksQuery.isLoading ? (
               <TableRow className="h-32">
                 <TableCell colSpan={6} className="text-center py-4">
                   <Spinner
@@ -38,22 +40,33 @@ export default function ContactBooksList() {
                   />
                 </TableCell>
               </TableRow>
-            ) : apiKeysQuery.data?.length === 0 ? (
+            ) : contactBooksQuery.data?.length === 0 ? (
               <TableRow className="h-32">
                 <TableCell colSpan={6} className="text-center py-4">
                   <p>No contact books added</p>
                 </TableCell>
               </TableRow>
             ) : (
-              apiKeysQuery.data?.map((apiKey) => (
-                <TableRow key={apiKey.id}>
-                  <TableCell>{apiKey.name}</TableCell>
-                  <TableCell>{apiKey.audiences}</TableCell>
+              contactBooksQuery.data?.map((contactBook) => (
+                <TableRow>
+                  <TableHead scope="row">
+                    <Link
+                      href={`/contacts/${contactBook.id}`}
+                      className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
+                    >
+                      {contactBook.name}
+                    </Link>
+                  </TableHead>
+                  {/* <TableCell>{contactBook.name}</TableCell> */}
+                  <TableCell>{contactBook._count.contacts}</TableCell>
                   <TableCell>
-                    {formatDistanceToNow(apiKey.createdAt, { addSuffix: true })}
+                    {formatDistanceToNow(contactBook.createdAt, {
+                      addSuffix: true,
+                    })}
                   </TableCell>
                   <TableCell>
-                    <DeleteContactBook apiKey={apiKey} />
+                    <EditContactBook contactBook={contactBook} />
+                    <DeleteContactBook contactBook={contactBook} />
                   </TableCell>
                 </TableRow>
               ))

@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["tracing"]
 }
 
@@ -217,13 +217,15 @@ model ContactBook {
   updatedAt  DateTime  @updatedAt
   team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
   contacts   Contact[]
+
+  @@index([teamId])
 }
 
 model Contact {
   id            String   @id @default(cuid())
   firstName     String?
   lastName      String?
-  email         String   @unique
+  email         String
   subscribed    Boolean  @default(true)
   properties    Json
   contactBookId String
@@ -231,10 +233,18 @@ model Contact {
   updatedAt     DateTime @updatedAt
 
   contactBook ContactBook @relation(fields: [contactBookId], references: [id], onDelete: Cascade)
+
+  @@unique([contactBookId, email])
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
 }
 
 model Campaign {
-  id            String   @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String
   teamId        Int
   from          String
@@ -247,16 +257,17 @@ model Campaign {
   html          String?
   content       String?
   contactBookId String?
-  total         Int
-  sent          Int
-  delivered     Int
-  opened        Int
-  clicked       Int
-  unsubscribed  Int
-  bounced       Int
-  complained    Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  total         Int            @default(0)
+  sent          Int            @default(0)
+  delivered     Int            @default(0)
+  opened        Int            @default(0)
+  clicked       Int            @default(0)
+  unsubscribed  Int            @default(0)
+  bounced       Int            @default(0)
+  complained    Int            @default(0)
+  status        CampaignStatus @default(DRAFT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }

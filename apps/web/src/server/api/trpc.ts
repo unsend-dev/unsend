@@ -142,7 +142,41 @@ export const contactBookProcedure = teamProcedure
       });
     }
 
+    if (contactBook.teamId !== ctx.team.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this contact book",
+      });
+    }
+
     return next({ ctx: { ...ctx, contactBook } });
+  });
+
+export const campaignProcedure = teamProcedure
+  .input(
+    z.object({
+      campaignId: z.string(),
+    })
+  )
+  .use(async ({ ctx, next, input }) => {
+    const campaign = await db.campaign.findUnique({
+      where: { id: input.campaignId },
+    });
+    if (!campaign) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Campaign not found",
+      });
+    }
+
+    if (campaign.teamId !== ctx.team.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this campaign",
+      });
+    }
+
+    return next({ ctx: { ...ctx, campaign } });
   });
 
 /**
