@@ -1,6 +1,5 @@
 import { SMTPServer, SMTPServerOptions } from 'smtp-server';
 import { Readable } from 'stream';
-import axios from 'axios';
 import dotenv from 'dotenv';
 import { simpleParser } from 'mailparser';
 
@@ -57,25 +56,27 @@ async function sendEmailToUnsend(emailData: any) {
     const url = new URL(apiEndpoint, UNSEND_BASE_URL); // Combine base URL with endpoint
     console.log('Sending email to Unsend API at:', url.href); // Debug statement
 
-    const response = await axios.post(url.href, emailData, {
+    const response = await fetch(url.href, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
     });
-    console.log('Unsend API response:', response.data);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Unsend API error response:', errorData);
+      throw new Error(`Failed to send email: ${errorData.message || 'Unknown error from server'}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Unsend API response:', responseData);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-        throw new Error(`Failed to send email: ${error.response.data.message || 'Unknown error from server'}`);
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-        throw new Error('Failed to send email: No response received from server');
-      } else {
-        console.error('Error message:', error.message);
-        throw new Error(`Failed to send email: ${error.message}`);
-      }
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      throw new Error(`Failed to send email: ${error.message}`);
     } else {
       console.error('Unexpected error:', error);
       throw new Error('Failed to send email: Unexpected error occurred');
