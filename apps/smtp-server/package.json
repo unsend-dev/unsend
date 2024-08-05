@@ -1,0 +1,28 @@
+{
+  "name": "smtp-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/mailparser": "^3.4.4",
+    "@types/smtp-server": "^3.5.10",
+    "dotenv": "^16.4.5",
+    "mailparser": "^3.7.1",
+    "nodemailer": "^6.9.14",
+    "smtp-server": "^3.13.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "@types/nodemailer": "^6.4.15",
+    "typescript": "^5.5.4"
+  }
+}
