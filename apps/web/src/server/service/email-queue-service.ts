@@ -5,38 +5,97 @@ import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { getRedis } from "../redis";
+import { createUnsubUrl } from "./campaign-service";
+
+function createQueueAndWorker(region: string, quota: number, suffix: string) {
+  const connection = getRedis();
+
+  const queueName = `${region}-${suffix}`;
+
+  const queue = new Queue(queueName, { connection });
+
+  const worker = new Worker(queueName, executeEmail, {
+    concurrency: quota,
+    connection,
+  });
+
+  return { queue, worker };
+}
 
 export class EmailQueueService {
   private static initialized = false;
-  private static regionQueue = new Map<string, Queue>();
-  private static regionWorker = new Map<string, Worker>();
+  public static transactionalQueue = new Map<string, Queue>();
+  private static transactionalWorker = new Map<string, Worker>();
+  public static marketingQueue = new Map<string, Queue>();
+  private static marketingWorker = new Map<string, Worker>();
 
-  public static initializeQueue(region: string, quota: number) {
-    const connection = getRedis();
+  public static initializeQueue(
+    region: string,
+    quota: number,
+    transactionalQuotaPercentage: number
+  ) {
     console.log(`[EmailQueueService]: Initializing queue for region ${region}`);
 
-    const queueName = `${region}-transaction`;
+    const transactionalQuota = Math.floor(
+      (quota * transactionalQuotaPercentage) / 100
+    );
+    const marketingQuota = quota - transactionalQuota;
 
-    const queue = new Queue(queueName, { connection });
+    console.log(
+      "is transactional queue",
+      this.transactionalQueue.has(region),
+      "is marketing queue",
+      this.marketingQueue.has(region)
+    );
 
-    const worker = new Worker(queueName, executeEmail, {
-      limiter: {
-        max: quota,
-        duration: 1000,
-      },
-      concurrency: quota,
-      connection,
-    });
+    if (this.transactionalQueue.has(region)) {
+      console.log(
+        `[EmailQueueService]: Updating transactional quota for region ${region} to ${transactionalQuota}`
+      );
+      const transactionalWorker = this.transactionalWorker.get(region);
+      if (transactionalWorker) {
+        transactionalWorker.concurrency = transactionalQuota;
+      }
+    } else {
+      console.log(
+        `[EmailQueueService]: Creating transactional queue for region ${region} with quota ${transactionalQuota}`
+      );
+      const { queue: transactionalQueue, worker: transactionalWorker } =
+        createQueueAndWorker(region, transactionalQuota ?? 1, "transaction");
+      this.transactionalQueue.set(region, transactionalQueue);
+      this.transactionalWorker.set(region, transactionalWorker);
+    }
 
-    this.regionQueue.set(region, queue);
-    this.regionWorker.set(region, worker);
+    if (this.marketingQueue.has(region)) {
+      console.log(
+        `[EmailQueueService]: Updating marketing quota for region ${region} to ${marketingQuota}`
+      );
+      const marketingWorker = this.marketingWorker.get(region);
+      if (marketingWorker) {
+        marketingWorker.concurrency = marketingQuota;
+      }
+    } else {
+      console.log(
+        `[EmailQueueService]: Creating marketing queue for region ${region} with quota ${marketingQuota}`
+      );
+      const { queue: marketingQueue, worker: marketingWorker } =
+        createQueueAndWorker(region, marketingQuota ?? 1, "marketing");
+      this.marketingQueue.set(region, marketingQueue);
+      this.marketingWorker.set(region, marketingWorker);
+    }
   }
 
-  public static async queueEmail(emailId: string, region: string) {
+  public static async queueEmail(
+    emailId: string,
+    region: string,
+    transactional: boolean
+  ) {
     if (!this.initialized) {
       await this.init();
     }
-    const queue = this.regionQueue.get(region);
+    const queue = transactional
+      ? this.transactionalQueue.get(region)
+      : this.marketingQueue.get(region);
     if (!queue) {
       throw new Error(`Queue for region ${region} not found`);
     }
@@ -46,7 +105,11 @@ export class EmailQueueService {
   public static async init() {
     const sesSettings = await db.sesSetting.findMany();
     for (const sesSetting of sesSettings) {
-      this.initializeQueue(sesSetting.region, sesSetting.sesEmailRateLimit);
+      this.initializeQueue(
+        sesSetting.region,
+        sesSetting.sesEmailRateLimit,
+        sesSetting.transactionalQuota
+      );
     }
     this.initialized = true;
   }
@@ -88,13 +151,18 @@ async function executeEmail(job: Job<{ emailId: string; timestamp: number }>) {
   }
 
   console.log(`[EmailQueueService]: Sending email ${email.id}`);
+  const unsubUrl =
+    email.contactId && email.campaignId
+      ? await createUnsubUrl(email.contactId, email.campaignId)
+      : undefined;
+
   try {
     const messageId = attachments.length
       ? await sendEmailWithAttachments({
           to: email.to,
           from: email.from,
           subject: email.subject,
-          text: email.text ?? undefined,
+          text: email.text ?? "",
           html: email.html ?? undefined,
           region: domain?.region ?? env.AWS_DEFAULT_REGION,
           configurationSetName,
@@ -105,11 +173,12 @@ async function executeEmail(job: Job<{ emailId: string; timestamp: number }>) {
           from: email.from,
           subject: email.subject,
           replyTo: email.replyTo ?? undefined,
-          text: email.text ?? undefined,
+          text: email.text ?? "",
           html: email.html ?? undefined,
           region: domain?.region ?? env.AWS_DEFAULT_REGION,
           configurationSetName,
           attachments,
+          unsubUrl,
         });
 
     // Delete attachments after sending the email

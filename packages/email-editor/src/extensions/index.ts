@@ -13,6 +13,8 @@ import Placeholder from "@tiptap/extension-placeholder";
 import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import { ButtonExtension } from "./ButtonExtension";
 import { SlashCommand, getSlashCommandSuggestions } from "./SlashCommand";
+import { VariableExtension } from "./VariableExtension";
+import { getVariableSuggestions } from "../nodes/variable";
 
 export function extensions() {
   const extensions = [
@@ -41,6 +43,7 @@ export function extensions() {
       HTMLAttributes: {
         class: "underline cursor-pointer",
       },
+      openOnClick: false,
     }),
     TextAlign.configure({
       types: [Paragraph.name, Heading.name],
@@ -66,6 +69,13 @@ export function extensions() {
     }),
     ButtonExtension,
     GlobalDragHandle,
+    VariableExtension.configure({
+      suggestion: getVariableSuggestions([
+        { name: "firstname" },
+        { name: "lastname" },
+        { name: "email" },
+      ]),
+    }),
   ];
 
   return extensions;

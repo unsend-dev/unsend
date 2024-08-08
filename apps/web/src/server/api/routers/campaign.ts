@@ -1,10 +1,16 @@
 import { Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   teamProcedure,
   createTRPCRouter,
   campaignProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
+import {
+  sendCampaign,
+  subscribeContact,
+} from "~/server/service/campaign-service";
 import { validateDomainFromEmail } from "~/server/service/domain-service";
 
 export const campaignRouter = createTRPCRouter({
@@ -70,6 +76,38 @@ export const campaignRouter = createTRPCRouter({
       return campaign;
     }),
 
+  updateCampaign: campaignProcedure
+    .input(
+      z.object({
+        name: z.string().optional(),
+        from: z.string().optional(),
+        subject: z.string().optional(),
+        previewText: z.string().optional(),
+        content: z.string().optional(),
+        contactBookId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx: { db }, input }) => {
+      const { campaignId, ...data } = input;
+      if (data.contactBookId) {
+        const contactBook = await db.contactBook.findUnique({
+          where: { id: data.contactBookId },
+        });
+
+        if (!contactBook) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Contact book not found",
+          });
+        }
+      }
+      const campaign = await db.campaign.update({
+        where: { id: campaignId },
+        data,
+      });
+      return campaign;
+    }),
+
   deleteCampaign: campaignProcedure.mutation(
     async ({ ctx: { db, team }, input }) => {
       const campaign = await db.campaign.delete({
@@ -85,4 +123,21 @@ export const campaignRouter = createTRPCRouter({
     });
     return campaign;
   }),
+
+  sendCampaign: campaignProcedure.mutation(
+    async ({ ctx: { db, team }, input }) => {
+      sendCampaign(input.campaignId);
+    }
+  ),
+
+  reSubscribeContact: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        hash: z.string(),
+      })
+    )
+    .mutation(async ({ ctx: { db }, input }) => {
+      await subscribeContact(input.id, input.hash);
+    }),
 });

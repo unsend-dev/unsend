@@ -26,6 +26,7 @@ model SesSetting {
   idPrefix             String   @unique
   topic                String
   topicArn             String?
+  transactionalQuota   Int      @default(50)
   callbackUrl          String
   callbackSuccess      Boolean  @default(false)
   configGeneral        String?
@@ -195,6 +196,8 @@ model Email {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   attachments  String?
+  campaignId   String?
+  contactId    String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
 }

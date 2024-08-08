@@ -79,7 +79,7 @@ export const ButtonExtension = Node.create({
           return commands.insertContent({
             type: this.name,
             attrs: {
-              mailyComponent: this.name,
+              unsendComponent: this.name,
             },
           });
         },

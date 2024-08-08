@@ -81,22 +81,6 @@ export interface RenderConfig {
    * }
    * ```
    *
-   * @example
-   * ```js
-   * const maily = new Maily(content, {
-   *   theme: {
-   *     colors: {
-   *       heading: 'rgb(17, 24, 39)',
-   *     },
-   *     fontSize: {
-   *       footer: {
-   *         size: '14px',
-   *         lineHeight: '24px',
-   *       },
-   *     },
-   *   },
-   * });
-   * ```
    */
   theme?: ThemeOptions;
 }
@@ -179,9 +163,6 @@ export type VariableFormatter = (options: {
   fallback?: string;
 }) => string;
 
-export type VariableValues = Map<string, string>;
-export type LinkValues = Map<string, string>;
-
 const allowedLogoSizes = ["sm", "md", "lg"] as const;
 type AllowedLogoSizes = (typeof allowedLogoSizes)[number];
 
@@ -191,17 +172,29 @@ const logoSizes: Record<AllowedLogoSizes, string> = {
   lg: "64px",
 };
 
+type EmailRendererOption = {
+  shouldReplaceVariableValues?: boolean;
+  variableValues?: Record<string, string>;
+  linkValues?: Record<string, string>;
+};
+
 export class EmailRenderer {
   private config: RenderConfig = {
     theme: DEFAULT_THEME,
   };
   private shouldReplaceVariableValues = false;
-  private variableValues: VariableValues = new Map<string, string>();
-  private linkValues: LinkValues = new Map<string, string>();
+  private variableValues: Record<string, string> = {};
+  private linkValues: Record<string, string> = {};
 
   constructor(
-    private readonly email: JSONContent = { type: "doc", content: [] }
-  ) {}
+    private readonly email: JSONContent = { type: "doc", content: [] },
+    options: EmailRendererOption = {}
+  ) {
+    this.shouldReplaceVariableValues =
+      options.shouldReplaceVariableValues || false;
+    this.variableValues = options.variableValues || {};
+    this.linkValues = options.linkValues || {};
+  }
 
   private variableFormatter: VariableFormatter = ({ variable, fallback }) => {
     return fallback
@@ -402,7 +395,7 @@ export class EmailRenderer {
       typeof this.linkValues === "object" ||
       typeof this.variableValues === "object"
     ) {
-      href = this.linkValues.get(href) || this.variableValues.get(href) || href;
+      href = this.linkValues[href] || this.variableValues[href] || href;
     }
 
     return (
@@ -460,11 +453,13 @@ export class EmailRenderer {
       fallback,
     });
 
+    console.log("Formatting variables: ", formattedVariable, variable);
+
     // If `shouldReplaceVariableValues` is true, replace the variable values
     // Otherwise, just return the formatted variable
     if (this.shouldReplaceVariableValues) {
       formattedVariable =
-        this.variableValues.get(variable) || fallback || formattedVariable;
+        this.variableValues[variable] || fallback || formattedVariable;
     }
 
     return <>{formattedVariable}</>;
@@ -557,8 +552,7 @@ export class EmailRenderer {
     const { next } = options || {};
     const isNextSpacer = next?.type === "spacer";
 
-    const href =
-      this.linkValues.get(url) || this.variableValues.get(url) || url;
+    const href = this.linkValues[url] || this.variableValues[url] || url;
 
     return (
       <Container

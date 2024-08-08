@@ -81,7 +81,13 @@ export default function CampaignList() {
               campaignsQuery.data?.campaigns.map((campaign) => (
                 <TableRow key={campaign.id} className="">
                   <TableCell className="font-medium">
-                    <Link href={`/campaigns/${campaign.id}/edit`}>
+                    <Link
+                      href={
+                        campaign.status === CampaignStatus.DRAFT
+                          ? `/campaigns/${campaign.id}/edit`
+                          : `/campaigns/${campaign.id}`
+                      }
+                    >
                       {campaign.name}
                     </Link>
                   </TableCell>
@@ -95,7 +101,7 @@ export default function CampaignList() {
                             : "bg-yellow-500/10 text-yellow-600 border-yellow-600/10"
                       }`}
                     >
-                      {campaign.status}
+                      {campaign.status.toLowerCase()}
                     </div>
                   </TableCell>
                   <TableCell className="">
