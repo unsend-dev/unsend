@@ -34,6 +34,8 @@ import {
   FormMessage,
 } from "@unsend/ui/src/form";
 import { toast } from "@unsend/ui/src/toaster";
+import { useDebouncedCallback } from "use-debounce";
+import { formatDistanceToNow } from "date-fns";
 
 const sendSchema = z.object({
   confirmation: z.string(),
@@ -80,38 +82,41 @@ export default function EditCampaignPage({
 
 function CampaignEditor({ campaign }: { campaign: Campaign }) {
   const contactBooksQuery = api.contacts.getContactBooks.useQuery();
+  const utils = api.useUtils();
 
   const [json, setJson] = useState<Record<string, any> | undefined>(
     campaign.content ? JSON.parse(campaign.content) : undefined
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const [name, setName] = useState(campaign.name);
   const [subject, setSubject] = useState(campaign.subject);
   const [from, setFrom] = useState(campaign.from);
-  const [isUpdated, setIsUpdated] = useState(false);
   const [contactBookId, setContactBookId] = useState(campaign.contactBookId);
   const [openSendDialog, setOpenSendDialog] = useState(false);
 
-  const updateCampaign = api.campaign.updateCampaign.useMutation();
+  const updateCampaignMutation = api.campaign.updateCampaign.useMutation({
+    onSuccess: () => {
+      utils.campaign.getCampaign.invalidate();
+      setIsSaving(false);
+    },
+  });
   const sendCampaignMutation = api.campaign.sendCampaign.useMutation();
 
   const sendForm = useForm<z.infer<typeof sendSchema>>({
     resolver: zodResolver(sendSchema),
   });
 
-  useInterval(() => {
-    if (isUpdated) {
-      updateCampaign.mutate(
-        {
-          campaignId: campaign.id,
-          content: JSON.stringify(json),
-        },
-        {
-          onSuccess: () => {
-            setIsUpdated(false);
-          },
-        }
-      );
-    }
-  }, 10000);
+  function updateEditorContent() {
+    updateCampaignMutation.mutate({
+      campaignId: campaign.id,
+      content: JSON.stringify(json),
+    });
+  }
+
+  const deboucedUpdateCampaign = useDebouncedCallback(
+    updateEditorContent,
+    1000
+  );
 
   async function onSendCampaign(values: z.infer<typeof sendSchema>) {
     if (
@@ -145,63 +150,116 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
     <div className="p-4">
       <div className="w-[600px] mx-auto">
         <div className="mb-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Edit Campaign</h1>
-          <Dialog open={openSendDialog} onOpenChange={setOpenSendDialog}>
-            <DialogTrigger asChild>
-              <Button variant="default">Send Campaign</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Send Campaign</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to send this campaign? This action
-                  cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-2">
-                <Form {...sendForm}>
-                  <form
-                    onSubmit={sendForm.handleSubmit(onSendCampaign)}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={sendForm.control}
-                      name="confirmation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type 'Send' to confirm</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex justify-end">
-                      <Button
-                        type="submit"
-                        disabled={
-                          sendCampaignMutation.isPending ||
-                          confirmation?.toLocaleLowerCase() !==
-                            "Send".toLocaleLowerCase()
-                        }
-                      >
-                        {sendCampaignMutation.isPending ? "Sending..." : "Send"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className=" border-0 focus:ring-0 focus:outline-none px-0.5 w-[300px]"
+            onBlur={() => {
+              if (name === campaign.name || !name) {
+                return;
+              }
+              updateCampaignMutation.mutate(
+                {
+                  campaignId: campaign.id,
+                  name,
+                },
+                {
+                  onError: (e) => {
+                    toast.error(`${e.message}. Reverting changes.`);
+                    setName(campaign.name);
+                  },
+                }
+              );
+            }}
+          />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              {isSaving ? (
+                <div className="h-2 w-2 bg-yellow-500 rounded-full" />
+              ) : (
+                <div className="h-2 w-2 bg-emerald-500 rounded-full" />
+              )}
+              {formatDistanceToNow(campaign.updatedAt) === "less than a minute"
+                ? "just now"
+                : `${formatDistanceToNow(campaign.updatedAt)} ago`}
+            </div>
+            <Dialog open={openSendDialog} onOpenChange={setOpenSendDialog}>
+              <DialogTrigger asChild>
+                <Button variant="default">Send Campaign</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Send Campaign</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to send this campaign? This action
+                    cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-2">
+                  <Form {...sendForm}>
+                    <form
+                      onSubmit={sendForm.handleSubmit(onSendCampaign)}
+                      className="space-y-4"
+                    >
+                      <FormField
+                        control={sendForm.control}
+                        name="confirmation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Type 'Send' to confirm</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          type="submit"
+                          disabled={
+                            sendCampaignMutation.isPending ||
+                            confirmation?.toLocaleLowerCase() !==
+                              "Send".toLocaleLowerCase()
+                          }
+                        >
+                          {sendCampaignMutation.isPending
+                            ? "Sending..."
+                            : "Send"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-        <div className="mb-4">
+        <div className="mb-4 mt-8">
           <label className="block text-sm font-medium ">Subject</label>
           <Input
             type="text"
             value={subject}
             onChange={(e) => {
               setSubject(e.target.value);
+            }}
+            onBlur={() => {
+              if (subject === campaign.subject || !subject) {
+                return;
+              }
+              updateCampaignMutation.mutate(
+                {
+                  campaignId: campaign.id,
+                  subject,
+                },
+                {
+                  onError: (e) => {
+                    toast.error(`${e.message}. Reverting changes.`);
+                    setSubject(campaign.subject);
+                  },
+                }
+              );
             }}
             className="mt-1 block w-full rounded-md  shadow-sm"
           />
@@ -216,6 +274,23 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
             }}
             className="mt-1 block w-full rounded-md  shadow-sm"
             placeholder="Friendly name<hello@example.com>"
+            onBlur={() => {
+              if (from === campaign.from) {
+                return;
+              }
+              updateCampaignMutation.mutate(
+                {
+                  campaignId: campaign.id,
+                  from,
+                },
+                {
+                  onError: (e) => {
+                    toast.error(`${e.message}. Reverting changes.`);
+                    setFrom(campaign.from);
+                  },
+                }
+              );
+            }}
           />
         </div>
         <div className="mb-12">
@@ -227,7 +302,7 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
               value={contactBookId ?? ""}
               onValueChange={(val) => {
                 // Update the campaign's contactBookId
-                updateCampaign.mutate(
+                updateCampaignMutation.mutate(
                   {
                     campaignId: campaign.id,
                     contactBookId: val,
@@ -260,8 +335,9 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
         <Editor
           initialContent={json}
           onUpdate={(content) => {
-            setIsUpdated(true);
             setJson(content.getJSON());
+            setIsSaving(true);
+            deboucedUpdateCampaign();
           }}
           variables={["email", "firstName", "lastName"]}
         />

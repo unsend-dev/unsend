@@ -87,7 +87,7 @@ export const campaignRouter = createTRPCRouter({
         contactBookId: z.string().optional(),
       })
     )
-    .mutation(async ({ ctx: { db }, input }) => {
+    .mutation(async ({ ctx: { db, team, campaign: campaignOld }, input }) => {
       const { campaignId, ...data } = input;
       if (data.contactBookId) {
         const contactBook = await db.contactBook.findUnique({
@@ -101,9 +101,17 @@ export const campaignRouter = createTRPCRouter({
           });
         }
       }
+      let domainId = campaignOld.domainId;
+      if (data.from) {
+        const domain = await validateDomainFromEmail(data.from, team.id);
+        domainId = domain.id;
+      }
       const campaign = await db.campaign.update({
         where: { id: campaignId },
-        data,
+        data: {
+          ...data,
+          domainId,
+        },
       });
       return campaign;
     }),
@@ -121,12 +129,26 @@ export const campaignRouter = createTRPCRouter({
     const campaign = await db.campaign.findUnique({
       where: { id: input.campaignId, teamId: team.id },
     });
-    return campaign;
+
+    if (!campaign) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Campaign not found",
+      });
+    }
+
+    if (campaign?.contactBookId) {
+      const contactBook = await db.contactBook.findUnique({
+        where: { id: campaign.contactBookId },
+      });
+      return { ...campaign, contactBook };
+    }
+    return { ...campaign, contactBook: null };
   }),
 
   sendCampaign: campaignProcedure.mutation(
     async ({ ctx: { db, team }, input }) => {
-      sendCampaign(input.campaignId);
+      await sendCampaign(input.campaignId);
     }
   ),
 
@@ -140,4 +162,22 @@ export const campaignRouter = createTRPCRouter({
     .mutation(async ({ ctx: { db }, input }) => {
       await subscribeContact(input.id, input.hash);
     }),
+
+  duplicateCampaign: campaignProcedure.mutation(
+    async ({ ctx: { db, team, campaign }, input }) => {
+      const newCampaign = await db.campaign.create({
+        data: {
+          name: `${campaign.name} (Copy)`,
+          from: campaign.from,
+          subject: campaign.subject,
+          content: campaign.content,
+          teamId: team.id,
+          domainId: campaign.domainId,
+          contactBookId: campaign.contactBookId,
+        },
+      });
+
+      return newCampaign;
+    }
+  ),
 });

@@ -1,10 +1,22 @@
 "use client";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@unsend/ui/src/breadcrumb";
+import Link from "next/link";
+
 import Spinner from "@unsend/ui/src/spinner";
 import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
 import { EmailStatusIcon } from "../../emails/email-status-badge";
 import { EmailStatus } from "@prisma/client";
+import { Separator } from "@unsend/ui/src/separator";
+import { ExternalLinkIcon } from "lucide-react";
 
 export default function CampaignDetailsPage({
   params,
@@ -52,9 +64,25 @@ export default function CampaignDetailsPage({
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">{campaign?.name}</h1>
-      <div className=" rounded-lg shadow mt-8">
-        <h2 className="text-xl font-semibold mb-4">Campaign Statistics</h2>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/campaigns" className="text-lg">
+                Campaigns
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="text-lg" />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="text-lg ">
+              {campaign.name}
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className=" rounded-lg shadow mt-10">
+        <h2 className="text-xl font-semibold mb-4"> Statistics</h2>
         <div className="flex  gap-4">
           {statusCards.map((card) => (
             <div
@@ -86,8 +114,35 @@ export default function CampaignDetailsPage({
         <div className=" rounded-lg shadow mt-16">
           <h2 className="text-xl font-semibold mb-4">Email</h2>
 
-          <div className=" dark:bg-slate-50 overflow-auto text-black rounded py-8">
-            <div dangerouslySetInnerHTML={{ __html: campaign.html ?? "" }} />
+          <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full">
+            <div className="flex gap-2 mt-2">
+              <span className="w-[65px] text-muted-foreground ">From</span>
+              <span>{campaign.from}</span>
+            </div>
+            <Separator />
+            <div className="flex gap-2">
+              <span className="w-[65px] text-muted-foreground ">To</span>
+              {campaign.contactBookId ? (
+                <Link
+                  href={`/contacts/${campaign.contactBookId}`}
+                  className="text-primary px-4 p-1 bg-muted text-sm rounded-md flex gap-1 items-center"
+                  target="_blank"
+                >
+                  {campaign.contactBook?.name}
+                  <ExternalLinkIcon className="w-4 h-4 " />
+                </Link>
+              ) : (
+                <div>No one</div>
+              )}
+            </div>
+            <Separator />
+            <div className="flex gap-2">
+              <span className="w-[65px] text-muted-foreground ">Subject</span>
+              <span>{campaign.subject}</span>
+            </div>
+            <div className=" dark:bg-slate-50 overflow-auto text-black rounded py-8">
+              <div dangerouslySetInnerHTML={{ __html: campaign.html ?? "" }} />
+            </div>
           </div>
         </div>
       )}

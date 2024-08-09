@@ -23,6 +23,7 @@ import { CampaignStatus } from "@prisma/client";
 import DeleteCampaign from "./delete-campaign";
 import { Edit2 } from "lucide-react";
 import Link from "next/link";
+import DuplicateCampaign from "./duplicate-campaign";
 
 export default function CampaignList() {
   const [page, setPage] = useUrlState("page", "1");
@@ -82,6 +83,7 @@ export default function CampaignList() {
                 <TableRow key={campaign.id} className="">
                   <TableCell className="font-medium">
                     <Link
+                      className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
                       href={
                         campaign.status === CampaignStatus.DRAFT
                           ? `/campaigns/${campaign.id}/edit`
@@ -111,11 +113,7 @@ export default function CampaignList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      {/* <Link href={`/campaigns/${campaign.id}/edit`}>
-                        <Button variant="ghost" size="sm">
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                      </Link> */}
+                      <DuplicateCampaign campaign={campaign} />
                       <DeleteCampaign campaign={campaign} />
                     </div>
                   </TableCell>

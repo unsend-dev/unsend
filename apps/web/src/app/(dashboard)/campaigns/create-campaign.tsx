@@ -25,6 +25,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@unsend/ui/src/toaster";
+import { useRouter } from "next/navigation";
+import Spinner from "@unsend/ui/src/spinner";
 
 const campaignSchema = z.object({
   name: z.string({ required_error: "Name is required" }).min(1, {
@@ -39,6 +41,7 @@ const campaignSchema = z.object({
 });
 
 export default function CreateCampaign() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const createCampaignMutation = api.campaign.createCampaign.useMutation();
@@ -62,10 +65,11 @@ export default function CreateCampaign() {
         subject: values.subject,
       },
       {
-        onSuccess: async () => {
+        onSuccess: async (data) => {
           utils.campaign.getCampaigns.invalidate();
-          setOpen(false);
+          router.push(`/campaigns/${data.id}/edit`);
           toast.success("Campaign created successfully");
+          setOpen(false);
         },
         onError: async (error) => {
           toast.error(error.message);
@@ -146,7 +150,11 @@ export default function CreateCampaign() {
                   type="submit"
                   disabled={createCampaignMutation.isPending}
                 >
-                  {createCampaignMutation.isPending ? "Creating..." : "Create"}
+                  {createCampaignMutation.isPending ? (
+                    <Spinner className="w-4 h-4" />
+                  ) : (
+                    "Create"
+                  )}
                 </Button>
               </div>
             </form>

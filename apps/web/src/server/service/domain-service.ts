@@ -29,7 +29,7 @@ export async function validateDomainFromEmail(email: string, teamId: number) {
     throw new UnsendApiError({
       code: "BAD_REQUEST",
       message:
-        "Domain of from email is wrong. Use the email verified by unsend",
+        "Domain of from email is wrong. Use the domain verified by unsend",
     });
   }
 
