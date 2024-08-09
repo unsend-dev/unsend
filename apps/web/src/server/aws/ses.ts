@@ -112,6 +112,7 @@ export async function sendEmailThroughSes({
   replyTo,
   region,
   configurationSetName,
+  unsubUrl,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
@@ -149,6 +150,14 @@ export async function sendEmailThroughSes({
             Charset: "UTF-8",
           },
         },
+        ...(unsubUrl
+          ? {
+              Headers: [
+                { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
+                { Name: "List-Unsubscribe-Post", Value: "One-Click" },
+              ],
+            }
+          : {}),
       },
     },
     ConfigurationSetName: configurationSetName,

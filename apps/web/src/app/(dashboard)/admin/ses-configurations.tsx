@@ -11,6 +11,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
 import Spinner from "@unsend/ui/src/spinner";
+import EditSesConfiguration from "./edit-ses-configuration";
+import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 
 export default function SesConfigurations() {
   const sesSettingsQuery = api.admin.getSesSettings.useQuery();
@@ -25,6 +27,9 @@ export default function SesConfigurations() {
               <TableHead>Callback URL</TableHead>
               <TableHead>Callback status</TableHead>
               <TableHead>Created at</TableHead>
+              <TableHead>Send rate</TableHead>
+              <TableHead>Transactional quota</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -47,12 +52,24 @@ export default function SesConfigurations() {
               sesSettingsQuery.data?.map((sesSetting) => (
                 <TableRow key={sesSetting.id}>
                   <TableCell>{sesSetting.region}</TableCell>
-                  <TableCell>{sesSetting.callbackUrl}</TableCell>
+                  <TableCell>
+                    <div className="w-[200px] overflow-hidden text-ellipsis">
+                      <TextWithCopyButton
+                        value={sesSetting.callbackUrl}
+                        className="w-[200px] overflow-hidden text-ellipsis"
+                      />
+                    </div>
+                  </TableCell>
                   <TableCell>
                     {sesSetting.callbackSuccess ? "Success" : "Failed"}
                   </TableCell>
                   <TableCell>
                     {formatDistanceToNow(sesSetting.createdAt)} ago
+                  </TableCell>
+                  <TableCell>{sesSetting.sesEmailRateLimit}</TableCell>
+                  <TableCell>{sesSetting.transactionalQuota}%</TableCell>
+                  <TableCell>
+                    <EditSesConfiguration setting={sesSetting} />
                   </TableCell>
                 </TableRow>
               ))

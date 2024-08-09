@@ -50,7 +50,7 @@ const route = createRoute({
           }),
         },
       },
-      description: "Retrieve the user",
+      description: "Retrieve the email",
     },
   },
 });

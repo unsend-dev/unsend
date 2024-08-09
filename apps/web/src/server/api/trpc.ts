@@ -9,7 +9,7 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
@@ -124,6 +124,60 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     },
   });
 });
+
+export const contactBookProcedure = teamProcedure
+  .input(
+    z.object({
+      contactBookId: z.string(),
+    })
+  )
+  .use(async ({ ctx, next, input }) => {
+    const contactBook = await db.contactBook.findUnique({
+      where: { id: input.contactBookId },
+    });
+    if (!contactBook) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Contact book not found",
+      });
+    }
+
+    if (contactBook.teamId !== ctx.team.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this contact book",
+      });
+    }
+
+    return next({ ctx: { ...ctx, contactBook } });
+  });
+
+export const campaignProcedure = teamProcedure
+  .input(
+    z.object({
+      campaignId: z.string(),
+    })
+  )
+  .use(async ({ ctx, next, input }) => {
+    const campaign = await db.campaign.findUnique({
+      where: { id: input.campaignId },
+    });
+    if (!campaign) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Campaign not found",
+      });
+    }
+
+    if (campaign.teamId !== ctx.team.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to access this campaign",
+      });
+    }
+
+    return next({ ctx: { ...ctx, campaign } });
+  });
 
 /**
  * To manage application settings, for hosted version, authenticated users will be considered as admin

@@ -22,6 +22,7 @@ const FormSchema = z.object({
   region: z.string(),
   unsendUrl: z.string().url(),
   sendRate: z.number(),
+  transactionalQuota: z.number().min(0).max(100),
 });
 
 type SesSettingsProps = {
@@ -56,6 +57,7 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
       region: "",
       unsendUrl: "",
       sendRate: 1,
+      transactionalQuota: 50,
     },
   });
 
@@ -162,6 +164,26 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
               ) : (
                 <FormDescription>
                   The number of emails to send per second.
+                </FormDescription>
+              )}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="transactionalQuota"
+          render={({ field, formState }) => (
+            <FormItem>
+              <FormLabel>Transactional Quota</FormLabel>
+              <FormControl>
+                <Input placeholder="0" className="w-full" {...field} />
+              </FormControl>
+              {formState.errors.transactionalQuota ? (
+                <FormMessage />
+              ) : (
+                <FormDescription>
+                  The percentage of the quota to be used for transactional
+                  emails (0-100%).
                 </FormDescription>
               )}
             </FormItem>

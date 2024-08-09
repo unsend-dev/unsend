@@ -52,9 +52,13 @@ export class SesSettingsService {
   public static async createSesSetting({
     region,
     unsendUrl,
+    sendingRateLimit,
+    transactionalQuota,
   }: {
     region: string;
     unsendUrl: string;
+    sendingRateLimit: number;
+    transactionalQuota: number;
   }) {
     await this.checkInitialized();
     if (this.cache[region]) {
@@ -80,12 +84,62 @@ export class SesSettingsService {
         region,
         callbackUrl: `${parsedUrl}/api/ses_callback`,
         topic: `${idPrefix}-${region}-unsend`,
+        sesEmailRateLimit: sendingRateLimit,
+        transactionalQuota,
         idPrefix,
       },
     });
 
     await createSettingInAws(setting);
-    EmailQueueService.initializeQueue(region, setting.sesEmailRateLimit);
+
+    EmailQueueService.initializeQueue(
+      region,
+      setting.sesEmailRateLimit,
+      setting.transactionalQuota
+    );
+    console.log(
+      EmailQueueService.transactionalQueue,
+      EmailQueueService.marketingQueue
+    );
+
+    await this.invalidateCache();
+  }
+
+  public static async updateSesSetting({
+    id,
+    sendingRateLimit,
+    transactionalQuota,
+  }: {
+    id: string;
+    sendingRateLimit: number;
+    transactionalQuota: number;
+  }) {
+    await this.checkInitialized();
+
+    const setting = await db.sesSetting.update({
+      where: {
+        id,
+      },
+      data: {
+        transactionalQuota,
+        sesEmailRateLimit: sendingRateLimit,
+      },
+    });
+    console.log(
+      EmailQueueService.transactionalQueue,
+      EmailQueueService.marketingQueue
+    );
+
+    EmailQueueService.initializeQueue(
+      setting.region,
+      setting.sesEmailRateLimit,
+      setting.transactionalQuota
+    );
+
+    console.log(
+      EmailQueueService.transactionalQueue,
+      EmailQueueService.marketingQueue
+    );
 
     await this.invalidateCache();
   }
