@@ -1,8 +1,10 @@
 import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { db } from "../db";
-import { sendCampaignEmail } from "./email-service";
 import { createHash } from "crypto";
 import { env } from "~/env";
+import { Campaign, Contact, EmailStatus } from "@prisma/client";
+import { validateDomainFromEmail } from "./domain-service";
+import { EmailQueueService } from "./email-queue-service";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
@@ -55,7 +57,7 @@ export async function sendCampaign(id: string) {
     throw new Error("No HTML content for campaign");
   }
 
-  await sendCampaignEmail({
+  await sendCampaignEmail(campaign, {
     campaignId: campaign.id,
     from: campaign.from,
     subject: campaign.subject,
@@ -69,11 +71,11 @@ export async function sendCampaign(id: string) {
 
   await db.campaign.update({
     where: { id },
-    data: { status: "SENT" },
+    data: { status: "SENT", total: contactBook.contacts.length },
   });
 }
 
-export async function createUnsubUrl(contactId: string, campaignId: string) {
+export function createUnsubUrl(contactId: string, campaignId: string) {
   const unsubId = `${contactId}-${campaignId}`;
 
   const unsubHash = createHash("sha256")
@@ -179,4 +181,129 @@ export async function subscribeContact(id: string, hash: string) {
     console.error("Error subscribing contact:", error);
     throw new Error("Failed to subscribe contact");
   }
+}
+
+type CampainEmail = {
+  campaignId: string;
+  from: string;
+  subject: string;
+  html: string;
+  replyTo?: string[];
+  cc?: string[];
+  bcc?: string[];
+  teamId: number;
+  contacts: Array<Contact>;
+};
+
+export async function sendCampaignEmail(
+  campaign: Campaign,
+  emailData: CampainEmail
+) {
+  const { campaignId, from, subject, replyTo, cc, bcc, teamId, contacts } =
+    emailData;
+
+  const jsonContent = JSON.parse(campaign.content || "{}");
+  const renderer = new EmailRenderer(jsonContent);
+
+  const domain = await validateDomainFromEmail(from, teamId);
+
+  const contactWithHtml = await Promise.all(
+    contacts.map(async (contact) => {
+      const unsubscribeUrl = createUnsubUrl(contact.id, campaignId);
+
+      return {
+        ...contact,
+        html: await renderer.render({
+          shouldReplaceVariableValues: true,
+          variableValues: {
+            email: contact.email,
+            firstName: contact.firstName,
+            lastName: contact.lastName,
+          },
+          linkValues: {
+            "{{unsend_unsubscribe_url}}": unsubscribeUrl,
+          },
+        }),
+      };
+    })
+  );
+
+  // Create emails in bulk
+  await db.email.createMany({
+    data: contactWithHtml.map((contact) => ({
+      to: [contact.email],
+      replyTo: replyTo
+        ? Array.isArray(replyTo)
+          ? replyTo
+          : [replyTo]
+        : undefined,
+      cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+      bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+      from,
+      subject,
+      html: contact.html,
+      teamId,
+      campaignId,
+      contactId: contact.id,
+      domainId: domain.id,
+    })),
+  });
+
+  // Fetch created emails
+  const emails = await db.email.findMany({
+    where: {
+      teamId,
+      campaignId,
+    },
+  });
+
+  // Queue emails
+  await Promise.all(
+    emails.map((email) =>
+      EmailQueueService.queueEmail(email.id, domain.region, false)
+    )
+  );
+}
+
+export async function updateCampaignAnalytics(
+  campaignId: string,
+  emailStatus: EmailStatus
+) {
+  const campaign = await db.campaign.findUnique({
+    where: { id: campaignId },
+  });
+
+  if (!campaign) {
+    throw new Error("Campaign not found");
+  }
+
+  const updateData: Record<string, any> = {};
+
+  switch (emailStatus) {
+    case EmailStatus.SENT:
+      updateData.sent = { increment: 1 };
+      break;
+    case EmailStatus.DELIVERED:
+      updateData.delivered = { increment: 1 };
+      break;
+    case EmailStatus.OPENED:
+      updateData.opened = { increment: 1 };
+      break;
+    case EmailStatus.CLICKED:
+      updateData.clicked = { increment: 1 };
+      break;
+    case EmailStatus.BOUNCED:
+      updateData.bounced = { increment: 1 };
+      break;
+    case EmailStatus.COMPLAINED:
+      updateData.complained = { increment: 1 };
+      break;
+    default:
+      break;
+  }
+
+  await db.campaign.update({
+    where: { id: campaignId },
+    data: updateData,
+  });
 }

@@ -35,11 +35,7 @@ export interface ThemeOptions {
     blockquoteBorder?: string;
     codeBackground?: string;
     codeText?: string;
-    linkCardTitle?: string;
-    linkCardDescription?: string;
-    linkCardBadgeText?: string;
-    linkCardBadgeBackground?: string;
-    linkCardSubTitle: string;
+    link?: string;
   };
   fontSize?: {
     paragraph?: string;
@@ -94,17 +90,12 @@ const DEFAULT_THEME: ThemeOptions = {
     blockquoteBorder: "rgb(209, 213, 219)",
     codeBackground: "rgb(239, 239, 239)",
     codeText: "rgb(17, 24, 39)",
-    linkCardTitle: "rgb(17, 24, 39)",
-    linkCardDescription: "rgb(107, 114, 128)",
-    linkCardBadgeText: "rgb(17, 24, 39)",
-    linkCardBadgeBackground: "rgb(254, 240, 138)",
-    linkCardSubTitle: "rgb(107, 114, 128)",
+    link: "rgb(59, 130, 246)",
   },
   fontSize: {
     paragraph: "15px",
     footer: {
-      size: "14px",
-      lineHeight: "24px",
+      size: ".8rem",
     },
   },
 };
@@ -174,8 +165,8 @@ const logoSizes: Record<AllowedLogoSizes, string> = {
 
 type EmailRendererOption = {
   shouldReplaceVariableValues?: boolean;
-  variableValues?: Record<string, string>;
-  linkValues?: Record<string, string>;
+  variableValues?: Record<string, string | null>;
+  linkValues?: Record<string, string | null>;
 };
 
 export class EmailRenderer {
@@ -183,8 +174,8 @@ export class EmailRenderer {
     theme: DEFAULT_THEME,
   };
   private shouldReplaceVariableValues = false;
-  private variableValues: Record<string, string> = {};
-  private linkValues: Record<string, string> = {};
+  private variableValues: Record<string, string | null> = {};
+  private linkValues: Record<string, string | null> = {};
 
   constructor(
     private readonly email: JSONContent = { type: "doc", content: [] },
@@ -202,21 +193,11 @@ export class EmailRenderer {
       : `{{${variable}}}`;
   };
 
-  private renderNode(
-    node: JSONContent,
-    options: NodeOptions = {}
-  ): JSX.Element | null {
-    const type = node.type || "";
-
-    if (type in this) {
-      // @ts-expect-error - `this` is not assignable to type 'never'
-      return this[type]?.(node, options) as JSX.Element;
-    }
-
-    throw new Error(`Node type "${type}" is not supported.`);
-  }
-
-  public render() {
+  public render(options: EmailRendererOption = {}) {
+    this.shouldReplaceVariableValues =
+      options.shouldReplaceVariableValues || false;
+    this.variableValues = options.variableValues || {};
+    this.linkValues = options.linkValues || {};
     const markup = this.markup();
     return render(markup);
   }
@@ -303,8 +284,6 @@ export class EmailRenderer {
           return this[type]?.(mark, acc) as JSX.Element;
         }
 
-        console.log(mark.type, mark.attrs);
-
         throw new Error(`Mark type "${type}" is not supported.`);
       },
       <>{text}</>
@@ -325,6 +304,38 @@ export class EmailRenderer {
         return <Fragment key={generateKey()}>{component}</Fragment>;
       })
       .filter((n) => n !== null) as JSX.Element[];
+  }
+
+  private renderNode(
+    node: JSONContent,
+    options: NodeOptions = {}
+  ): JSX.Element | null {
+    const type = node.type || "";
+
+    if (type in this) {
+      // @ts-expect-error - `this` is not assignable to type 'never'
+      return this[type]?.(node, options) as JSX.Element;
+    }
+
+    throw new Error(`Node type "${type}" is not supported.`);
+  }
+
+  private unsubscribeFooter(
+    node: JSONContent,
+    options?: NodeOptions
+  ): JSX.Element {
+    return (
+      <Container
+        style={{
+          fontSize: this.config.theme?.fontSize?.footer?.size,
+          lineHeight: this.config.theme?.fontSize?.footer?.lineHeight,
+          maxWidth: "100%",
+          color: this.config.theme?.colors?.footer,
+        }}
+      >
+        {this.getMappedContent(node)}
+      </Container>
+    );
   }
 
   private paragraph(node: JSONContent, options?: NodeOptions): JSX.Element {
@@ -405,7 +416,7 @@ export class EmailRenderer {
         style={{
           fontWeight: 500,
           textDecoration: "underline",
-          color: this.config.theme?.colors?.heading,
+          color: this.config.theme?.colors?.link,
         }}
         target={target}
       >
@@ -452,8 +463,6 @@ export class EmailRenderer {
       variable,
       fallback,
     });
-
-    console.log("Formatting variables: ", formattedVariable, variable);
 
     // If `shouldReplaceVariableValues` is true, replace the variable values
     // Otherwise, just return the formatted variable
@@ -693,30 +702,6 @@ export class EmailRenderer {
           )}
         </Column>
       </Row>
-    );
-  }
-
-  private footer(node: JSONContent, options?: NodeOptions): JSX.Element {
-    const { attrs } = node;
-    const { textAlign = "left" } = attrs || {};
-
-    const { next } = options || {};
-    const isNextSpacer = next?.type === "spacer";
-
-    return (
-      <Text
-        style={{
-          fontSize: this.config.theme?.fontSize?.footer?.size,
-          lineHeight: this.config.theme?.fontSize?.footer?.lineHeight,
-          color: this.config.theme?.colors?.footer,
-          marginTop: "0px",
-          marginBottom: isNextSpacer ? "0px" : "20px",
-          textAlign,
-          ...antialiased,
-        }}
-      >
-        {this.getMappedContent(node)}
-      </Text>
     );
   }
 

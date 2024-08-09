@@ -1,10 +1,4 @@
 import { Button } from "@unsend/ui/src/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@unsend/ui/src/tooltip";
 import { Edit2Icon, EditIcon, Trash2Icon } from "lucide-react";
 
 export type LinkPreviewPanelProps = {

@@ -65,7 +65,7 @@
 
 .unsend-editor .unsend-prose hr {
   margin-block: 32px;
-  border-top-width: 2px;
+  border-top-width: 1px;
 }
 
 .drag-handle {
@@ -116,6 +116,10 @@
 
 .unsend-editor .unsend-prose p + .spacer {
   margin-top: -20px;
+}
+
+.unsend-editor .unsend-prose a {
+  @apply text-blue-500;
 }
 
 .unsend-editor .unsend-prose blockquote + .spacer {
@@ -235,4 +239,8 @@
 .prosemirror-dropcursor-block {
   height: 1px !important;
   background-color: #555 !important;
+}
+
+.unsend-editor .footer {
+  font-size: 0.8rem;
 }

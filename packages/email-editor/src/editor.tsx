@@ -64,9 +64,14 @@ unsend.emails.send({
 export type EditorProps = {
   onUpdate?: (content: TipTapEditor) => void;
   initialContent?: Content;
+  variables?: Array<string>;
 };
 
-export const Editor: React.FC<EditorProps> = ({ onUpdate, initialContent }) => {
+export const Editor: React.FC<EditorProps> = ({
+  onUpdate,
+  initialContent,
+  variables,
+}) => {
   const menuContainerRef = useRef(null);
 
   const editor = useEditor({
@@ -86,7 +91,7 @@ export const Editor: React.FC<EditorProps> = ({ onUpdate, initialContent }) => {
         },
       },
     },
-    extensions: extensions(),
+    extensions: extensions({ variables }),
     onUpdate: ({ editor }) => {
       onUpdate?.(editor);
     },

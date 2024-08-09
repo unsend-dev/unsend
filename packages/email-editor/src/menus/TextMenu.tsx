@@ -366,7 +366,7 @@ function ContentTypePicker({ options }: ContentTypePickerProps) {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="hover:bg-slate-100 hover:text-slate-600 text-slate-600 px-2"
+          className="hover:bg-slate-100  hover:text-slate-600 text-slate-600 px-2"
         >
           <span>{activeOption?.label || "Text"}</span>
           <ChevronDown className="h-4 w-4 ml-1.5 text-gray-800" />
@@ -375,7 +375,7 @@ function ContentTypePicker({ options }: ContentTypePickerProps) {
       <PopoverContent
         side="bottom"
         align="start"
-        className="bg-white text-slate-900 w-52 px-1"
+        className="bg-white border-gray-200 text-slate-900 w-52 px-1"
         sideOffset={16}
       >
         {options.map((option) => (

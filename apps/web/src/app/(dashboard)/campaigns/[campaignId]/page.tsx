@@ -28,43 +28,42 @@ export default function CampaignDetailsPage({
   }
 
   const statusCards = [
-    { status: "total", count: campaign.total, percentage: 100 },
     {
-      status: EmailStatus.DELIVERED,
+      status: "delivered",
       count: campaign.delivered,
-      percentage: (campaign.delivered / campaign.total) * 100,
+      percentage: 100,
     },
     {
-      status: EmailStatus.BOUNCED,
-      count: campaign.bounced,
-      percentage: (campaign.bounced / campaign.total) * 100,
+      status: "unsubscribed",
+      count: campaign.unsubscribed,
+      percentage: (campaign.unsubscribed / campaign.delivered) * 100,
     },
     {
-      status: EmailStatus.CLICKED,
+      status: "clicked",
       count: campaign.clicked,
-      percentage: (campaign.clicked / campaign.total) * 100,
+      percentage: (campaign.clicked / campaign.delivered) * 100,
     },
     {
-      status: EmailStatus.OPENED,
+      status: "opened",
       count: campaign.opened,
-      percentage: (campaign.opened / campaign.total) * 100,
+      percentage: (campaign.opened / campaign.delivered) * 100,
     },
   ];
 
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">{campaign?.name}</h1>
-      <div className=" rounded-lg shadow">
+      <div className=" rounded-lg shadow mt-8">
         <h2 className="text-xl font-semibold mb-4">Campaign Statistics</h2>
         <div className="flex  gap-4">
           {statusCards.map((card) => (
             <div
               key={card.status}
-              className="h-[100px] w-1/5  bg-secondary/10 border rounded-lg p-4 flex flex-col gap-3"
+              className="h-[100px] w-1/4  bg-secondary/10 border rounded-lg p-4 flex flex-col gap-3"
             >
               <div className="flex items-center gap-3">
                 {card.status !== "total" ? (
-                  <EmailStatusIcon status={card.status as EmailStatus} />
+                  <CampaignStatusBadge status={card.status} />
                 ) : null}
                 <div className="capitalize">{card.status.toLowerCase()}</div>
               </div>
@@ -84,14 +83,57 @@ export default function CampaignDetailsPage({
       </div>
 
       {campaign.html && (
-        <div className=" rounded-lg shadow mt-6">
+        <div className=" rounded-lg shadow mt-16">
           <h2 className="text-xl font-semibold mb-4">Email</h2>
 
-          <div className="bg-slate-50 border p-4 rounded-md">
-            <div dangerouslySetInnerHTML={{ __html: campaign.html }} />
+          <div className=" dark:bg-slate-50 overflow-auto text-black rounded py-8">
+            <div dangerouslySetInnerHTML={{ __html: campaign.html ?? "" }} />
           </div>
         </div>
       )}
     </div>
   );
 }
+
+export const CampaignStatusBadge: React.FC<{ status: string }> = ({
+  status,
+}) => {
+  let outsideColor = "bg-gray-600";
+  let insideColor = "bg-gray-600/50";
+
+  switch (status) {
+    case "delivered":
+      outsideColor = "bg-emerald-500/30";
+      insideColor = "bg-emerald-500";
+      break;
+    case "bounced":
+    case "unsubscribed":
+      outsideColor = "bg-red-500/30";
+      insideColor = "bg-red-500";
+      break;
+    case "clicked":
+      outsideColor = "bg-cyan-500/30";
+      insideColor = "bg-cyan-500";
+      break;
+    case "opened":
+      outsideColor = "bg-indigo-500/30";
+      insideColor = "bg-indigo-500";
+      break;
+
+    case "complained":
+      outsideColor = "bg-yellow-500/30";
+      insideColor = "bg-yellow-500";
+      break;
+    default:
+      outsideColor = "bg-gray-600/40";
+      insideColor = "bg-gray-600";
+  }
+
+  return (
+    <div
+      className={`flex justify-center items-center p-1.5 ${outsideColor} rounded-full`}
+    >
+      <div className={`h-2 w-2 rounded-full ${insideColor}`}></div>
+    </div>
+  );
+};

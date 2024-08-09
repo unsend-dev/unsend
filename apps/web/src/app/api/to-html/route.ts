@@ -8,7 +8,12 @@ export async function POST(req: Request) {
   try {
     const renderer = new EmailRenderer(data);
     const time = Date.now();
-    const html = await renderer.render();
+    const html = await renderer.render({
+      shouldReplaceVariableValues: true,
+      linkValues: {
+        "{{unsend_unsubscribe_url}}": "https://unsend.com/unsubscribe",
+      },
+    });
     console.log(`Time taken: ${Date.now() - time}ms`);
     return new Response(JSON.stringify({ data: html }), {
       headers: {

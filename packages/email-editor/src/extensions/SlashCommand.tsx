@@ -14,6 +14,8 @@ import {
   SquareSplitVerticalIcon,
   TextIcon,
   TextQuoteIcon,
+  UserXIcon,
+  VariableIcon,
 } from "lucide-react";
 import {
   ReactNode,
@@ -275,6 +277,32 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
     icon: <EraserIcon className="h-4 w-4" />,
     command: ({ editor, range }: CommandProps) => {
       editor.chain().focus().selectParentNode().deleteSelection().run();
+    },
+  },
+  {
+    title: "Variable",
+    description: "Add a variable.",
+    searchTerms: ["variable"],
+    icon: <VariableIcon className="h-4 w-4" />,
+    command: ({ editor, range }: CommandProps) => {
+      editor.chain().focus().deleteRange(range).insertContent("{{").run();
+    },
+  },
+  {
+    title: "Unsubscribe Footer",
+    description: "Add an unsubscribe link.",
+    searchTerms: ["unsubscribe"],
+    icon: <UserXIcon className="h-4 w-4" />,
+    command: ({ editor, range }: CommandProps) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .setHorizontalRule()
+        .insertContent(
+          `<unsub data-unsend-component='unsubscribe-footer'><p>You are receiving this email because you opted in via our site.<br/><br/><a href="{{unsend_unsubscribe_url}}">Unsubscribe from the list</a></p><br><br><p>Company name,<br/>00 street name<br/>City, State 000000</p></unsub>`
+        )
+        .run();
     },
   },
 ];

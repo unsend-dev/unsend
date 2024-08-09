@@ -12,12 +12,6 @@ import { SuggestionOptions } from "@tiptap/suggestion";
 import tippy, { GetReferenceClientRect } from "tippy.js";
 import { CheckIcon, TriangleAlert } from "lucide-react";
 
-export type Variables = Array<{
-  name: string;
-  // Default is true
-  required?: boolean;
-}>;
-
 export interface VariableOptions {
   name: string;
   fallback: string;
@@ -88,13 +82,11 @@ export const VariableList = forwardRef((props: any, ref) => {
 VariableList.displayName = "VariableList";
 
 export function getVariableSuggestions(
-  variables: Variables = []
+  variables: Array<string> = []
 ): Omit<SuggestionOptions, "editor"> {
-  const defaultVariables = variables.map((variable) => variable.name);
-
   return {
     items: ({ query }) => {
-      return defaultVariables
+      return variables
         .concat(query.length > 0 ? [query] : [])
         .filter((item) => item.toLowerCase().startsWith(query.toLowerCase()))
         .slice(0, 5);
@@ -168,6 +160,13 @@ export function VariableComponent(props: NodeViewProps) {
 
   console.log(props.selected);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    props.updateAttributes({
+      fallback: fallbackValue,
+    });
+  };
+
   return (
     <NodeViewWrapper
       className={`react-component inline-block ${
@@ -181,7 +180,7 @@ export function VariableComponent(props: NodeViewProps) {
           <button
             className={cn(
               "inline-flex items-center justify-center rounded-md text-sm gap-1 ring-offset-white transition-colors",
-              "px-2 border shadow-sm  cursor-pointer text-primary/80"
+              "px-2 border border-gray-300 shadow-sm  cursor-pointer text-primary/80"
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -203,27 +202,19 @@ export function VariableComponent(props: NodeViewProps) {
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="flex gap-2 items-center">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-center">
             <Input
               placeholder="Fallback value"
               value={fallbackValue}
               onChange={(e) => {
                 setFallbackValue(e.target.value);
               }}
+              autoFocus
             />
-            <Button
-              variant="silent"
-              size="sm"
-              className="px-1"
-              onClick={() => {
-                props.updateAttributes({
-                  fallback: fallbackValue,
-                });
-              }}
-            >
+            <Button variant="silent" size="sm" className="px-1" type="submit">
               <CheckIcon className="h-4 w-4" />
             </Button>
-          </div>
+          </form>
           <div className="text-sm text-muted-foreground">
             Fallback value will be used if the variable value is empty.
           </div>

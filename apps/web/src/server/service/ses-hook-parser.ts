@@ -1,6 +1,8 @@
 import { EmailStatus, Prisma } from "@prisma/client";
-import { SesEvent, SesEventDataKey } from "~/types/aws-types";
+import { SesClick, SesEvent, SesEventDataKey } from "~/types/aws-types";
 import { db } from "../db";
+import { updateCampaignAnalytics } from "./campaign-service";
+import { env } from "~/env";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -42,6 +44,24 @@ export async function parseSesHook(data: SesEvent) {
       END
       WHERE id = ${email.id}
     `;
+
+  if (email.campaignId) {
+    if (
+      mailStatus !== "CLICKED" ||
+      !(mailData as SesClick).link.startsWith(`${env.NEXTAUTH_URL}/unsubscribe`)
+    ) {
+      const mailEvent = await db.emailEvent.findFirst({
+        where: {
+          emailId: email.id,
+          status: mailStatus,
+        },
+      });
+
+      if (!mailEvent) {
+        await updateCampaignAnalytics(email.campaignId, mailStatus);
+      }
+    }
+  }
 
   await db.emailEvent.create({
     data: {

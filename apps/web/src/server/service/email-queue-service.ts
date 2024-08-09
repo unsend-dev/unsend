@@ -88,7 +88,8 @@ export class EmailQueueService {
   public static async queueEmail(
     emailId: string,
     region: string,
-    transactional: boolean
+    transactional: boolean,
+    unsubUrl?: string
   ) {
     if (!this.initialized) {
       await this.init();
@@ -99,7 +100,7 @@ export class EmailQueueService {
     if (!queue) {
       throw new Error(`Queue for region ${region} not found`);
     }
-    queue.add("send-email", { emailId, timestamp: Date.now() });
+    queue.add("send-email", { emailId, timestamp: Date.now(), unsubUrl });
   }
 
   public static async init() {
@@ -115,7 +116,9 @@ export class EmailQueueService {
   }
 }
 
-async function executeEmail(job: Job<{ emailId: string; timestamp: number }>) {
+async function executeEmail(
+  job: Job<{ emailId: string; timestamp: number; unsubUrl?: string }>
+) {
   console.log(
     `[EmailQueueService]: Executing email job ${job.data.emailId}, time elapsed: ${Date.now() - job.data.timestamp}ms`
   );
@@ -151,10 +154,7 @@ async function executeEmail(job: Job<{ emailId: string; timestamp: number }>) {
   }
 
   console.log(`[EmailQueueService]: Sending email ${email.id}`);
-  const unsubUrl =
-    email.contactId && email.campaignId
-      ? await createUnsubUrl(email.contactId, email.campaignId)
-      : undefined;
+  const unsubUrl = job.data.unsubUrl;
 
   try {
     const messageId = attachments.length

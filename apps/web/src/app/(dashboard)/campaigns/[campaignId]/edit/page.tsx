@@ -6,7 +6,7 @@ import { Spinner } from "@unsend/ui/src/spinner";
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
 import { Editor } from "@unsend/email-editor";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Campaign } from "@prisma/client";
 import {
   Select,
@@ -263,6 +263,7 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
             setIsUpdated(true);
             setJson(content.getJSON());
           }}
+          variables={["email", "firstName", "lastName"]}
         />
       </div>
     </div>

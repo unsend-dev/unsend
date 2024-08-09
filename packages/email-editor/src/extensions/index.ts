@@ -15,8 +15,9 @@ import { ButtonExtension } from "./ButtonExtension";
 import { SlashCommand, getSlashCommandSuggestions } from "./SlashCommand";
 import { VariableExtension } from "./VariableExtension";
 import { getVariableSuggestions } from "../nodes/variable";
+import { UnsubscribeFooterExtension } from "./UnsubsubscribeExtension";
 
-export function extensions() {
+export function extensions({ variables }: { variables?: Array<string> }) {
   const extensions = [
     StarterKit.configure({
       heading: {
@@ -70,12 +71,9 @@ export function extensions() {
     ButtonExtension,
     GlobalDragHandle,
     VariableExtension.configure({
-      suggestion: getVariableSuggestions([
-        { name: "firstname" },
-        { name: "lastname" },
-        { name: "email" },
-      ]),
+      suggestion: getVariableSuggestions(variables),
     }),
+    UnsubscribeFooterExtension,
   ];
 
   return extensions;

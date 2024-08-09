@@ -17,16 +17,12 @@ export const useLinkEditorState = ({
     setUrl(event.target.value);
   }, []);
 
-  const isValidUrl = useMemo(() => /^(\S+):(\/\/)?\S+$/.test(url), [url]);
-
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (isValidUrl) {
-        onSetLink(url);
-      }
+      onSetLink(url);
     },
-    [url, isValidUrl, onSetLink]
+    [url, onSetLink]
   );
 
   return {
@@ -34,7 +30,6 @@ export const useLinkEditorState = ({
     setUrl,
     onChange,
     handleSubmit,
-    isValidUrl,
   };
 };
 
@@ -55,20 +50,14 @@ export const LinkEditorPanel = ({
       >
         <label className="flex items-center gap-2 p-2 rounded-lg  cursor-text">
           <input
-            type="url"
             className="flex-1 bg-transparent outline-none min-w-[12rem] text-black text-sm"
-            placeholder="Enter link"
+            placeholder="Enter valid url"
             value={state.url}
             onChange={state.onChange}
           />
         </label>
-        <Button
-          variant="silent"
-          size="sm"
-          className="px-1"
-          disabled={!state.isValidUrl}
-        >
-          <CheckIcon className="h-4 w-4" />
+        <Button variant="silent" size="sm" className="px-1">
+          <CheckIcon className="h-4 w-4 disabled:opacity-50" />
         </Button>
       </form>
     </div>
