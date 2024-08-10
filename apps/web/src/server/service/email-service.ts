@@ -2,7 +2,14 @@ import { EmailContent } from "~/types";
 import { db } from "../db";
 import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
+import { validateDomainFromEmail } from "./domain-service";
+import { Campaign, Contact } from "@prisma/client";
+import { EmailRenderer } from "@unsend/email-editor/src/renderer";
+import { createUnsubUrl } from "./campaign-service";
 
+/**
+ Send transactional email
+ */
 export async function sendEmail(
   emailContent: EmailContent & { teamId: number }
 ) {
@@ -19,29 +26,7 @@ export async function sendEmail(
     bcc,
   } = emailContent;
 
-  let fromDomain = from.split("@")[1];
-  if (fromDomain?.endsWith(">")) {
-    fromDomain = fromDomain.slice(0, -1);
-  }
-
-  const domain = await db.domain.findFirst({
-    where: { teamId, name: fromDomain },
-  });
-
-  if (!domain) {
-    throw new UnsendApiError({
-      code: "BAD_REQUEST",
-      message:
-        "Domain of from email is wrong. Use the email verified by unsend",
-    });
-  }
-
-  if (domain.status !== "SUCCESS") {
-    throw new UnsendApiError({
-      code: "BAD_REQUEST",
-      message: "Domain is not verified",
-    });
-  }
+  const domain = await validateDomainFromEmail(from, teamId);
 
   const email = await db.email.create({
     data: {
@@ -64,7 +49,7 @@ export async function sendEmail(
   });
 
   try {
-    await EmailQueueService.queueEmail(email.id, domain.region);
+    await EmailQueueService.queueEmail(email.id, domain.region, true);
   } catch (error: any) {
     await db.emailEvent.create({
       data: {

@@ -8,6 +8,7 @@ export type EmailContent = {
   cc?: string | string[];
   bcc?: string | string[];
   attachments?: Array<EmailAttachment>;
+  unsubUrl?: string;
 };
 
 export type EmailAttachment = {
