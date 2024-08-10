@@ -6,7 +6,8 @@ import { CheckIcon, ClipboardCopy } from "lucide-react";
 export const TextWithCopyButton: React.FC<{
   value: string;
   className?: string;
-}> = ({ value, className }) => {
+  alwaysShowCopy?: boolean;
+}> = ({ value, className, alwaysShowCopy }) => {
   const [isCopied, setIsCopied] = React.useState(false);
 
   const copyToClipboard = async () => {
@@ -24,7 +25,9 @@ export const TextWithCopyButton: React.FC<{
       <div className={className}>{value}</div>
       <Button
         variant="ghost"
-        className="hover:bg-transparent p-0 cursor-pointer text-muted-foreground opacity-0 group-hover:opacity-100"
+        className={`hover:bg-transparent p-0 cursor-pointer text-muted-foreground ${
+          alwaysShowCopy ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        }`}
         onClick={copyToClipboard}
       >
         {isCopied ? (

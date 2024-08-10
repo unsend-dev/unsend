@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["tracing"]
 }
 
@@ -26,6 +26,7 @@ model SesSetting {
   idPrefix             String   @unique
   topic                String
   topicArn             String?
+  transactionalQuota   Int      @default(50)
   callbackUrl          String
   callbackSuccess      Boolean  @default(false)
   configGeneral        String?
@@ -90,14 +91,16 @@ model User {
 }
 
 model Team {
-  id        Int        @id @default(autoincrement())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  teamUsers TeamUser[]
-  domains   Domain[]
-  apiKeys   ApiKey[]
-  emails    Email[]
+  id           Int           @id @default(autoincrement())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  teamUsers    TeamUser[]
+  domains      Domain[]
+  apiKeys      ApiKey[]
+  emails       Email[]
+  contactBooks ContactBook[]
+  campaigns    Campaign[]
 }
 
 enum Role {
@@ -193,6 +196,8 @@ model Email {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   attachments  String?
+  campaignId   String?
+  contactId    String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
 }
@@ -204,4 +209,68 @@ model EmailEvent {
   data      Json?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
+}
+
+model ContactBook {
+  id         String    @id @default(cuid())
+  name       String
+  teamId     Int
+  properties Json
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  contacts   Contact[]
+
+  @@index([teamId])
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  email         String
+  subscribed    Boolean  @default(true)
+  properties    Json
+  contactBookId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  contactBook ContactBook @relation(fields: [contactBookId], references: [id], onDelete: Cascade)
+
+  @@unique([contactBookId, email])
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+}
+
+model Campaign {
+  id            String         @id @default(cuid())
+  name          String
+  teamId        Int
+  from          String
+  cc            String[]
+  bcc           String[]
+  replyTo       String[]
+  domainId      Int
+  subject       String
+  previewText   String?
+  html          String?
+  content       String?
+  contactBookId String?
+  total         Int            @default(0)
+  sent          Int            @default(0)
+  delivered     Int            @default(0)
+  opened        Int            @default(0)
+  clicked       Int            @default(0)
+  unsubscribed  Int            @default(0)
+  bounced       Int            @default(0)
+  complained    Int            @default(0)
+  status        CampaignStatus @default(DRAFT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }

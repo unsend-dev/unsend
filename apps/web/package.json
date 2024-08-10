@@ -20,7 +20,6 @@
     "@auth/prisma-adapter": "^1.4.0",
     "@aws-sdk/client-sesv2": "^3.535.0",
     "@aws-sdk/client-sns": "^3.540.0",
-    "@hono/node-server": "^1.9.1",
     "@hono/swagger-ui": "^0.2.1",
     "@hono/zod-openapi": "^0.10.0",
     "@hookform/resolvers": "^3.3.4",
@@ -32,6 +31,7 @@
     "@trpc/next": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
+    "@unsend/email-editor": "workspace:*",
     "@unsend/ui": "workspace:*",
     "bullmq": "^5.8.2",
     "date-fns": "^3.6.0",
@@ -56,6 +56,7 @@
     "tldts": "^6.1.16",
     "ua-parser-js": "^1.0.38",
     "unsend": "workspace:*",
+    "use-debounce": "^10.0.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
