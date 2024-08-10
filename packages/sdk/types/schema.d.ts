@@ -54,7 +54,7 @@ export interface paths {
         };
       };
       responses: {
-        /** @description Retrieve the user */
+        /** @description Retrieve the email */
         200: {
           content: {
             "application/json": {
@@ -73,7 +73,7 @@ export interface paths {
               emailEvents: ({
                   emailId: string;
                   /** @enum {string} */
-                  status: "QUEUED" | "SENT" | "BOUNCED" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERY_DELAYED" | "FAILED";
+                  status: "QUEUED" | "SENT" | "DELIVERY_DELAYED" | "BOUNCED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "FAILED";
                   createdAt: string;
                   data?: unknown;
                 })[];
@@ -109,6 +109,99 @@ export interface paths {
           content: {
             "application/json": {
               emailId?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/v1/contactBooks/{contactBookId}/contacts": {
+    post: {
+      parameters: {
+        path: {
+          contactBookId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            email: string;
+            firstName?: string;
+            lastName?: string;
+            properties?: {
+              [key: string]: string;
+            };
+            subscribed?: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description Retrieve the user */
+        200: {
+          content: {
+            "application/json": {
+              contactId?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/v1/contactBooks/{contactBookId}/contacts/{contactId}": {
+    get: {
+      parameters: {
+        path: {
+          contactBookId: string;
+          contactId: string;
+        };
+      };
+      responses: {
+        /** @description Retrieve the contact */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+              firstName?: string | null;
+              lastName?: string | null;
+              email: string;
+              /** @default true */
+              subscribed?: boolean;
+              properties: {
+                [key: string]: string;
+              };
+              contactBookId: string;
+              createdAt: string;
+              updatedAt: string;
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          contactBookId: string;
+          contactId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            firstName?: string;
+            lastName?: string;
+            properties?: {
+              [key: string]: string;
+            };
+            subscribed?: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description Retrieve the user */
+        200: {
+          content: {
+            "application/json": {
+              contactId?: string;
             };
           };
         };

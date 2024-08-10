@@ -5,7 +5,6 @@ import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { getRedis } from "../redis";
-import { createUnsubUrl } from "./campaign-service";
 
 function createQueueAndWorker(region: string, quota: number, suffix: string) {
   const connection = getRedis();

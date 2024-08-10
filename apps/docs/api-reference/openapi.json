@@ -120,7 +120,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Retrieve the user",
+            "description": "Retrieve the email",
             "content": {
               "application/json": {
                 "schema": {
@@ -217,14 +217,14 @@
                             "enum": [
                               "QUEUED",
                               "SENT",
+                              "DELIVERY_DELAYED",
                               "BOUNCED",
+                              "REJECTED",
+                              "RENDERING_FAILURE",
                               "DELIVERED",
                               "OPENED",
                               "CLICKED",
                               "COMPLAINED",
-                              "REJECTED",
-                              "RENDERING_FAILURE",
-                              "DELIVERY_DELAYED",
                               "FAILED"
                             ]
                           },
@@ -375,6 +375,217 @@
                       "type": "string"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contactBooks/{contactBookId}/contacts": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "subscribed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contactId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contactBooks/{contactBookId}/contacts/{contactId}": {
+      "patch": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "subscribed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contactId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieve the contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "subscribed": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "properties": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "contactBookId": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email",
+                    "properties",
+                    "contactBookId",
+                    "createdAt",
+                    "updatedAt"
+                  ]
                 }
               }
             }

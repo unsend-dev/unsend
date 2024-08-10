@@ -73,6 +73,14 @@
       ]
     },
     {
+      "group": "Contacts",
+      "pages": [
+        "api-reference/contacts/get-contact",
+        "api-reference/contacts/create-contact",
+        "api-reference/contacts/update-contact"
+      ]
+    },
+    {
       "group": "Domains",
       "pages": [
         "api-reference/domains/get-domain"
