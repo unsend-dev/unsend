@@ -11,10 +11,7 @@ import {
 import Link from "next/link";
 
 import Spinner from "@unsend/ui/src/spinner";
-import { formatDistanceToNow } from "date-fns";
 import { api } from "~/trpc/react";
-import { EmailStatusIcon } from "../../emails/email-status-badge";
-import { EmailStatus } from "@prisma/client";
 import { Separator } from "@unsend/ui/src/separator";
 import { ExternalLinkIcon } from "lucide-react";
 
@@ -150,9 +147,7 @@ export default function CampaignDetailsPage({
   );
 }
 
-export const CampaignStatusBadge: React.FC<{ status: string }> = ({
-  status,
-}) => {
+const CampaignStatusBadge: React.FC<{ status: string }> = ({ status }) => {
   let outsideColor = "bg-gray-600";
   let insideColor = "bg-gray-600/50";
 
