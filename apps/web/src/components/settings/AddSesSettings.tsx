@@ -21,8 +21,11 @@ import { toast } from "@unsend/ui/src/toaster";
 const FormSchema = z.object({
   region: z.string(),
   unsendUrl: z.string().url(),
-  sendRate: z.number(),
-  transactionalQuota: z.number().min(0).max(100),
+  sendRate: z.preprocess((val) => Number(val), z.number()),
+  transactionalQuota: z.preprocess(
+    (val) => Number(val),
+    z.number().min(0).max(100)
+  ),
 });
 
 type SesSettingsProps = {

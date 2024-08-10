@@ -54,14 +54,19 @@ export class EmailQueueService {
       );
       const transactionalWorker = this.transactionalWorker.get(region);
       if (transactionalWorker) {
-        transactionalWorker.concurrency = transactionalQuota;
+        transactionalWorker.concurrency =
+          transactionalQuota !== 0 ? transactionalQuota : 1;
       }
     } else {
       console.log(
         `[EmailQueueService]: Creating transactional queue for region ${region} with quota ${transactionalQuota}`
       );
       const { queue: transactionalQueue, worker: transactionalWorker } =
-        createQueueAndWorker(region, transactionalQuota ?? 1, "transaction");
+        createQueueAndWorker(
+          region,
+          transactionalQuota !== 0 ? transactionalQuota : 1,
+          "transaction"
+        );
       this.transactionalQueue.set(region, transactionalQueue);
       this.transactionalWorker.set(region, transactionalWorker);
     }
@@ -72,14 +77,18 @@ export class EmailQueueService {
       );
       const marketingWorker = this.marketingWorker.get(region);
       if (marketingWorker) {
-        marketingWorker.concurrency = marketingQuota;
+        marketingWorker.concurrency = marketingQuota !== 0 ? marketingQuota : 1;
       }
     } else {
       console.log(
         `[EmailQueueService]: Creating marketing queue for region ${region} with quota ${marketingQuota}`
       );
       const { queue: marketingQueue, worker: marketingWorker } =
-        createQueueAndWorker(region, marketingQuota ?? 1, "marketing");
+        createQueueAndWorker(
+          region,
+          marketingQuota !== 0 ? marketingQuota : 1,
+          "marketing"
+        );
       this.marketingQueue.set(region, marketingQueue);
       this.marketingWorker.set(region, marketingWorker);
     }
