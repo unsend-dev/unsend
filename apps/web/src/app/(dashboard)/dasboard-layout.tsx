@@ -66,14 +66,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Domains
                 </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
+                <NavButton href="/contacts">
                   <BookUser className="h-4 w-4" />
                   Contacts
                 </NavButton>
 
-                <NavButton href="/contacts" comingSoon>
+                <NavButton href="/campaigns">
                   <Volume2 className="h-4 w-4" />
-                  Marketing
+                  Campaigns
                 </NavButton>
 
                 <NavButton href="/api-keys">
@@ -104,7 +104,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="flex flex-1 flex-col">
-        <header className="flex h-14 items-center gap-4 md:hidden  bg-muted/20 px-4 lg:h-[60px] lg:px-6">
+        <header className=" h-14 items-center gap-4 hidden  bg-muted/20 px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button

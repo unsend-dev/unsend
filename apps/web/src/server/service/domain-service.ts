@@ -4,8 +4,44 @@ import * as tldts from "tldts";
 import * as ses from "~/server/aws/ses";
 import { db } from "~/server/db";
 import { SesSettingsService } from "./ses-settings-service";
+import { UnsendApiError } from "../public-api/api-error";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
+
+export async function validateDomainFromEmail(email: string, teamId: number) {
+  let fromDomain = email.split("@")[1];
+  if (fromDomain?.endsWith(">")) {
+    fromDomain = fromDomain.slice(0, -1);
+  }
+
+  if (!fromDomain) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "From email is invalid",
+    });
+  }
+
+  const domain = await db.domain.findUnique({
+    where: { name: fromDomain, teamId },
+  });
+
+  if (!domain) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message:
+        "Domain of from email is wrong. Use the domain verified by unsend",
+    });
+  }
+
+  if (domain.status !== "SUCCESS") {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "Domain is not verified",
+    });
+  }
+
+  return domain;
+}
 
 export async function createDomain(
   teamId: number,

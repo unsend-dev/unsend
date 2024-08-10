@@ -26,12 +26,32 @@ export const adminRouter = createTRPCRouter({
       z.object({
         region: z.string(),
         unsendUrl: z.string().url(),
+        sendRate: z.number(),
+        transactionalQuota: z.number(),
       })
     )
     .mutation(async ({ input }) => {
       return SesSettingsService.createSesSetting({
         region: input.region,
         unsendUrl: input.unsendUrl,
+        sendingRateLimit: input.sendRate,
+        transactionalQuota: input.transactionalQuota,
+      });
+    }),
+
+  updateSesSettings: adminProcedure
+    .input(
+      z.object({
+        settingsId: z.string(),
+        sendRate: z.number(),
+        transactionalQuota: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return SesSettingsService.updateSesSetting({
+        id: input.settingsId,
+        sendingRateLimit: input.sendRate,
+        transactionalQuota: input.transactionalQuota,
       });
     }),
 
