@@ -13,6 +13,7 @@
         "db:generate"
       ],
       "outputs": [
+        "dist/**",
         ".next/**",
         "!.next/cache/**"
       ],
