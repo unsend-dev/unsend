@@ -41,7 +41,7 @@ We are currently in beta and trying to rollout to public slowly. If you're inter
 - [x] Transactional Mails
 - [x] Rest API
 - [x] Dashboard (Delivered, opened, clicked, bounced)
-- [ ] Marketing email
+- [x] Marketing email
 - [ ] Webhook support
 - [ ] SMTP support
 - [ ] BYO AWS credentials
