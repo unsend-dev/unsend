@@ -68,6 +68,14 @@ We're currently working on opening unsend for public beta.
 - [hono](https://hono.dev/) - Public API
 - [Redis](https://redis.io/) - Queue
 
+### Email editor
+
+Check out the editor code for [here](https://github.com/unsend-dev/unsend/tree/main/packages/email-editor). Editor is possible only because of the amazing tools and libraries.
+
+- [jsx-emai](https://jsx.email/) - converts editor content to html
+- [maily.to](https://maily.to/) - unsend email editor is greatly inspired from maily.to
+- [tiptap](https://tiptap.dev/) - editor core
+
 ## Local Development
 
 Follow our detailed guide to run Unsend locally
