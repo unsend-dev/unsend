@@ -54,3 +54,32 @@ icon: node-js
     ```
   </Step>
 </Steps>
+
+## Adding contacts programatically
+
+<Steps>
+  <Step title="Get the contact book id">
+    Get the contact book id from the [Unsend dashboard](https://app.unsend.dev/contacts/). Copy the contact book id
+  </Step>
+  <Step title="Add contacts">
+
+    ```javascript
+    unsend.contacts
+      .create("clzeydgeygff", {
+        email: "hey@koushik.dev",
+        firstName: "Koushik",
+        lastName: "KM",
+      })
+    ```
+
+  </Step>
+
+  <Step title="Update contact">
+    ```javascript
+    unsend.contacts.update("clzeydgeygff", contactId, {
+      firstName: "Koushik",
+      lastName: "KM",
+    });
+    ```
+  </Step>
+</Steps>
