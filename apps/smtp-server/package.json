@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsup",
     "start": "node dist/server.js"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^22.1.0",
     "@types/nodemailer": "^6.4.15",
+    "tsup": "^8.0.2",
     "typescript": "^5.5.4"
   }
 }
