@@ -5,7 +5,7 @@
     "build": "turbo build",
     "build:editor": "turbo build --filter=@unsend/email-editor",
     "build:web": "turbo build --filter=@unsend/email-editor  --filter=web ",
-    "build:marketing": "turbo build --filter=marketing",
+    "build:marketing": "turbo build --filter=@unsend/email-editor --filter=marketing",
     "dev": "pnpm load-env -- turbo dev",
     "dev:docs": "cd apps/docs && mintlify dev",
     "lint": "turbo lint",
