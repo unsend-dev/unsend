@@ -1,4 +1,5 @@
 import { ErrorResponse } from "../types";
+import { Contacts } from "./contact";
 import { Emails } from "./email";
 
 const defaultBaseUrl = "https://app.unsend.dev";
@@ -14,6 +15,7 @@ export class Unsend {
 
   // readonly domains = new Domains(this);
   readonly emails = new Emails(this);
+  readonly contacts = new Contacts(this);
   url = baseUrl;
 
   constructor(
