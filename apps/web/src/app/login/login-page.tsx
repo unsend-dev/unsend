@@ -65,7 +65,7 @@ export default function LoginPage() {
 
     window.location.href = `/api/auth/callback/email?email=${encodeURIComponent(
       email.toLowerCase()
-    )}&token=${values.otp.toLowerCase()}${callbackUrl ? `&callbackUrl=${callbackUrl}/balances` : ""}`;
+    )}&token=${values.otp.toLowerCase()}${callbackUrl ? `&callbackUrl=${callbackUrl}/dashboard` : ""}`;
   }
 
   return (
