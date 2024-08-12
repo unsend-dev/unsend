@@ -35,7 +35,7 @@ async function sendMail(
   text: string,
   html: string
 ) {
-  if (env.UNSEND_API_KEY && env.UNSEND_URL && env.FROM_EMAIL) {
+  if (env.UNSEND_API_KEY && env.FROM_EMAIL) {
     const resp = await getClient().emails.send({
       to: email,
       from: env.FROM_EMAIL,
@@ -55,6 +55,6 @@ async function sendMail(
       );
     }
   } else {
-    throw new Error("UNSEND_API_KEY or UNSEND_URL not found");
+    throw new Error("UNSEND_API_KEY not found");
   }
 }
