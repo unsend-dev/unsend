@@ -141,14 +141,18 @@ export async function sendEmailThroughSes({
         },
         Body: {
           // Body
-          Text: {
-            Data: text, // required
-            Charset: "UTF-8",
-          },
-          Html: {
-            Data: html, // required
-            Charset: "UTF-8",
-          },
+          Text: text
+            ? {
+                Data: text, // required
+                Charset: "UTF-8",
+              }
+            : undefined,
+          Html: html
+            ? {
+                Data: html, // required
+                Charset: "UTF-8",
+              }
+            : undefined,
         },
         ...(unsubUrl
           ? {

@@ -1,6 +1,7 @@
 import { Job, Queue, Worker } from "bullmq";
 import { env } from "~/env";
 import { EmailAttachment } from "~/types";
+import { convert as htmlToText } from "html-to-text";
 import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
@@ -164,13 +165,19 @@ async function executeEmail(
   console.log(`[EmailQueueService]: Sending email ${email.id}`);
   const unsubUrl = job.data.unsubUrl;
 
+  const text = email.text
+    ? email.text
+    : email.campaignId && email.html
+      ? htmlToText(email.html)
+      : undefined;
+
   try {
     const messageId = attachments.length
       ? await sendEmailWithAttachments({
           to: email.to,
           from: email.from,
           subject: email.subject,
-          text: email.text ?? "",
+          text,
           html: email.html ?? undefined,
           region: domain?.region ?? env.AWS_DEFAULT_REGION,
           configurationSetName,
@@ -181,7 +188,7 @@ async function executeEmail(
           from: email.from,
           subject: email.subject,
           replyTo: email.replyTo ?? undefined,
-          text: email.text ?? "",
+          text,
           html: email.html ?? undefined,
           region: domain?.region ?? env.AWS_DEFAULT_REGION,
           configurationSetName,
@@ -192,7 +199,7 @@ async function executeEmail(
     // Delete attachments after sending the email
     await db.email.update({
       where: { id: email.id },
-      data: { sesEmailId: messageId, attachments: undefined },
+      data: { sesEmailId: messageId, text, attachments: undefined },
     });
   } catch (error: any) {
     await db.emailEvent.create({
