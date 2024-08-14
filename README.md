@@ -44,7 +44,7 @@ We are currently in beta and trying to rollout to public slowly. If you're inter
 - [x] Dashboard (Delivered, opened, clicked, bounced)
 - [x] Marketing email
 - [ ] Webhook support
-- [ ] SMTP support
+- [x] SMTP support
 - [ ] BYO AWS credentials
 
 ## Community and Next Steps 🎯
