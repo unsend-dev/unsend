@@ -76,7 +76,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Campaigns
                 </NavButton>
 
-                <NavButton href="/api-keys">
+                <NavButton href="/dev-settings">
                   <Code className="h-4 w-4" />
                   Developer settings
                 </NavButton>
