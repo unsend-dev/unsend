@@ -33,6 +33,8 @@ export function ButtonComponent(props: NodeViewProps) {
   } = props.node.attrs as ButtonOptions;
   const { getPos, editor } = props;
 
+  console.log(props);
+
   return (
     <NodeViewWrapper
       className={`react-component ${

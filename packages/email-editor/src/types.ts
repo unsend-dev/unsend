@@ -20,4 +20,14 @@ export interface ButtonOptions {
   HTMLAttributes: Record<string, any>;
 }
 
+export interface ImageOptions {
+  altText: string;
+  url: string;
+  alignment: AllowedAlignments;
+  borderRadius: string;
+  borderColor: string;
+  borderWidth: string;
+  HTMLAttributes: Record<string, any>;
+}
+
 export type SVGProps = React.SVGProps<SVGSVGElement>;
