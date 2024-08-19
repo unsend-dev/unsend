@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- [Unsend API key](https://app.unsend.dev/api-keys)
+- [Unsend API key](https://app.unsend.dev/dev-settings/api-keys)
 - [Verified domain](https://app.unsend.dev/domains)
 
 ## Installation
