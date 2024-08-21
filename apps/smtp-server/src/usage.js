@@ -1,12 +1,12 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "localhost",
+  host: "smtp.unsend.dev",
   port: 2587,
   secure: false,
   auth: {
     user: "unsend",
-    pass: "us_38de56vwa7_cc90a91b01a402de0c15516b3554adc1",
+    pass: "us_123",
   },
   tls: {
     rejectUnauthorized: false,
@@ -14,8 +14,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const mailOptions = {
-  to: "harsh121102@gmail.com",
-  from: "hello@support.harshbhat.me",
+  to: "sender@example.com",
+  from: "hello@example.com",
   subject: "Testing SMTP",
   html: "<strong>THIS IS USING SMTP,</strong><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
   text: "hello,\n\nUnsend is the best open source sending platform",

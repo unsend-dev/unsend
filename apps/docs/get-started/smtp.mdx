@@ -19,3 +19,40 @@ To set up your SMTP integration, you'll need to provide the following credential
 - **Port:** ```465```, ```587```, ```2465```, or ```2587```
 - **Username:** ```unsend```
 - **Password:** ```YOUR-API-KEY```
+
+## Example with Nodemailer
+
+Following example with Nodemailer shows how you can send mails with SMTP support from Unsend and Nodemailer.
+
+```javascript
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.unsend.dev",
+  port: 2587,
+  secure: false,
+  auth: {
+    user: "unsend",
+    pass: "us_123",
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
+const mailOptions = {
+  to: "sender@example.com",
+  from: "hello@example.com",
+  subject: "Testing SMTP",
+  html: "<strong>THIS IS USING SMTP,</strong><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
+  text: "hello,\n\nUnsend is the best open source sending platform",
+};
+
+transporter.sendMail(mailOptions, (error, info) => {
+  if (error) {
+    console.error("Error sending email:", error);
+  } else {
+    console.log("Email sent successfully:", info.response);
+  }
+});
+```
