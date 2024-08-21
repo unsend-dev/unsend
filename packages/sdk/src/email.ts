@@ -25,6 +25,27 @@ type GetEmailResponse = {
   error: ErrorResponse | null;
 };
 
+type UpdateEmailPayload =
+  paths["/v1/emails/{emailId}"]["patch"]["requestBody"]["content"]["application/json"] & {
+    react?: React.ReactElement;
+  };
+
+type UpdateEmailResponse = {
+  data: UpdateEmailResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type UpdateEmailResponseSuccess =
+  paths["/v1/emails/{emailId}"]["patch"]["responses"]["200"]["content"]["application/json"];
+
+type CancelEmailResponse = {
+  data: CancelEmailResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type CancelEmailResponseSuccess =
+  paths["/v1/emails/{emailId}/cancel"]["post"]["responses"]["200"]["content"]["application/json"];
+
 export class Emails {
   constructor(private readonly unsend: Unsend) {
     this.unsend = unsend;
@@ -51,6 +72,25 @@ export class Emails {
   async get(id: string): Promise<GetEmailResponse> {
     const data = await this.unsend.get<GetEmailResponseSuccess>(
       `/emails/${id}`
+    );
+    return data;
+  }
+
+  async update(
+    id: string,
+    payload: UpdateEmailPayload
+  ): Promise<UpdateEmailResponse> {
+    const data = await this.unsend.patch<UpdateEmailResponseSuccess>(
+      `/emails/${id}`,
+      payload
+    );
+    return data;
+  }
+
+  async cancel(id: string): Promise<CancelEmailResponse> {
+    const data = await this.unsend.post<CancelEmailResponseSuccess>(
+      `/emails/${id}/cancel`,
+      {}
     );
     return data;
   }
