@@ -73,10 +73,35 @@ export interface paths {
               emailEvents: ({
                   emailId: string;
                   /** @enum {string} */
-                  status: "QUEUED" | "SENT" | "DELIVERY_DELAYED" | "BOUNCED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "FAILED";
+                  status: "SCHEDULED" | "QUEUED" | "SENT" | "DELIVERY_DELAYED" | "BOUNCED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "FAILED" | "CANCELLED";
                   createdAt: string;
                   data?: unknown;
                 })[];
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          emailId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: date-time */
+            scheduledAt: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Retrieve the user */
+        200: {
+          content: {
+            "application/json": {
+              emailId?: string;
             };
           };
         };
@@ -100,7 +125,28 @@ export interface paths {
                 filename: string;
                 content: string;
               }[];
+            /** Format: date-time */
+            scheduledAt?: string;
           };
+        };
+      };
+      responses: {
+        /** @description Retrieve the user */
+        200: {
+          content: {
+            "application/json": {
+              emailId?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/v1/emails/{emailId}/cancel": {
+    post: {
+      parameters: {
+        path: {
+          emailId: string;
         };
       };
       responses: {

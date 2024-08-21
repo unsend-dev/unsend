@@ -215,6 +215,7 @@
                           "status": {
                             "type": "string",
                             "enum": [
+                              "SCHEDULED",
                               "QUEUED",
                               "SENT",
                               "DELIVERY_DELAYED",
@@ -225,7 +226,8 @@
                               "OPENED",
                               "CLICKED",
                               "COMPLAINED",
-                              "FAILED"
+                              "FAILED",
+                              "CANCELLED"
                             ]
                           },
                           "createdAt": {
@@ -255,6 +257,56 @@
                     "updatedAt",
                     "emailEvents"
                   ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "emailId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduledAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "scheduledAt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emailId": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -352,6 +404,10 @@
                         "content"
                       ]
                     }
+                  },
+                  "scheduledAt": {
+                    "type": "string",
+                    "format": "date-time"
                   }
                 },
                 "required": [
@@ -363,6 +419,39 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emailId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/{emailId}/cancel": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "emailId",
+            "in": "path"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Retrieve the user",
