@@ -50,7 +50,8 @@
         "introduction",
         "get-started/nodejs",
         "get-started/local",
-        "get-started/self-hosting"
+        "get-started/self-hosting",
+        "get-started/smtp"
       ]
     },
     {
