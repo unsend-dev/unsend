@@ -9,6 +9,7 @@ export type EmailContent = {
   bcc?: string | string[];
   attachments?: Array<EmailAttachment>;
   unsubUrl?: string;
+  scheduledAt?: string;
 };
 
 export type EmailAttachment = {

@@ -34,6 +34,7 @@
     "@unsend/email-editor": "workspace:*",
     "@unsend/ui": "workspace:*",
     "bullmq": "^5.8.2",
+    "chrono-node": "^2.7.6",
     "date-fns": "^3.6.0",
     "hono": "^4.2.2",
     "html-to-text": "^9.0.5",

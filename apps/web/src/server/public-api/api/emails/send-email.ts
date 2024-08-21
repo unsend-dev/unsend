@@ -28,6 +28,7 @@ const route = createRoute({
                 })
               )
               .optional(),
+            scheduledAt: z.string().datetime().optional(),
           }),
         },
       },
