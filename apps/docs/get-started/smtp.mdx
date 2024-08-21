@@ -1,8 +1,35 @@
+---
+title: SMTP support
+description: "A guide to integrate Unsend with SMTP"
+icon: envelope  
+---
+
+## Prerequisites 
+
+You will need an API key and a verified domain to get the most out of this guide:
+
+- [API Key](https://app.unsend.dev/dev-settings/api-keys)
+- [Verified Domain](https://app.unsend.dev/domains)
+
+## SMTP credentials
+
+To set up your SMTP integration, you'll need to provide the following credentials:
+
+- **Host:** ```smtp.unsend.dev```
+- **Port:** ```465```, ```587```, ```2465```, or ```2587```
+- **Username:** ```unsend```
+- **Password:** ```YOUR-API-KEY```
+
+## Example with Nodemailer
+
+Following example with Nodemailer shows how you can send mails with SMTP support from Unsend and Nodemailer.
+
+```javascript
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.unsend.dev",
-  port: 2587,
+  port: 465,
   secure: false,
   auth: {
     user: "unsend",
@@ -28,3 +55,4 @@ transporter.sendMail(mailOptions, (error, info) => {
     console.log("Email sent successfully:", info.response);
   }
 });
+```
