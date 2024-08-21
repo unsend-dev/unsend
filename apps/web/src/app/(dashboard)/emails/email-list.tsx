@@ -17,7 +17,7 @@ import {
   MailWarning,
   MailX,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDate, formatDistanceToNow } from "date-fns";
 import { EmailStatus } from "@prisma/client";
 import { EmailStatusBadge } from "./email-status-badge";
 import EmailDetails from "./email-details";
@@ -31,6 +31,12 @@ import {
   SelectTrigger,
 } from "@unsend/ui/src/select";
 import Spinner from "@unsend/ui/src/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@unsend/ui/src/tooltip";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -123,16 +129,39 @@ export default function EmailsList() {
                 >
                   <TableCell className="font-medium">
                     <div className="flex gap-4 items-center">
-                      <EmailIcon status={email.latestStatus ?? "Send"} />
+                      <EmailIcon status={email.latestStatus ?? "Sent"} />
                       <p>{email.to}</p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <EmailStatusBadge status={email.latestStatus ?? "Sent"} />
+                    {email.latestStatus === "SCHEDULED" && email.scheduledAt ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <EmailStatusBadge
+                              status={email.latestStatus ?? "Sent"}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Scheduled at{" "}
+                            {formatDate(
+                              email.scheduledAt,
+                              "MMM dd'th', hh:mm a"
+                            )}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <EmailStatusBadge status={email.latestStatus ?? "Sent"} />
+                    )}
                   </TableCell>
                   <TableCell>{email.subject}</TableCell>
                   <TableCell className="text-right">
-                    {formatDistanceToNow(email.createdAt, { addSuffix: true })}
+                    {email.latestStatus !== "SCHEDULED"
+                      ? formatDistanceToNow(
+                          email.scheduledAt ?? email.createdAt
+                        )
+                      : "--"}
                   </TableCell>
                 </TableRow>
               ))
