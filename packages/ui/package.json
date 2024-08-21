@@ -43,6 +43,7 @@
     "add": "^2.0.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "cmdk": "^1.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.359.0",
     "next-themes": "^0.3.0",

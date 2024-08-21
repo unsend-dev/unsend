@@ -38,7 +38,7 @@ export async function parseSesHook(data: SesEvent) {
   await db.$executeRaw`
       UPDATE "Email"
       SET "latestStatus" = CASE
-        WHEN ${mailStatus}::text::\"EmailStatus\" > "latestStatus" OR "latestStatus" IS NULL 
+        WHEN ${mailStatus}::text::\"EmailStatus\" > "latestStatus" OR "latestStatus" IS NULL OR "latestStatus" = 'SCHEDULED'::\"EmailStatus\"
         THEN ${mailStatus}::text::\"EmailStatus\"
         ELSE "latestStatus"
       END

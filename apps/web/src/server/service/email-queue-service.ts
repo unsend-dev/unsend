@@ -41,13 +41,6 @@ export class EmailQueueService {
     );
     const marketingQuota = quota - transactionalQuota;
 
-    console.log(
-      "is transactional queue",
-      this.transactionalQueue.has(region),
-      "is marketing queue",
-      this.marketingQueue.has(region)
-    );
-
     if (this.transactionalQueue.has(region)) {
       console.log(
         `[EmailQueueService]: Updating transactional quota for region ${region} to ${transactionalQuota}`
@@ -98,7 +91,8 @@ export class EmailQueueService {
     emailId: string,
     region: string,
     transactional: boolean,
-    unsubUrl?: string
+    unsubUrl?: string,
+    delay?: number
   ) {
     if (!this.initialized) {
       await this.init();
@@ -109,7 +103,56 @@ export class EmailQueueService {
     if (!queue) {
       throw new Error(`Queue for region ${region} not found`);
     }
-    queue.add("send-email", { emailId, timestamp: Date.now(), unsubUrl });
+    queue.add(
+      emailId,
+      { emailId, timestamp: Date.now(), unsubUrl },
+      { jobId: emailId, delay }
+    );
+  }
+
+  public static async changeDelay(
+    emailId: string,
+    region: string,
+    transactional: boolean,
+    delay: number
+  ) {
+    if (!this.initialized) {
+      await this.init();
+    }
+    const queue = transactional
+      ? this.transactionalQueue.get(region)
+      : this.marketingQueue.get(region);
+    if (!queue) {
+      throw new Error(`Queue for region ${region} not found`);
+    }
+
+    const job = await queue.getJob(emailId);
+    if (!job) {
+      throw new Error(`Job ${emailId} not found`);
+    }
+    await job.changeDelay(delay);
+  }
+
+  public static async chancelEmail(
+    emailId: string,
+    region: string,
+    transactional: boolean
+  ) {
+    if (!this.initialized) {
+      await this.init();
+    }
+    const queue = transactional
+      ? this.transactionalQueue.get(region)
+      : this.marketingQueue.get(region);
+    if (!queue) {
+      throw new Error(`Queue for region ${region} not found`);
+    }
+
+    const job = await queue.getJob(emailId);
+    if (!job) {
+      throw new Error(`Job ${emailId} not found`);
+    }
+    await job.remove();
   }
 
   public static async init() {

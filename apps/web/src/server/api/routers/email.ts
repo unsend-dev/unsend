@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
+import { cancelEmail, updateEmail } from "~/server/service/email-service";
 
 const statuses = Object.values(EmailStatus) as [EmailStatus];
 
@@ -39,6 +40,7 @@ export const emailRouter = createTRPCRouter({
           latestStatus: true,
           subject: true,
           to: true,
+          scheduledAt: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -187,9 +189,22 @@ export const emailRouter = createTRPCRouter({
           domainId: true,
           text: true,
           html: true,
+          scheduledAt: true,
         },
       });
 
       return email;
+    }),
+
+  cancelEmail: teamProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      await cancelEmail(input.id);
+    }),
+
+  updateEmailScheduledAt: teamProcedure
+    .input(z.object({ id: z.string(), scheduledAt: z.string().datetime() }))
+    .mutation(async ({ input }) => {
+      await updateEmail(input.id, { scheduledAt: input.scheduledAt });
     }),
 });
