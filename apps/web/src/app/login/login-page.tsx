@@ -94,7 +94,7 @@ export default function LoginPage() {
             </svg>
             Continue with Github
           </Button>
-          {env.NEXT_PUBLIC_IS_CLOUD ? (
+          {/* {env.NEXT_PUBLIC_IS_CLOUD ? (
             <Button
               className="w-[350px]"
               size="lg"
@@ -109,7 +109,7 @@ export default function LoginPage() {
               </svg>
               Continue with Google
             </Button>
-          ) : null}
+          ) : null} */}
           {env.NEXT_PUBLIC_IS_CLOUD ? (
             <>
               <div className=" flex w-[350px]  items-center justify-between gap-2">
