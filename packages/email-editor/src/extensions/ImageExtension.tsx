@@ -8,8 +8,17 @@ export const ResizableImageExtension = TipTapImage.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
-      width: { renderHTML: ({ width }) => ({ width }) },
+      width: { renderHTML: ({ width }) => ({ width }), default: "600" },
       height: { renderHTML: ({ height }) => ({ height }) },
+      borderRadius: {
+        default: "0",
+      },
+      borderWidth: {
+        default: "0",
+      },
+      borderColor: {
+        default: "rgb(0, 0, 0)",
+      },
       alignment: {
         default: "center",
         renderHTML: ({ alignment }) => ({ "data-alignment": alignment }),
