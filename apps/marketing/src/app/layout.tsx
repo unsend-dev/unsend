@@ -89,11 +89,13 @@ export default function RootLayout({
               </nav>
             </div>
             <div className="max-w-6xl mx-auto px-4">{children}</div>
-            <div className="flex justify-between mt-20 max-w-6xl mx-auto px-4">
-              <div>
+            <div className="flex justify-between mt-20 max-w-6xl mx-auto px-4 pb-10">
+              <div className="flex gap-2 items-center">
                 <TextWithCopyButton value="hello@unsend.dev" />
               </div>
               <div className="flex gap-8 items-center">
+                <Link href="/terms">terms</Link>
+                <Link href="/privacy">privacy</Link>
                 <Link
                   href="https://github.com/unsend-dev/unsend"
                   target="_blank"
