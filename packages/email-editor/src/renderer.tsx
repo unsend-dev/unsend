@@ -655,6 +655,9 @@ export class EmailRenderer {
       height = "auto",
       alignment = "center",
       externalLink = "",
+      borderRadius,
+      borderColor,
+      borderWidth,
     } = attrs || {};
 
     const { next } = options || {};
@@ -669,8 +672,11 @@ export class EmailRenderer {
           width,
           maxWidth: "100%",
           outline: "none",
-          border: "none",
           textDecoration: "none",
+          borderStyle: "solid",
+          borderRadius: `${borderRadius}px`,
+          borderColor,
+          borderWidth: `${borderWidth}px`,
         }}
         title={title || alt || "Image"}
       />

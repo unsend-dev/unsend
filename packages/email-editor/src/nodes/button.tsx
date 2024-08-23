@@ -4,6 +4,7 @@ import {
   AlignLeftIcon,
   AlignRightIcon,
   BoxSelectIcon,
+  LinkIcon,
   ScanIcon,
 } from "lucide-react";
 import {
@@ -18,6 +19,14 @@ import { AllowedAlignments, ButtonOptions } from "../types";
 import { Separator } from "@unsend/ui/src/separator";
 import { BorderWidth } from "../components/ui/icons/BorderWidth";
 import { ColorPicker, ColorPickerPopup } from "../components/ui/ColorPicker";
+import { LinkEditorPanel } from "../components/panels/LinkEditorPanel";
+import { useState } from "react";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipContent,
+  TooltipTrigger,
+} from "@unsend/ui/src/tooltip";
 
 const alignments: Array<AllowedAlignments> = ["left", "center", "right"];
 
@@ -33,6 +42,8 @@ export function ButtonComponent(props: NodeViewProps) {
     borderWidth,
   } = props.node.attrs as ButtonOptions;
   const { getPos, editor } = props;
+
+  const [editUrlOpen, setEditUrlOpen] = useState(false);
 
   console.log(props);
 
@@ -72,21 +83,37 @@ export function ButtonComponent(props: NodeViewProps) {
                 editor.commands.setNodeSelection(pos);
               }}
             >
-              <span>{text}</span>
-              <input
-                type="text"
-                value={text}
-                onChange={(e) => {
-                  props.updateAttributes({
-                    text: e.target.value,
-                  });
-                }}
-                onBlur={() => {
-                  editor.commands.setNodeSelection(getPos());
-                }}
-                autoFocus
-                className="w-full bg-transparent text-center outline-none"
-              />
+              <div className="relative flex max-w-full items-center">
+                {props.selected}
+                <div className="inset-0 flex items-center overflow-hidden ">
+                  <span
+                    className={cn(
+                      " cursor-text",
+                      props.selected ? "text-transparent" : ""
+                    )}
+                  >
+                    {text === "" ? "Button text" : text}
+                  </span>
+                </div>
+                {props.selected ? (
+                  <form className="absolute inset-x-[-4px] inset-y-0 flex items-center justify-center">
+                    <input
+                      type="text"
+                      value={text}
+                      onChange={(e) => {
+                        props.updateAttributes({
+                          text: e.target.value,
+                        });
+                      }}
+                      onBlur={() => {
+                        editor.commands.setNodeSelection(getPos());
+                      }}
+                      autoFocus
+                      className="w-full bg-transparent text-center outline-none"
+                    />
+                  </form>
+                ) : null}
+              </div>
             </div>
           </div>
         </PopoverTrigger>
@@ -120,111 +147,171 @@ export function ButtonComponent(props: NodeViewProps) {
             />
           </div> */}
 
-          <div className="flex gap-1 items-center">
-            <div>
-              <div className="flex">
-                {alignments.map((alignment) => (
+          <TooltipProvider>
+            <div className="flex gap-1 items-center">
+              <div>
+                <div className="flex">
+                  {alignments.map((alignment) => (
+                    <Tooltip key={alignment}>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          key={alignment}
+                          className=""
+                          size="sm"
+                          type="button"
+                          onClick={() => {
+                            props.updateAttributes({
+                              alignment,
+                            });
+                          }}
+                        >
+                          <AlignmentIcon alignment={alignment} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Align {alignment}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </div>
+              <Separator orientation="vertical" className=" h-6 my-auto" />
+              <div>
+                <div className="flex">
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ColorPickerPopup
+                        trigger={
+                          <div
+                            className="h-4 w-4 rounded border"
+                            style={{
+                              backgroundColor: buttonColor,
+                            }}
+                          />
+                        }
+                        color={buttonColor}
+                        onChange={(color) => {
+                          props.updateAttributes({
+                            buttonColor: color,
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>Background color</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ColorPickerPopup
+                        trigger={
+                          <div className="flex flex-col items-center justify-center gap-[1px]">
+                            <span className="font-bolder font-mono text-xs text-slate-700">
+                              A
+                            </span>
+                            <div
+                              className="h-[2px] w-3"
+                              style={{ backgroundColor: textColor }}
+                            />
+                          </div>
+                        }
+                        color={textColor}
+                        onChange={(color) => {
+                          props.updateAttributes({
+                            textColor: color,
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>Text color</TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
+              <Separator orientation="vertical" className=" h-6 my-auto" />
+              <div>
+                <div className="flex gap-1">
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center border border-transparent hover:border-border focus-within:border-border gap-1 px-1 py-0.5 rounded-md">
+                        <ScanIcon className="text-slate-700 h-4 w-4" />
+                        <Input
+                          value={_radius}
+                          onChange={(e) =>
+                            props.updateAttributes({
+                              borderRadius: e.target.value,
+                            })
+                          }
+                          className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>Border radius</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center border border-transparent hover:border-border focus-within:border-border gap-1 px-1 py-0.5 rounded-md">
+                        <BorderWidth className="text-slate-700 h-4 w-4" />
+                        <Input
+                          value={borderWidth}
+                          onChange={(e) =>
+                            props.updateAttributes({
+                              borderWidth: e.target.value,
+                            })
+                          }
+                          className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>Border width</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ColorPickerPopup
+                        trigger={
+                          <BoxSelectIcon
+                            className="h-4 w-4"
+                            style={{ color: borderColor }}
+                          />
+                        }
+                        color={borderColor}
+                        onChange={(color) => {
+                          props.updateAttributes({
+                            borderColor: color,
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>Border color</TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
+              <Separator orientation="vertical" className=" h-6 my-auto" />
+              <Popover open={editUrlOpen} onOpenChange={setEditUrlOpen}>
+                <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
-                    key={alignment}
-                    className=""
+                    className="px-2"
                     size="sm"
                     type="button"
-                    onClick={() => {
-                      props.updateAttributes({
-                        alignment,
-                      });
-                    }}
                   >
-                    <AlignmentIcon alignment={alignment} />
+                    Link
+                    <LinkIcon className="h-4 w-4 ml-2" />
                   </Button>
-                ))}
-              </div>
-            </div>
-            <Separator orientation="vertical" className=" h-6 my-auto" />
-            <div>
-              <div className="flex">
-                <ColorPickerPopup
-                  trigger={
-                    <div
-                      className="h-4 w-4 rounded border"
-                      style={{
-                        backgroundColor: buttonColor,
-                      }}
-                    />
-                  }
-                  color={buttonColor}
-                  onChange={(color) => {
-                    props.updateAttributes({
-                      buttonColor: color,
-                    });
-                  }}
-                />
-                <ColorPickerPopup
-                  trigger={
-                    <div className="flex flex-col items-center justify-center gap-[1px]">
-                      <span className="font-bolder font-mono text-xs text-slate-700">
-                        A
-                      </span>
-                      <div
-                        className="h-[2px] w-3"
-                        style={{ backgroundColor: textColor }}
-                      />
-                    </div>
-                  }
-                  color={textColor}
-                  onChange={(color) => {
-                    props.updateAttributes({
-                      textColor: color,
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <Separator orientation="vertical" className=" h-6 my-auto" />
-            <div>
-              <div className="flex gap-1">
-                <div className="flex items-center border border-transparent hover:border-border focus-within:border-border gap-1 px-1 py-0.5 rounded-md">
-                  <ScanIcon className="text-slate-700 h-4 w-4" />
-                  <Input
-                    value={_radius}
-                    onChange={(e) =>
+                </PopoverTrigger>
+                <PopoverContent className="light border-gray-200 px-4 py-2">
+                  <LinkEditorPanel
+                    initialUrl={url}
+                    onSetLink={(u) => {
                       props.updateAttributes({
-                        borderRadius: e.target.value,
-                      })
-                    }
-                    className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
+                        url: u,
+                      });
+                      setEditUrlOpen(false);
+                    }}
                   />
-                </div>
-                <div className="flex items-center border border-transparent hover:border-border focus-within:border-border gap-1 px-1 py-0.5 rounded-md">
-                  <BorderWidth className="text-slate-700 h-4 w-4" />
-                  <Input
-                    value={borderWidth}
-                    onChange={(e) =>
-                      props.updateAttributes({
-                        borderWidth: e.target.value,
-                      })
-                    }
-                    className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
-                  />
-                </div>
-                <ColorPickerPopup
-                  trigger={
-                    <BoxSelectIcon
-                      className="h-4 w-4"
-                      style={{ color: borderColor }}
-                    />
-                  }
-                  color={borderColor}
-                  onChange={(color) => {
-                    props.updateAttributes({
-                      borderColor: color,
-                    });
-                  }}
-                />
-              </div>
+                </PopoverContent>
+              </Popover>
             </div>
-          </div>
+          </TooltipProvider>
         </PopoverContent>
       </Popover>
     </NodeViewWrapper>

@@ -40,6 +40,9 @@ export const ResizableImageExtension = TipTapImage.extend({
           return externalLink ? { externalLink } : null;
         },
       },
+      alt: {
+        default: "image",
+      },
     };
   },
   addNodeView() {

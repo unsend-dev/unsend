@@ -7,13 +7,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@unsend/ui/src/popover";
-import { ExpandIcon, ScanIcon } from "lucide-react";
+import {
+  ExpandIcon,
+  ScanIcon,
+  LinkIcon,
+  ImageIcon,
+  TypeIcon,
+} from "lucide-react";
 import { Input } from "@unsend/ui/src/input";
 import { BorderWidth } from "../components/ui/icons/BorderWidth";
 import { ColorPickerPopup } from "../components/ui/ColorPicker";
 import { AllowedAlignments } from "../types";
 import { Button } from "@unsend/ui/src/button";
 import { AlignmentIcon } from "../components/ui/icons/AlignmentIcon";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipContent,
+  TooltipTrigger,
+} from "@unsend/ui/src/tooltip";
+import { Separator } from "@unsend/ui/src/separator";
+import { LinkEditorPanel } from "../components/panels/LinkEditorPanel";
+import { TextEditorPanel } from "../components/panels/TextEditorPanel";
 
 const alignments: Array<AllowedAlignments> = ["left", "center", "right"];
 
@@ -35,9 +50,13 @@ export function ResizableImageTemplate(props: NodeViewProps) {
     borderRadius,
     borderWidth,
     borderColor,
+    src,
   } = node.attrs || {};
 
   const [widthState, setWidthState] = useState<string>(width.toString());
+  const [openLink, setOpenLink] = useState(false);
+  const [openImgSrc, setOpenImgSrc] = useState(false);
+  const [openAltText, setOpenAltText] = useState(false);
 
   const handleMouseDown = useEvent(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -138,13 +157,19 @@ export function ResizableImageTemplate(props: NodeViewProps) {
           [direction]: 5,
           top: "50%",
           transform: "translateY(-50%)",
-          cursor: `${direction === "left" ? "w" : "e"}-resize`,
+          cursor: "ew-resize",
         }}
       />
     );
   }
 
-  const { externalLink, ...attrs } = node.attrs || {};
+  const {
+    externalLink,
+    alt,
+    borderRadius: _br,
+    borderColor: _bc,
+    ...attrs
+  } = node.attrs || {};
 
   return (
     <NodeViewWrapper
@@ -191,26 +216,30 @@ export function ResizableImageTemplate(props: NodeViewProps) {
         <PopoverContent
           align="start"
           side="top"
-          className="light border-gray-200 px-4 py-2"
+          className="light border-gray-200 px-2 py-2 w-[32rem]"
           sideOffset={10}
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          <div>
-            <div className="flex items-center gap-2">
-              <div>
-                <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
-                  <ExpandIcon className="text-slate-700 h-4 w-4" />
-                  <Input
-                    value={widthState}
-                    onChange={(e) => updateWidth(e.target.value)}
-                    className="border-0 focus-visible:ring-0 h-6 p-0 w-8"
-                  />
-                </div>
-              </div>
-              <div className="w-full">
-                <div className="flex w-full justify-between">
-                  {alignments.map((alignment) => (
+          <TooltipProvider>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
+                    <ExpandIcon className="text-slate-700 h-4 w-4" />
+                    <Input
+                      value={widthState}
+                      onChange={(e) => updateWidth(e.target.value)}
+                      className="border-0 focus-visible:ring-0 h-6 p-0 w-8"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Width</TooltipContent>
+              </Tooltip>
+              <Separator orientation="vertical" className="h-6 my-auto" />
+              {alignments.map((alignment) => (
+                <Tooltip key={alignment}>
+                  <TooltipTrigger>
                     <Button
                       variant="ghost"
                       key={alignment}
@@ -225,56 +254,157 @@ export function ResizableImageTemplate(props: NodeViewProps) {
                     >
                       <AlignmentIcon alignment={alignment} />
                     </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-gray-500 mt-4">Border</div>
-              <div className="flex gap-2">
-                <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
-                  <ScanIcon className="text-slate-700 h-4 w-4" />
-                  <Input
-                    value={borderRadius}
-                    onChange={(e) =>
-                      props.updateAttributes({
-                        borderRadius: e.target.value,
-                      })
-                    }
-                    className="border-0 focus-visible:ring-0 h-6 p-0"
-                  />
-                </div>
-                <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
-                  <BorderWidth className="text-slate-700 h-4 w-4" />
-                  <Input
-                    value={borderWidth}
-                    onChange={(e) =>
-                      props.updateAttributes({
-                        borderWidth: e.target.value,
-                      })
-                    }
-                    className="border-0 focus-visible:ring-0 h-6 p-0"
-                  />
-                </div>
-                <ColorPickerPopup
-                  trigger={
-                    <div
-                      className="h-4 w-4 rounded border"
-                      style={{
-                        backgroundColor: borderColor,
-                      }}
+                  </TooltipTrigger>
+                  <TooltipContent>Align {alignment}</TooltipContent>
+                </Tooltip>
+              ))}
+              <Separator orientation="vertical" className="h-6 my-auto" />
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
+                    <ScanIcon className="text-slate-700 h-4 w-4" />
+                    <Input
+                      value={borderRadius}
+                      onChange={(e) =>
+                        props.updateAttributes({
+                          borderRadius: e.target.value,
+                        })
+                      }
+                      className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
                     />
-                  }
-                  color={borderColor}
-                  onChange={(color) => {
-                    props.updateAttributes({
-                      borderColor: color,
-                    });
-                  }}
-                />
-              </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Border radius</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center border border-transparent focus-within:border-border gap-2 px-1 py-0.5 rounded-md">
+                    <BorderWidth className="text-slate-700 h-4 w-4" />
+                    <Input
+                      value={borderWidth}
+                      onChange={(e) =>
+                        props.updateAttributes({
+                          borderWidth: e.target.value,
+                        })
+                      }
+                      className="border-0 focus-visible:ring-0 h-6 p-0 w-5"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Border width</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <ColorPickerPopup
+                    trigger={
+                      <div
+                        className="h-4 w-4 rounded border"
+                        style={{
+                          backgroundColor: borderColor,
+                        }}
+                      />
+                    }
+                    color={borderColor}
+                    onChange={(color) => {
+                      props.updateAttributes({
+                        borderColor: color,
+                      });
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>Border color</TooltipContent>
+              </Tooltip>
+              <Separator orientation="vertical" className="h-6 my-auto" />
+              <Popover open={openImgSrc} onOpenChange={setOpenImgSrc}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="px-2"
+                    size="sm"
+                    type="button"
+                    onClick={() => setOpenImgSrc(true)}
+                  >
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <ImageIcon className="h-4 w-4 " />
+                      </TooltipTrigger>
+                      <TooltipContent>Image source</TooltipContent>
+                    </Tooltip>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="light border-gray-200 px-4 py-2">
+                  <LinkEditorPanel
+                    initialUrl={src}
+                    onSetLink={(u) => {
+                      props.updateAttributes({
+                        src: u,
+                      });
+                      setOpenImgSrc(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover open={openAltText} onOpenChange={setOpenAltText}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="px-2"
+                    size="sm"
+                    type="button"
+                    onClick={() => setOpenAltText(true)}
+                  >
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <TypeIcon className="h-4 w-4 " />
+                      </TooltipTrigger>
+                      <TooltipContent>Alt text</TooltipContent>
+                    </Tooltip>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="light border-gray-200 px-4 py-2">
+                  <TextEditorPanel
+                    initialText={alt}
+                    onSetInitialText={(t) => {
+                      props.updateAttributes({
+                        alt: t,
+                      });
+                      setOpenAltText(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover open={openLink} onOpenChange={setOpenLink}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="px-2"
+                    size="sm"
+                    type="button"
+                    onClick={() => setOpenLink(true)}
+                  >
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <LinkIcon className="h-4 w-4 " />
+                      </TooltipTrigger>
+                      <TooltipContent>Link</TooltipContent>
+                    </Tooltip>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="light border-gray-200 px-4 py-2">
+                  <LinkEditorPanel
+                    initialUrl={externalLink}
+                    onSetLink={(u) => {
+                      props.updateAttributes({
+                        externalLink: u,
+                      });
+                      setOpenLink(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-          </div>
+          </TooltipProvider>
         </PopoverContent>
       </Popover>
     </NodeViewWrapper>
