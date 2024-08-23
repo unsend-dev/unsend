@@ -1,6 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@unsend/ui/src/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@unsend/ui/src/popover";
+import { ReactNode, useState } from "react";
 import { HexAlphaColorPicker, HexColorInput } from "react-colorful";
 
 type ColorPickerProps = {
@@ -19,7 +25,7 @@ export function ColorPicker(props: ColorPickerProps) {
   };
 
   return (
-    <div className="min-w-[260px] rounded-xl border bg-white p-4">
+    <div className="min-w-[260px] rounded-xl shadow border border-gray-200 bg-white p-4">
       <HexAlphaColorPicker
         color={color}
         onChange={handleColorChange}
@@ -33,5 +39,38 @@ export function ColorPicker(props: ColorPickerProps) {
         prefixed
       />
     </div>
+  );
+}
+
+export function ColorPickerPopup(
+  props: ColorPickerProps & { trigger: ReactNode }
+) {
+  const { color, onChange } = props;
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" className="" size="sm" type="button">
+          {props.trigger}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full rounded-none border-0 !bg-transparent !p-0 shadow-none drop-shadow-md">
+        <ColorPicker
+          color={color}
+          onChange={(newColor) => {
+            // HACK: This is a workaround for a bug in tiptap
+            // https://github.com/ueberdosis/tiptap/issues/3580
+            //
+            //     ERROR: flushSync was called from inside a lifecycle
+            //
+            // To fix this, we need to make sure that the onChange
+            // callback is run after the current execution context.
+            queueMicrotask(() => {
+              onChange?.(newColor);
+            });
+          }}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

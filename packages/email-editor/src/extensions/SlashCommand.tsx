@@ -8,6 +8,7 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
+  ImageIcon,
   ListIcon,
   ListOrderedIcon,
   RectangleEllipsisIcon,
@@ -151,70 +152,22 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).toggleOrderedList().run();
     },
   },
-  // {
-  //   title: "Image",
-  //   description: "Full width image",
-  //   searchTerms: ["image"],
-  //   icon: <ImageIcon className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     const imageUrl = prompt("Image URL: ") || "";
+  {
+    title: "Image",
+    description: "Full width image",
+    searchTerms: ["image"],
+    icon: <ImageIcon className="h-4 w-4" />,
+    command: ({ editor, range }: CommandProps) => {
+      const imageUrl = prompt("Image URL: ") || "";
 
-  //     if (!imageUrl) {
-  //       return;
-  //     }
+      if (!imageUrl) {
+        return;
+      }
 
-  //     editor.chain().focus().deleteRange(range).run();
-  //     editor.chain().focus().setImage({ src: imageUrl }).run();
-  //   },
-  // },
-  // {
-  //   title: "Logo",
-  //   description: "Add your brand logo",
-  //   searchTerms: ["image", "logo"],
-  //   icon: <ImageIcon className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     const logoUrl = prompt("Logo URL: ") || "";
-
-  //     if (!logoUrl) {
-  //       return;
-  //     }
-  //     editor.chain().focus().deleteRange(range).run();
-  //     editor.chain().focus().setLogoImage({ src: logoUrl }).run();
-  //   },
-  // },
-  // {
-  //   title: "Spacer",
-  //   description:
-  //     "Add a spacer to email. Useful for adding space between sections.",
-  //   searchTerms: ["space", "gap", "divider"],
-  //   icon: <MoveVertical className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     editor
-  //       .chain()
-  //       .focus()
-  //       .deleteRange(range)
-  //       .setSpacer({ height: "sm" })
-  //       .run();
-  //   },
-  // },
-  // {
-  //   title: "Button",
-  //   description: "Add a call to action button to email.",
-  //   searchTerms: ["link", "button", "cta"],
-  //   icon: <MousePointer className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     editor.chain().focus().deleteRange(range).setButton().run();
-  //   },
-  // },
-  // {
-  //   title: "Link Card",
-  //   description: "Add a link card to email.",
-  //   searchTerms: ["link", "button", "image"],
-  //   icon: <ArrowUpRightSquare className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     editor.chain().focus().deleteRange(range).setLinkCard().run();
-  //   },
-  // },
+      editor.chain().focus().deleteRange(range).run();
+      editor.chain().focus().setImage({ src: imageUrl }).run();
+    },
+  },
   {
     title: "Hard Break",
     description: "Add a break between lines.",

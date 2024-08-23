@@ -16,6 +16,7 @@ import { SlashCommand, getSlashCommandSuggestions } from "./SlashCommand";
 import { VariableExtension } from "./VariableExtension";
 import { getVariableSuggestions } from "../nodes/variable";
 import { UnsubscribeFooterExtension } from "./UnsubsubscribeExtension";
+import { ResizableImageExtension } from "./ImageExtension";
 
 export function extensions({ variables }: { variables?: Array<string> }) {
   const extensions = [
@@ -74,6 +75,7 @@ export function extensions({ variables }: { variables?: Array<string> }) {
       suggestion: getVariableSuggestions(variables),
     }),
     UnsubscribeFooterExtension,
+    ResizableImageExtension,
   ];
 
   return extensions;
