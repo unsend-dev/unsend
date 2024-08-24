@@ -2,21 +2,21 @@
   "name": "@unsend/email-editor",
   "version": "0.0.1",
   "description": "Email editor used by unsend",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "files": [
-    "dist/**"
+    "src"
   ],
   "scripts": {
-    "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "build": "tsup"
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/eslint": "^9.6.0",
     "@types/react": "^18.3.3",
     "@unsend/eslint-config": "workspace:*",
     "@unsend/tailwind-config": "workspace:*",
@@ -50,6 +50,7 @@
     "@tiptap/react": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
     "@tiptap/suggestion": "^2.4.0",
+    "eslint": "^9.9.1",
     "jsx-email": "^1.12.1",
     "lucide-react": "^0.359.0",
     "react-colorful": "^5.6.1",
