@@ -18,7 +18,7 @@ import { Button } from "@unsend/ui/src/button";
 import { AllowedAlignments, ButtonOptions } from "../types";
 import { Separator } from "@unsend/ui/src/separator";
 import { BorderWidth } from "../components/ui/icons/BorderWidth";
-import { ColorPicker, ColorPickerPopup } from "../components/ui/ColorPicker";
+import { ColorPickerPopup } from "../components/ui/ColorPicker";
 import { LinkEditorPanel } from "../components/panels/LinkEditorPanel";
 import { useState } from "react";
 import {
@@ -96,7 +96,21 @@ export function ButtonComponent(props: NodeViewProps) {
                   </span>
                 </div>
                 {props.selected ? (
-                  <form className="absolute inset-x-[-4px] inset-y-0 flex items-center justify-center">
+                  <form
+                    className="absolute inset-x-[-4px] inset-y-0 flex items-center justify-center"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const endPos = props.getPos() + props.node.nodeSize;
+
+                      editor.commands.focus("start");
+
+                      editor
+                        .chain()
+                        .insertContentAt(endPos, { type: "paragraph" })
+                        .focus(endPos)
+                        .run();
+                    }}
+                  >
                     <input
                       type="text"
                       value={text}

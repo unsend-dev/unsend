@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { useInterval } from "~/hooks/useInterval";
 import { Spinner } from "@unsend/ui/src/spinner";
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
@@ -147,8 +146,8 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
   const confirmation = sendForm.watch("confirmation");
 
   return (
-    <div className="p-4">
-      <div className="w-[600px] mx-auto">
+    <div className="p-4 container mx-auto">
+      <div className="w-[664px] mx-auto">
         <div className="mb-4 flex justify-between items-center">
           <Input
             type="text"

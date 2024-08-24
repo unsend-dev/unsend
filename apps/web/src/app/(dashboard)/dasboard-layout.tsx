@@ -38,7 +38,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full h-full">
-      <div className="hidden bg-muted/20 md:block md:w-[280px]">
+      <div className="hidden bg-muted/20 md:block md:w-[230px]">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 gap-4 items-center px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">

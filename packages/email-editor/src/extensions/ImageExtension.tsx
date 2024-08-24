@@ -2,8 +2,6 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 import TipTapImage from "@tiptap/extension-image";
 import { ResizableImageTemplate } from "../nodes/image-resize";
 
-const BORDER_COLOR = "#0096fd";
-
 export const ResizableImageExtension = TipTapImage.extend({
   addAttributes() {
     return {
