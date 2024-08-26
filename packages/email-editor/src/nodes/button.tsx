@@ -167,7 +167,7 @@ export function ButtonComponent(props: NodeViewProps) {
                 <div className="flex">
                   {alignments.map((alignment) => (
                     <Tooltip key={alignment}>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           key={alignment}

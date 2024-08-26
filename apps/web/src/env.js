@@ -49,6 +49,10 @@ export const env = createEnv({
       .string()
       .default("false")
       .transform((str) => str === "true"), // Converts string "true" to boolean true
+    S3_COMPATIBLE_ACCESS_KEY: z.string().optional(),
+    S3_COMPATIBLE_SECRET_KEY: z.string().optional(),
+    S3_COMPATIBLE_API_URL: z.string().optional(),
+    S3_COMPATIBLE_PUBLIC_URL: z.string().optional(),
   },
 
   /**
@@ -88,6 +92,10 @@ export const env = createEnv({
     REDIS_URL: process.env.REDIS_URL,
     FROM_EMAIL: process.env.FROM_EMAIL,
     ENABLE_PRISMA_CLIENT: process.env.ENABLE_PRISMA_CLIENT, // Add this line
+    S3_COMPATIBLE_ACCESS_KEY: process.env.S3_COMPATIBLE_ACCESS_KEY,
+    S3_COMPATIBLE_SECRET_KEY: process.env.S3_COMPATIBLE_SECRET_KEY,
+    S3_COMPATIBLE_API_URL: process.env.S3_COMPATIBLE_API_URL,
+    S3_COMPATIBLE_PUBLIC_URL: process.env.S3_COMPATIBLE_PUBLIC_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

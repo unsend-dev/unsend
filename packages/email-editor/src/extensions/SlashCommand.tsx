@@ -27,6 +27,7 @@ import {
   useState,
 } from "react";
 import tippy, { GetReferenceClientRect } from "tippy.js";
+import { UploadFn } from "./ImageExtension";
 
 export interface CommandProps {
   editor: Editor;
@@ -65,6 +66,7 @@ export const SlashCommand = Extension.create({
           props.command({ editor, range });
         },
       },
+      uploadImage: undefined as UploadFn | undefined,
     };
   },
   addProseMirrorPlugins() {
@@ -77,7 +79,7 @@ export const SlashCommand = Extension.create({
   },
 });
 
-const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
+const DEFAULT_SLASH_COMMANDS = (uploadImage?: UploadFn): SlashCommandItem[] => [
   {
     title: "Text",
     description: "Just start typing with plain text.",
@@ -158,14 +160,46 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
     searchTerms: ["image"],
     icon: <ImageIcon className="h-4 w-4" />,
     command: ({ editor, range }: CommandProps) => {
-      const imageUrl = prompt("Image URL: ") || "";
+      if (uploadImage) {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (file && uploadImage) {
+            editor.chain().focus().deleteRange(range).run();
+            const placeholder = URL.createObjectURL(file);
+            editor
+              .chain()
+              .focus()
+              .setImage({ src: placeholder })
+              .updateAttributes("image", { isUploading: true })
+              .run();
+            try {
+              console.log("before upload");
+              const url = await uploadImage(file);
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("image", { src: url, isUploading: false })
+                .run();
+            } catch (e) {
+              editor.chain().focus().deleteNode("image").run();
+              console.error("Failed to upload image:", e);
+            }
+          }
+        };
+        input.click();
+      } else {
+        const imageUrl = prompt("Image URL: ") || "";
 
-      if (!imageUrl) {
-        return;
+        if (!imageUrl) {
+          return;
+        }
+
+        editor.chain().focus().deleteRange(range).run();
+        editor.chain().focus().setImage({ src: imageUrl }).run();
       }
-
-      editor.chain().focus().deleteRange(range).run();
-      editor.chain().focus().setImage({ src: imageUrl }).run();
     },
   },
   {
@@ -186,16 +220,6 @@ const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).toggleBlockquote().run();
     },
   },
-  // {
-  //   title: "Footer",
-  //   description: "Add a footer text to email.",
-  //   searchTerms: ["footer", "text"],
-  //   icon: <FootprintsIcon className="h-4 w-4" />,
-  //   command: ({ editor, range }: CommandProps) => {
-  //     editor.chain().focus().deleteRange(range).setFooter().run();
-  //   },
-  // },
-
   {
     title: "Button",
     description: "Add code.",
@@ -372,22 +396,25 @@ const CommandList = ({
 };
 
 export function getSlashCommandSuggestions(
-  commands: SlashCommandItem[] = []
+  commands: SlashCommandItem[] = [],
+  uploadImage?: UploadFn
 ): Omit<SuggestionOptions, "editor"> {
   return {
     items: ({ query }) => {
-      return [...DEFAULT_SLASH_COMMANDS, ...commands].filter((item) => {
-        if (typeof query === "string" && query.length > 0) {
-          const search = query.toLowerCase();
-          return (
-            item.title.toLowerCase().includes(search) ||
-            item.description.toLowerCase().includes(search) ||
-            (item.searchTerms &&
-              item.searchTerms.some((term: string) => term.includes(search)))
-          );
+      return [...DEFAULT_SLASH_COMMANDS(uploadImage), ...commands].filter(
+        (item) => {
+          if (typeof query === "string" && query.length > 0) {
+            const search = query.toLowerCase();
+            return (
+              item.title.toLowerCase().includes(search) ||
+              item.description.toLowerCase().includes(search) ||
+              (item.searchTerms &&
+                item.searchTerms.some((term: string) => term.includes(search)))
+            );
+          }
+          return true;
         }
-        return true;
-      });
+      );
     },
     render: () => {
       let component: ReactRenderer<any>;

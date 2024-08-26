@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@unsend/ui/src/tooltip";
 import { Separator } from "@unsend/ui/src/separator";
+import Spinner from "@unsend/ui/src/spinner";
 import { LinkEditorPanel } from "../components/panels/LinkEditorPanel";
 import { TextEditorPanel } from "../components/panels/TextEditorPanel";
 
@@ -168,6 +169,7 @@ export function ResizableImageTemplate(props: NodeViewProps) {
     alt,
     borderRadius: _br,
     borderColor: _bc,
+    isUploading,
     ...attrs
   } = node.attrs || {};
 
@@ -195,18 +197,31 @@ export function ResizableImageTemplate(props: NodeViewProps) {
         }[alignment as string] || {}),
       }}
     >
-      <Popover open={props.selected}>
+      <Popover open={props.selected && !isUploading}>
         <PopoverTrigger>
-          <img
-            {...attrs}
-            ref={imgRef}
-            style={{
-              ...resizingStyle,
-              cursor: "default",
-              marginBottom: 0,
-            }}
-          />
-          {selected && (
+          {isUploading ? (
+            <div className="relative w-full h-full">
+              <img
+                {...attrs}
+                className="flex items-center justify-center opacity-70"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Spinner className="w-8 h-8 text-primary" />
+              </div>
+            </div>
+          ) : (
+            <img
+              {...attrs}
+              ref={imgRef}
+              style={{
+                ...resizingStyle,
+                cursor: "default",
+                marginBottom: 0,
+              }}
+            />
+          )}
+
+          {selected && !isUploading && (
             <>
               {dragButton("left")}
               {dragButton("right")}
@@ -239,7 +254,7 @@ export function ResizableImageTemplate(props: NodeViewProps) {
               <Separator orientation="vertical" className="h-6 my-auto" />
               {alignments.map((alignment) => (
                 <Tooltip key={alignment}>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       key={alignment}
@@ -326,7 +341,7 @@ export function ResizableImageTemplate(props: NodeViewProps) {
                     onClick={() => setOpenImgSrc(true)}
                   >
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <ImageIcon className="h-4 w-4 " />
                       </TooltipTrigger>
                       <TooltipContent>Image source</TooltipContent>
@@ -346,22 +361,22 @@ export function ResizableImageTemplate(props: NodeViewProps) {
                 </PopoverContent>
               </Popover>
               <Popover open={openAltText} onOpenChange={setOpenAltText}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="px-2"
-                    size="sm"
-                    type="button"
-                    onClick={() => setOpenAltText(true)}
-                  >
-                    <Tooltip>
-                      <TooltipTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="px-2"
+                        size="sm"
+                        type="button"
+                        onClick={() => setOpenAltText(true)}
+                      >
                         <TypeIcon className="h-4 w-4 " />
-                      </TooltipTrigger>
-                      <TooltipContent>Alt text</TooltipContent>
-                    </Tooltip>
-                  </Button>
-                </PopoverTrigger>
+                      </Button>
+                    </PopoverTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Alt text</TooltipContent>
+                </Tooltip>
                 <PopoverContent className="light border-gray-200 px-4 py-2">
                   <TextEditorPanel
                     initialText={alt}
@@ -375,22 +390,23 @@ export function ResizableImageTemplate(props: NodeViewProps) {
                 </PopoverContent>
               </Popover>
               <Popover open={openLink} onOpenChange={setOpenLink}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="px-2"
-                    size="sm"
-                    type="button"
-                    onClick={() => setOpenLink(true)}
-                  >
-                    <Tooltip>
-                      <TooltipTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="px-2"
+                        size="sm"
+                        type="button"
+                        onClick={() => setOpenLink(true)}
+                      >
                         <LinkIcon className="h-4 w-4 " />
-                      </TooltipTrigger>
-                      <TooltipContent>Link</TooltipContent>
-                    </Tooltip>
-                  </Button>
-                </PopoverTrigger>
+                      </Button>
+                    </PopoverTrigger>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Link</TooltipContent>
+                </Tooltip>
                 <PopoverContent className="light border-gray-200 px-4 py-2">
                   <LinkEditorPanel
                     initialUrl={externalLink}
