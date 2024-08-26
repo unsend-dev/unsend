@@ -67,10 +67,10 @@ export const ResizableImageExtension =
           props: {
             handleDOMEvents: {
               drop: (view, event) => {
-                event.preventDefault();
-
                 const hasFiles = event.dataTransfer?.files?.length;
                 if (!hasFiles) return false;
+
+                event.preventDefault();
 
                 const image = Array.from(event.dataTransfer.files).find(
                   (file) => file.type.startsWith("image/")
