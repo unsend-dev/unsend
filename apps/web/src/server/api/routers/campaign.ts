@@ -210,7 +210,7 @@ export const campaignRouter = createTRPCRouter({
         input.type
       );
 
-      const imageUrl = `${env.S3_COMPATIBLE_PUBLIC_URL}/${DEFAULT_BUCKET}/${team.id}/${randomName}`;
+      const imageUrl = `${env.S3_COMPATIBLE_PUBLIC_URL}/${team.id}/${randomName}`;
 
       return { uploadUrl: url, imageUrl };
     }),
