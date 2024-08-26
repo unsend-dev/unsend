@@ -16,9 +16,15 @@ import { SlashCommand, getSlashCommandSuggestions } from "./SlashCommand";
 import { VariableExtension } from "./VariableExtension";
 import { getVariableSuggestions } from "../nodes/variable";
 import { UnsubscribeFooterExtension } from "./UnsubsubscribeExtension";
-import { ResizableImageExtension } from "./ImageExtension";
+import { ResizableImageExtension, UploadFn } from "./ImageExtension";
 
-export function extensions({ variables }: { variables?: Array<string> }) {
+export function extensions({
+  variables,
+  uploadImage,
+}: {
+  variables?: Array<string>;
+  uploadImage?: UploadFn;
+}) {
   const extensions = [
     StarterKit.configure({
       heading: {
@@ -64,7 +70,8 @@ export function extensions({ variables }: { variables?: Array<string> }) {
     TaskItem,
     TaskList,
     SlashCommand.configure({
-      suggestion: getSlashCommandSuggestions([]),
+      suggestion: getSlashCommandSuggestions([], uploadImage),
+      uploadImage,
     }),
     Placeholder.configure({
       placeholder: "write something on '/' for commands",
@@ -75,7 +82,7 @@ export function extensions({ variables }: { variables?: Array<string> }) {
       suggestion: getVariableSuggestions(variables),
     }),
     UnsubscribeFooterExtension,
-    ResizableImageExtension,
+    ResizableImageExtension.configure({ uploadImage }),
   ];
 
   return extensions;

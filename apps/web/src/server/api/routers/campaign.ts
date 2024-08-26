@@ -1,17 +1,24 @@
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { env } from "~/env";
 import {
   teamProcedure,
   createTRPCRouter,
   campaignProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { nanoid } from "~/server/nanoid";
 import {
   sendCampaign,
   subscribeContact,
 } from "~/server/service/campaign-service";
 import { validateDomainFromEmail } from "~/server/service/domain-service";
+import {
+  DEFAULT_BUCKET,
+  getDocumentUploadUrl,
+  isStorageConfigured,
+} from "~/server/service/storage-service";
 
 export const campaignRouter = createTRPCRouter({
   getCampaigns: teamProcedure
@@ -137,13 +144,19 @@ export const campaignRouter = createTRPCRouter({
       });
     }
 
+    const imageUploadSupported = isStorageConfigured();
+
     if (campaign?.contactBookId) {
       const contactBook = await db.contactBook.findUnique({
         where: { id: campaign.contactBookId },
       });
-      return { ...campaign, contactBook };
+      return { ...campaign, contactBook, imageUploadSupported };
     }
-    return { ...campaign, contactBook: null };
+    return {
+      ...campaign,
+      contactBook: null,
+      imageUploadSupported,
+    };
   }),
 
   sendCampaign: campaignProcedure.mutation(
@@ -180,4 +193,25 @@ export const campaignRouter = createTRPCRouter({
       return newCampaign;
     }
   ),
+
+  generateImagePresignedUrl: campaignProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        type: z.string(),
+      })
+    )
+    .mutation(async ({ ctx: { team }, input }) => {
+      const extension = input.name.split(".").pop();
+      const randomName = `${nanoid()}.${extension}`;
+
+      const url = await getDocumentUploadUrl(
+        `${team.id}/${randomName}`,
+        input.type
+      );
+
+      const imageUrl = `${env.S3_COMPATIBLE_PUBLIC_URL}/${DEFAULT_BUCKET}/${team.id}/${randomName}`;
+
+      return { uploadUrl: url, imageUrl };
+    }),
 });

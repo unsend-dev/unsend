@@ -29,6 +29,20 @@ services:
       - cache:/data
     command: ["redis-server", "--maxmemory-policy", "noeviction"]
 
+  minio:
+    image: minio/minio
+    container_name: unsend-storage-prod
+    ports:
+      - 9002:9002
+      - 9001:9001
+    volumes:
+      - storage:/data
+    environment:
+      MINIO_ROOT_USER: unsend
+      MINIO_ROOT_PASSWORD: password
+    entrypoint: sh
+    command: -c 'mkdir -p /data/unsend && minio server /data --console-address ":9001" --address ":9002"'
+
   unsend:
     image: unsend/unsend:latest
     container_name: unsend
@@ -57,3 +71,4 @@ services:
 volumes:
   database:
   cache:
+  storage:
