@@ -33,7 +33,11 @@
         "UNSEND_API_KEY",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
-        "NEXT_PUBLIC_IS_CLOUD"
+        "NEXT_PUBLIC_IS_CLOUD",
+        "S3_COMPATIBLE_ACCESS_KEY",
+        "S3_COMPATIBLE_SECRET_KEY",
+        "S3_COMPATIBLE_API_URL",
+        "S3_COMPATIBLE_PUBLIC_URL"
       ]
     },
     "lint": {

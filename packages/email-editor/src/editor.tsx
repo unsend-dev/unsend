@@ -15,6 +15,7 @@ import { cn } from "@unsend/ui/lib/utils";
 import { extensions } from "./extensions";
 import LinkMenu from "./menus/LinkMenu";
 import { Content, Editor as TipTapEditor } from "@tiptap/core";
+import { UploadFn } from "./extensions/ImageExtension";
 
 const content = `<h2>Hello World!</h2>
 
@@ -65,12 +66,14 @@ export type EditorProps = {
   onUpdate?: (content: TipTapEditor) => void;
   initialContent?: Content;
   variables?: Array<string>;
+  uploadImage?: UploadFn;
 };
 
 export const Editor: React.FC<EditorProps> = ({
   onUpdate,
   initialContent,
   variables,
+  uploadImage,
 }) => {
   const menuContainerRef = useRef(null);
 
@@ -91,7 +94,7 @@ export const Editor: React.FC<EditorProps> = ({
         },
       },
     },
-    extensions: extensions({ variables }),
+    extensions: extensions({ variables, uploadImage }),
     onUpdate: ({ editor }) => {
       onUpdate?.(editor);
     },

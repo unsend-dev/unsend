@@ -40,6 +40,8 @@ const sendSchema = z.object({
   confirmation: z.string(),
 });
 
+const IMAGE_SIZE_LIMIT = 10 * 1024 * 1024;
+
 export default function EditCampaignPage({
   params,
 }: {
@@ -79,7 +81,11 @@ export default function EditCampaignPage({
   return <CampaignEditor campaign={campaign} />;
 }
 
-function CampaignEditor({ campaign }: { campaign: Campaign }) {
+function CampaignEditor({
+  campaign,
+}: {
+  campaign: Campaign & { imageUploadSupported: boolean };
+}) {
   const contactBooksQuery = api.contacts.getContactBooks.useQuery();
   const utils = api.useUtils();
 
@@ -100,6 +106,7 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
     },
   });
   const sendCampaignMutation = api.campaign.sendCampaign.useMutation();
+  const getUploadUrl = api.campaign.generateImagePresignedUrl.useMutation();
 
   const sendForm = useForm<z.infer<typeof sendSchema>>({
     resolver: zodResolver(sendSchema),
@@ -142,6 +149,33 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
       }
     );
   }
+
+  const handleFileChange = async (file: File) => {
+    if (file.size > IMAGE_SIZE_LIMIT) {
+      throw new Error(
+        `File should be less than ${IMAGE_SIZE_LIMIT / 1024 / 1024}MB`
+      );
+    }
+
+    console.log("file type: ", file.type);
+
+    const { uploadUrl, imageUrl } = await getUploadUrl.mutateAsync({
+      name: file.name,
+      type: file.type,
+      campaignId: campaign.id,
+    });
+
+    const response = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload file");
+    }
+
+    return imageUrl;
+  };
 
   const confirmation = sendForm.watch("confirmation");
 
@@ -339,6 +373,9 @@ function CampaignEditor({ campaign }: { campaign: Campaign }) {
             deboucedUpdateCampaign();
           }}
           variables={["email", "firstName", "lastName"]}
+          uploadImage={
+            campaign.imageUploadSupported ? handleFileChange : undefined
+          }
         />
       </div>
     </div>
