@@ -12,35 +12,35 @@ export interface paths {
         200: {
           content: {
             "application/json": ({
-                /**
-                 * @description The ID of the domain
-                 * @example 1
-                 */
-                id: number;
-                /**
-                 * @description The name of the domain
-                 * @example example.com
-                 */
-                name: string;
-                /**
-                 * @description The ID of the team
-                 * @example 1
-                 */
-                teamId: number;
-                /** @enum {string} */
-                status: "NOT_STARTED" | "PENDING" | "SUCCESS" | "FAILED" | "TEMPORARY_FAILURE";
-                /** @default us-east-1 */
-                region?: string;
-                /** @default false */
-                clickTracking?: boolean;
-                /** @default false */
-                openTracking?: boolean;
-                publicKey: string;
-                dkimStatus?: string | null;
-                spfDetails?: string | null;
-                createdAt: string;
-                updatedAt: string;
-              })[];
+              /**
+               * @description The ID of the domain
+               * @example 1
+               */
+              id: number;
+              /**
+               * @description The name of the domain
+               * @example example.com
+               */
+              name: string;
+              /**
+               * @description The ID of the team
+               * @example 1
+               */
+              teamId: number;
+              /** @enum {string} */
+              status: "NOT_STARTED" | "PENDING" | "SUCCESS" | "FAILED" | "TEMPORARY_FAILURE";
+              /** @default us-east-1 */
+              region?: string;
+              /** @default false */
+              clickTracking?: boolean;
+              /** @default false */
+              openTracking?: boolean;
+              publicKey: string;
+              dkimStatus?: string | null;
+              spfDetails?: string | null;
+              createdAt: string;
+              updatedAt: string;
+            })[];
           };
         };
       };
@@ -71,12 +71,12 @@ export interface paths {
               createdAt: string;
               updatedAt: string;
               emailEvents: ({
-                  emailId: string;
-                  /** @enum {string} */
-                  status: "SCHEDULED" | "QUEUED" | "SENT" | "DELIVERY_DELAYED" | "BOUNCED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "FAILED" | "CANCELLED";
-                  createdAt: string;
-                  data?: unknown;
-                })[];
+                emailId: string;
+                /** @enum {string} */
+                status: "SCHEDULED" | "QUEUED" | "SENT" | "DELIVERY_DELAYED" | "BOUNCED" | "REJECTED" | "RENDERING_FAILURE" | "DELIVERED" | "OPENED" | "CLICKED" | "COMPLAINED" | "FAILED" | "CANCELLED";
+                createdAt: string;
+                data?: unknown;
+              })[];
             };
           };
         };
@@ -122,9 +122,9 @@ export interface paths {
             text?: string;
             html?: string;
             attachments?: {
-                filename: string;
-                content: string;
-              }[];
+              filename: string;
+              content: string;
+            }[];
             /** Format: date-time */
             scheduledAt?: string;
           };
@@ -192,6 +192,7 @@ export interface paths {
         };
       };
     };
+
   };
   "/v1/contactBooks/{contactBookId}/contacts/{contactId}": {
     get: {
@@ -248,6 +249,55 @@ export interface paths {
           content: {
             "application/json": {
               contactId?: string;
+            };
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          contactBookId: string;
+          contactId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            email: string;
+            firstName?: string;
+            lastName?: string;
+            properties?: {
+              [key: string]: string;
+            };
+            subscribed?: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description Contact upserted successfully */
+        200: {
+          content: {
+            "application/json": {
+              contactId: string;
+            };
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          contactBookId: string;
+          contactId: string;
+        };
+      };
+      responses: {
+        /** @description Contact deleted successfully */
+        200: {
+          content: {
+            "application/json": {
+              success: boolean;
             };
           };
         };
