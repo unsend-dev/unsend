@@ -32,6 +32,22 @@ type UpdateContactResponse = {
   error: ErrorResponse | null;
 };
 
+type UpsertContactPayload =
+  paths["/v1/contactBooks/{contactBookId}/contacts/{contactId}"]["put"]["requestBody"]["content"]["application/json"];
+
+type UpsertContactResponseSuccess =
+  paths["/v1/contactBooks/{contactBookId}/contacts/{contactId}"]["put"]["responses"]["200"]["content"]["application/json"];
+
+type UpsertContactResponse = {
+  data: UpsertContactResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type DeleteContactResponse = {
+  data: { success: boolean } | null;
+  error: ErrorResponse | null;
+};
+
 export class Contacts {
   constructor(private readonly unsend: Unsend) {
     this.unsend = unsend;
@@ -67,6 +83,30 @@ export class Contacts {
     const data = await this.unsend.patch<UpdateContactResponseSuccess>(
       `/contactBooks/${contactBookId}/contacts/${contactId}`,
       payload
+    );
+
+    return data;
+  }
+
+  async upsert(
+    contactBookId: string,
+    contactId: string,
+    payload: UpsertContactPayload
+  ): Promise<UpsertContactResponse> {
+    const data = await this.unsend.put<UpsertContactResponseSuccess>(
+      `/contactBooks/${contactBookId}/contacts/${contactId}`,
+      payload
+    );
+
+    return data;
+  }
+
+  async delete(
+    contactBookId: string,
+    contactId: string
+  ): Promise<DeleteContactResponse> {
+    const data = await this.unsend.delete<{ success: boolean }>(
+      `/contactBooks/${contactBookId}/contacts/${contactId}`
     );
 
     return data;
