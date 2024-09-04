@@ -80,7 +80,9 @@
       "pages": [
         "api-reference/contacts/get-contact",
         "api-reference/contacts/create-contact",
-        "api-reference/contacts/update-contact"
+        "api-reference/contacts/update-contact",
+        "api-reference/contacts/upsert-contact",
+        "api-reference/contacts/delete-contact"
       ]
     },
     {

@@ -538,72 +538,6 @@
       }
     },
     "/v1/contactBooks/{contactBookId}/contacts/{contactId}": {
-      "patch": {
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "example": "cuiwqdj74rygf74"
-            },
-            "required": true,
-            "name": "contactBookId",
-            "in": "path"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "example": "cuiwqdj74rygf74"
-            },
-            "required": true,
-            "name": "contactId",
-            "in": "path"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string"
-                  },
-                  "lastName": {
-                    "type": "string"
-                  },
-                  "properties": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "string"
-                    }
-                  },
-                  "subscribed": {
-                    "type": "boolean"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Retrieve the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "contactId": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "parameters": [
           {
@@ -675,6 +609,187 @@
                     "createdAt",
                     "updatedAt"
                   ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "subscribed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contactId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Upsert a contact",
+        "description": "Create a new contact or update an existing one based on the contactId",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "subscribed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact upserted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contactId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a contact",
+        "description": "Delete a contact from a contact book",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             }
