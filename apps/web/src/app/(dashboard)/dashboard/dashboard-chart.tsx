@@ -100,7 +100,7 @@ export default function DashboardChart() {
           )}
         </div>
         {!statusQuery.isLoading && statusQuery.data ? (
-          <div className="w-full h-[400px] border rounded-lg p-4">
+          <div className="w-full h-[400px] border shadow rounded-lg p-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 width={900}
@@ -205,7 +205,7 @@ const DashboardItemCard: React.FC<DashboardItemCardProps> = ({
   percentage,
 }) => {
   return (
-    <div className="h-[100px] w-[16%] min-w-[170px]  bg-secondary/10 border rounded-lg p-4 flex flex-col gap-3">
+    <div className="h-[100px] w-[16%] min-w-[170px]  bg-secondary/10 border shadow rounded-lg p-4 flex flex-col gap-3">
       <div className="flex items-center gap-3">
         {status !== "total" ? <EmailStatusIcon status={status} /> : null}
         <div className=" capitalize">{status.toLowerCase()}</div>
