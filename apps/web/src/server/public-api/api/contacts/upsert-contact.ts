@@ -5,61 +5,61 @@ import { addOrUpdateContact } from "~/server/service/contact-service";
 import { getContactBook } from "../../api-utils";
 
 const route = createRoute({
-    method: "put",
-    path: "/v1/contactBooks/{contactBookId}/contacts/{contactId}",
-    request: {
-        params: z.object({
-            contactBookId: z
-                .string()
-                .min(3)
-                .openapi({
-                    param: {
-                        name: "contactBookId",
-                        in: "path",
-                    },
-                    example: "cuiwqdj74rygf74",
-                }),
+  method: "put",
+  path: "/v1/contactBooks/{contactBookId}/contacts/{contactId}",
+  request: {
+    params: z.object({
+      contactBookId: z
+        .string()
+        .min(3)
+        .openapi({
+          param: {
+            name: "contactBookId",
+            in: "path",
+          },
+          example: "cuiwqdj74rygf74",
         }),
-        body: {
-            required: true,
-            content: {
-                "application/json": {
-                    schema: z.object({
-                        email: z.string(),
-                        firstName: z.string().optional(),
-                        lastName: z.string().optional(),
-                        properties: z.record(z.string()).optional(),
-                        subscribed: z.boolean().optional(),
-                    }),
-                },
-            },
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: z.object({
+            email: z.string(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            properties: z.record(z.string()).optional(),
+            subscribed: z.boolean().optional(),
+          }),
         },
+      },
     },
-    responses: {
-        200: {
-            content: {
-                "application/json": {
-                    schema: z.object({ contactId: z.string() }),
-                },
-            },
-            description: "Contact upserted successfully",
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({ contactId: z.string() }),
         },
+      },
+      description: "Contact upserted successfully",
     },
+  },
 });
 
 function upsertContact(app: PublicAPIApp) {
-    app.openapi(route, async (c) => {
-        const team = await getTeamFromToken(c);
+  app.openapi(route, async (c) => {
+    const team = await getTeamFromToken(c);
 
-        const contactBook = await getContactBook(c, team.id);
+    const contactBook = await getContactBook(c, team.id);
 
-        const contact = await addOrUpdateContact(
-            contactBook.id,
-            c.req.valid("json")
-        );
+    const contact = await addOrUpdateContact(
+      contactBook.id,
+      c.req.valid("json")
+    );
 
-        return c.json({ contactId: contact.id });
-    });
+    return c.json({ contactId: contact.id });
+  });
 }
 
 export default upsertContact;
