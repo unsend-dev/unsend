@@ -129,7 +129,7 @@ export default function EmailsList() {
                 >
                   <TableCell className="font-medium">
                     <div className="flex gap-4 items-center">
-                      <EmailIcon status={email.latestStatus ?? "Sent"} />
+                      {/* <EmailIcon status={email.latestStatus ?? "Sent"} /> */}
                       <p>{email.to}</p>
                     </div>
                   </TableCell>

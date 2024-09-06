@@ -21,7 +21,7 @@ export default function DashboardChart() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className="font-bold text-lg">Dashboard</h1>
+        <h1 className="font-semibold text-xl">Dashboard</h1>
         <Tabs
           value={days || "7"}
           onValueChange={(value) => setDays(value)}

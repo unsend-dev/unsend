@@ -50,6 +50,7 @@
     "pnpm": "^8.15.5",
     "react-hook-form": "^7.51.3",
     "react-syntax-highlighter": "^15.5.0",
+    "recharts": "^2.12.5",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",

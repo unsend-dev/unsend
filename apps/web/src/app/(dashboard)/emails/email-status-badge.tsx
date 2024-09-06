@@ -3,13 +3,14 @@ import { EmailStatus } from "@prisma/client";
 export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
   status,
 }) => {
-  let badgeColor = "bg-gray-400/10 text-gray-400 border-gray-400/10"; // Default color
+  let badgeColor = "bg-gray-700/10 text-gray-400 border border-gray-400/10"; // Default color
   switch (status) {
     case "SENT":
-      badgeColor = "bg-gray-400/10 text-gray-400 border-gray-400/10";
+      badgeColor = "bg-gray-400/10 text-gray-400 border border-gray-400/10";
       break;
     case "DELIVERED":
-      badgeColor = "bg-emerald-500/10 text-emerald-500 border-emerald-600/10";
+      badgeColor =
+        "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 border border-emerald-200";
       break;
     case "BOUNCED":
     case "FAILED":
@@ -27,8 +28,9 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
     case "COMPLAINED":
       badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
       break;
+
     default:
-      badgeColor = "bg-gray-400/10 text-gray-400 border-gray-400/10";
+      badgeColor = "bg-gray-100 text-gray-600 border border-gray-200";
   }
 
   return (
