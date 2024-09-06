@@ -78,6 +78,7 @@ const serverOptions: SMTPServerOptions = {
         subject: parsed.subject,
         text: parsed.text,
         html: parsed.html,
+        replyTo: parsed.replyTo?.text,
       };
 
       console.log("Parsed email data:", emailObject); // Debug statement
