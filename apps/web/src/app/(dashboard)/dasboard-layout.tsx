@@ -32,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@unsend/ui/src/dropdown-menu";
+import { ThemeSwitcher } from "~/components/theme/ThemeSwitcher";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -50,7 +51,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex-1 h-full">
             <nav className=" flex-1 h-full flex-col justify-between items-center px-2 text-sm font-medium lg:px-4">
-              <div>
+              <div className="h-[calc(100%-120px)]">
                 <NavButton href="/dashboard">
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
@@ -87,7 +88,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </NavButton>
                 ) : null}
               </div>
-              <div className=" absolute bottom-10 p-4 flex flex-col gap-2">
+              <div className="pl-4 flex flex-col gap-2 w-full">
                 <Link
                   href="https://docs.unsend.dev"
                   target="_blank"
@@ -97,6 +98,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   <span className="">Docs</span>
                 </Link>
                 <LogoutButton />
+                <div>
+                  <ThemeSwitcher />
+                </div>
               </div>
             </nav>
           </div>

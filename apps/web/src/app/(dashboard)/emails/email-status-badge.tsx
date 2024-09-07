@@ -5,12 +5,9 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
 }) => {
   let badgeColor = "bg-gray-700/10 text-gray-400 border border-gray-400/10"; // Default color
   switch (status) {
-    case "SENT":
-      badgeColor = "bg-gray-400/10 text-gray-400 border border-gray-400/10";
-      break;
     case "DELIVERED":
       badgeColor =
-        "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 border border-emerald-200";
+        "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25 ";
       break;
     case "BOUNCED":
     case "FAILED":
@@ -23,14 +20,16 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
       badgeColor = "bg-indigo-500/10 text-indigo-500 border-indigo-600/10";
       break;
     case "DELIVERY_DELAYED":
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
+      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/20";
       break;
     case "COMPLAINED":
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/10";
+      badgeColor =
+        " bg-yellow-500/20 dark:bg-yellow-500/10 text-yellow-600 border border-yellow-600/10 ";
       break;
 
     default:
-      badgeColor = "bg-gray-100 text-gray-600 border border-gray-200";
+      badgeColor =
+        "bg-gray-200 dark:bg-gray-400/15 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-400/20";
   }
 
   return (
