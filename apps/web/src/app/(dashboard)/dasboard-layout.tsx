@@ -62,11 +62,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Emails
                 </NavButton>
 
-                <NavButton href="/domains">
-                  <Globe className="h-4 w-4" />
-                  Domains
-                </NavButton>
-
                 <NavButton href="/contacts">
                   <BookUser className="h-4 w-4" />
                   Contacts
@@ -75,6 +70,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <NavButton href="/campaigns">
                   <Volume2 className="h-4 w-4" />
                   Campaigns
+                </NavButton>
+
+                <NavButton href="/domains">
+                  <Globe className="h-4 w-4" />
+                  Domains
                 </NavButton>
 
                 <NavButton href="/dev-settings">

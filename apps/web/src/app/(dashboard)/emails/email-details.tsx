@@ -28,16 +28,16 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
   const emailQuery = api.email.getEmail.useQuery({ id: emailId });
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full overflow-auto px-4">
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <h1 className="font-bold text-lg">{emailQuery.data?.to}</h1>
           <EmailStatusBadge status={emailQuery.data?.latestStatus ?? "SENT"} />
         </div>
       </div>
-      <div className="flex flex-col gap-8 mt-10 items-start ">
-        <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full">
-          <div className="flex gap-2">
+      <div className="flex flex-col gap-8 mt-10 items-start">
+        <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full shadow">
+          {/* <div className="flex gap-2">
             <span className="w-[100px] text-muted-foreground text-sm">
               From
             </span>
@@ -54,6 +54,15 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
               Subject
             </span>
             <span className="text-sm">{emailQuery.data?.subject}</span>
+          </div> */}
+          <div className="flex flex-col gap-1 px-4 py-1">
+            {/* <div className=" text-[15px] font-medium">
+              {emailQuery.data?.to}
+            </div> */}
+            <div className=" text-sm">Subject: {emailQuery.data?.subject}</div>
+            <div className="text-muted-foreground text-xs">
+              From: {emailQuery.data?.from}
+            </div>
           </div>
           {emailQuery.data?.latestStatus === "SCHEDULED" &&
           emailQuery.data?.scheduledAt ? (
@@ -75,15 +84,16 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
               </div>
             </>
           ) : null}
-          <div className=" dark:bg-slate-200 h-[250px] overflow-auto text-black rounded">
-            <div
-              className="px-4 py-4 overflow-auto"
-              dangerouslySetInnerHTML={{ __html: emailQuery.data?.html ?? "" }}
+          <div className=" dark:bg-slate-200 h-[350px] overflow-visible  rounded border-t ">
+            <iframe
+              className="w-full h-full"
+              srcDoc={emailQuery.data?.html ?? ""}
+              sandbox="allow-same-origin"
             />
           </div>
         </div>
         {emailQuery.data?.latestStatus !== "SCHEDULED" ? (
-          <div className=" border rounded-lg w-full ">
+          <div className=" border rounded-lg w-full shadow ">
             <div className="  p-4 flex flex-col gap-8 w-full">
               <div className="font-medium">Events History</div>
               <div className="flex items-stretch px-4 w-full">
@@ -150,7 +160,7 @@ const EmailStatusText = ({
     return (
       <div className="flex flex-col gap-4 w-full">
         <p>{getErrorMessage(_errorData)}</p>
-        <div className="rounded-xl p-4 bg-muted/20 flex flex-col gap-4">
+        <div className="rounded-xl p-4 bg-muted/30 flex flex-col gap-4">
           <div className="flex gap-2 w-full">
             <div className="w-1/2">
               <p className="text-sm text-muted-foreground">Type</p>
@@ -176,7 +186,7 @@ const EmailStatusText = ({
     const userAgent = getUserAgent(_data.userAgent);
 
     return (
-      <div className="w-full rounded-xl p-4 bg-muted/20 mt-4">
+      <div className="w-full rounded-xl p-4 bg-muted/30 mt-4">
         <div className="flex  w-full ">
           {userAgent.os.name ? (
             <div className="w-1/2">
@@ -198,7 +208,7 @@ const EmailStatusText = ({
     const userAgent = getUserAgent(_data.userAgent);
 
     return (
-      <div className="w-full mt-4 flex flex-col gap-4  rounded-xl p-4 bg-muted/20">
+      <div className="w-full mt-4 flex flex-col gap-4  rounded-xl p-4 bg-muted/30">
         <div className="flex  w-full ">
           {userAgent.os.name ? (
             <div className="w-1/2">
