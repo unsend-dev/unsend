@@ -177,7 +177,7 @@ export const emailRouter = createTRPCRouter({
         select: {
           emailEvents: {
             orderBy: {
-              status: "asc",
+              status: "desc",
             },
           },
           id: true,

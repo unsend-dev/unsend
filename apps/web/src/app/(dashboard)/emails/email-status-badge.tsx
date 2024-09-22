@@ -7,7 +7,7 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
   switch (status) {
     case "DELIVERED":
       badgeColor =
-        "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25 ";
+        "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25";
       break;
     case "BOUNCED":
     case "FAILED":

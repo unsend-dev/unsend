@@ -135,7 +135,7 @@ export default function LoginPage({
           </p>
         </div>
 
-        <div className="flex flex-col gap-8 mt-8 border border-gray-100 p-8 rounded-lg shadow">
+        <div className="flex flex-col gap-8 mt-8 border p-8 rounded-lg shadow">
           {providers &&
             Object.values(providers).map((provider) => {
               if (provider.type === "email") return null;

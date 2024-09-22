@@ -38,6 +38,8 @@
     "bullmq": "^5.8.2",
     "chrono-node": "^2.7.6",
     "date-fns": "^3.6.0",
+    "emoji-picker-react": "^4.12.0",
+    "framer-motion": "^11.0.24",
     "hono": "^4.2.2",
     "html-to-text": "^9.0.5",
     "install": "^0.13.0",

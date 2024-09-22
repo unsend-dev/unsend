@@ -31,11 +31,11 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
     <div className="h-full overflow-auto px-4">
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
-          <h1 className="font-bold text-lg">{emailQuery.data?.to}</h1>
+          <h1 className="font-bold">{emailQuery.data?.to}</h1>
           <EmailStatusBadge status={emailQuery.data?.latestStatus ?? "SENT"} />
         </div>
       </div>
-      <div className="flex flex-col gap-8 mt-10 items-start">
+      <div className="flex flex-col gap-8 mt-8 items-start">
         <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full shadow">
           {/* <div className="flex gap-2">
             <span className="w-[100px] text-muted-foreground text-sm">
@@ -97,7 +97,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
             <div className="  p-4 flex flex-col gap-8 w-full">
               <div className="font-medium">Events History</div>
               <div className="flex items-stretch px-4 w-full">
-                <div className="border-r border-dashed" />
+                <div className="border-r border-gray-300 dark:border-gray-700 border-dashed" />
                 <div className="flex flex-col gap-12 w-full">
                   {emailQuery.data?.emailEvents.map((evt) => (
                     <div
