@@ -60,7 +60,7 @@ export default function CampaignDetailsPage({
   ];
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -78,13 +78,13 @@ export default function CampaignDetailsPage({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className=" rounded-lg shadow mt-10">
+      <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4"> Statistics</h2>
         <div className="flex  gap-4">
           {statusCards.map((card) => (
             <div
               key={card.status}
-              className="h-[100px] w-1/4  bg-secondary/10 border rounded-lg p-4 flex flex-col gap-3"
+              className="h-[100px] w-1/4  bg-secondary/10 border rounded-lg shadow p-4 flex flex-col gap-3"
             >
               <div className="flex items-center gap-3">
                 {card.status !== "total" ? (
@@ -108,36 +108,33 @@ export default function CampaignDetailsPage({
       </div>
 
       {campaign.html && (
-        <div className=" rounded-lg shadow mt-16">
+        <div className=" rounded-lg  mt-16">
           <h2 className="text-xl font-semibold mb-4">Email</h2>
 
-          <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full">
-            <div className="flex gap-2 mt-2">
-              <span className="w-[65px] text-muted-foreground ">From</span>
-              <span>{campaign.from}</span>
-            </div>
-            <Separator />
-            <div className="flex gap-2">
-              <span className="w-[65px] text-muted-foreground ">To</span>
-              {campaign.contactBookId ? (
+          <div className="p-2 rounded-lg border shadow  flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-3 px-4 py-1">
+              <div className=" flex text-sm">
+                <div className="w-[70px] text-muted-foreground">Subject</div>
+                <div> {campaign.subject}</div>
+              </div>
+              <div className="flex  text-sm">
+                <div className="w-[70px] text-muted-foreground">From</div>
+                <div> {campaign.from}</div>
+              </div>
+              <div className="flex  text-sm items-center">
+                <div className="w-[70px] text-muted-foreground">Contact</div>
                 <Link
                   href={`/contacts/${campaign.contactBookId}`}
-                  className="text-primary px-4 p-1 bg-muted text-sm rounded-md flex gap-1 items-center"
                   target="_blank"
                 >
-                  {campaign.contactBook?.name}
-                  <ExternalLinkIcon className="w-4 h-4 " />
+                  <div className="bg-secondary p-0.5 px-2 rounded-md ">
+                    {campaign.contactBook?.emoji} &nbsp;
+                    {campaign.contactBook?.name}
+                  </div>
                 </Link>
-              ) : (
-                <div>No one</div>
-              )}
+              </div>
             </div>
-            <Separator />
-            <div className="flex gap-2">
-              <span className="w-[65px] text-muted-foreground ">Subject</span>
-              <span>{campaign.subject}</span>
-            </div>
-            <div className=" dark:bg-slate-50 overflow-auto text-black rounded py-8">
+            <div className=" dark:bg-slate-50 overflow-auto text-black rounded py-8 border-t">
               <div dangerouslySetInnerHTML={{ __html: campaign.html ?? "" }} />
             </div>
           </div>

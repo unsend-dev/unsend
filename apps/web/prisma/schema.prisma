@@ -221,6 +221,7 @@ model ContactBook {
   properties Json
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  emoji      String    @default("📙")
   team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
   contacts   Contact[]
 

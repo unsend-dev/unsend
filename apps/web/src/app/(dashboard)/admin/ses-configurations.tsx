@@ -19,7 +19,7 @@ export default function SesConfigurations() {
 
   return (
     <div className="">
-      <div className="border rounded-xl">
+      <div className="border rounded-xl shadow">
         <Table className="">
           <TableHeader className="">
             <TableRow className=" bg-muted/30">

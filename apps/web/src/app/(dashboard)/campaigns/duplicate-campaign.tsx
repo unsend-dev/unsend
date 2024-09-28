@@ -45,8 +45,8 @@ export const DuplicateCampaign: React.FC<{
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Copy className="h-4 w-4 text-blue-600/80" />
+        <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
+          <Copy className="h-[18px] w-[18px] text-blue-600/80" />
         </Button>
       </DialogTrigger>
       <DialogContent>

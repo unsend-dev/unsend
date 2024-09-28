@@ -35,6 +35,12 @@ import {
 import { toast } from "@unsend/ui/src/toaster";
 import { useDebouncedCallback } from "use-debounce";
 import { formatDistanceToNow } from "date-fns";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@unsend/ui/src/accordion";
 
 const sendSchema = z.object({
   confirmation: z.string(),
@@ -97,6 +103,12 @@ function CampaignEditor({
   const [subject, setSubject] = useState(campaign.subject);
   const [from, setFrom] = useState(campaign.from);
   const [contactBookId, setContactBookId] = useState(campaign.contactBookId);
+  const [replyTo, setReplyTo] = useState<string | undefined>(
+    campaign.replyTo[0]
+  );
+  const [previewText, setPreviewText] = useState<string | null>(
+    campaign.previewText
+  );
   const [openSendDialog, setOpenSendDialog] = useState(false);
 
   const updateCampaignMutation = api.campaign.updateCampaign.useMutation({
@@ -179,10 +191,14 @@ function CampaignEditor({
 
   const confirmation = sendForm.watch("confirmation");
 
+  const contactBook = contactBooksQuery.data?.find(
+    (book) => book.id === contactBookId
+  );
+
   return (
-    <div className="p-4 container mx-auto">
-      <div className="w-[664px] mx-auto">
-        <div className="mb-4 flex justify-between items-center">
+    <div className="p-4 container mx-auto ">
+      <div className="mx-auto">
+        <div className="mb-4 flex justify-between items-center w-[700px] mx-auto">
           <Input
             type="text"
             value={name}
@@ -269,114 +285,204 @@ function CampaignEditor({
             </Dialog>
           </div>
         </div>
-        <div className="mb-4 mt-8">
-          <label className="block text-sm font-medium ">Subject</label>
-          <Input
-            type="text"
-            value={subject}
-            onChange={(e) => {
-              setSubject(e.target.value);
-            }}
-            onBlur={() => {
-              if (subject === campaign.subject || !subject) {
-                return;
-              }
-              updateCampaignMutation.mutate(
-                {
-                  campaignId: campaign.id,
-                  subject,
-                },
-                {
-                  onError: (e) => {
-                    toast.error(`${e.message}. Reverting changes.`);
-                    setSubject(campaign.subject);
-                  },
-                }
-              );
-            }}
-            className="mt-1 block w-full rounded-md  shadow-sm"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium ">From</label>
-          <Input
-            type="text"
-            value={from}
-            onChange={(e) => {
-              setFrom(e.target.value);
-            }}
-            className="mt-1 block w-full rounded-md  shadow-sm"
-            placeholder="Friendly name<hello@example.com>"
-            onBlur={() => {
-              if (from === campaign.from) {
-                return;
-              }
-              updateCampaignMutation.mutate(
-                {
-                  campaignId: campaign.id,
-                  from,
-                },
-                {
-                  onError: (e) => {
-                    toast.error(`${e.message}. Reverting changes.`);
-                    setFrom(campaign.from);
-                  },
-                }
-              );
-            }}
-          />
-        </div>
-        <div className="mb-12">
-          <label className="block text-sm font-medium mb-1">To</label>
-          {contactBooksQuery.isLoading ? (
-            <Spinner className="w-6 h-6" />
-          ) : (
-            <Select
-              value={contactBookId ?? ""}
-              onValueChange={(val) => {
-                // Update the campaign's contactBookId
-                updateCampaignMutation.mutate(
-                  {
-                    campaignId: campaign.id,
-                    contactBookId: val,
-                  },
-                  {
-                    onError: () => {
-                      setContactBookId(campaign.contactBookId);
-                    },
-                  }
-                );
-                setContactBookId(val);
-              }}
-            >
-              <SelectTrigger className="w-[300px]">
-                {contactBooksQuery.data?.find(
-                  (book) => book.id === contactBookId
-                )?.name || "Select a contact book"}
-              </SelectTrigger>
-              <SelectContent>
-                {contactBooksQuery.data?.map((book) => (
-                  <SelectItem key={book.id} value={book.id}>
-                    {book.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
 
-        <Editor
-          initialContent={json}
-          onUpdate={(content) => {
-            setJson(content.getJSON());
-            setIsSaving(true);
-            deboucedUpdateCampaign();
-          }}
-          variables={["email", "firstName", "lastName"]}
-          uploadImage={
-            campaign.imageUploadSupported ? handleFileChange : undefined
-          }
-        />
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <div className="flex flex-col border shadow rounded-lg mt-12 mb-12 p-4 w-[700px] mx-auto z-50">
+              <div className="flex items-center gap-4">
+                <label className="block text-sm  w-[80px] text-muted-foreground">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => {
+                    setSubject(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (subject === campaign.subject || !subject) {
+                      return;
+                    }
+                    updateCampaignMutation.mutate(
+                      {
+                        campaignId: campaign.id,
+                        subject,
+                      },
+                      {
+                        onError: (e) => {
+                          toast.error(`${e.message}. Reverting changes.`);
+                          setSubject(campaign.subject);
+                        },
+                      }
+                    );
+                  }}
+                  className="mt-1 py-1 text-sm block w-full outline-none border-b border-transparent  focus:border-border bg-transparent"
+                />
+                <AccordionTrigger className="py-0"></AccordionTrigger>
+              </div>
+
+              <AccordionContent className=" flex flex-col gap-4">
+                <div className=" flex items-center gap-4 mt-4">
+                  <label className=" text-sm  w-[80px] text-muted-foreground">
+                    From
+                  </label>
+                  <input
+                    type="text"
+                    value={from}
+                    onChange={(e) => {
+                      setFrom(e.target.value);
+                    }}
+                    className="mt-1 py-1 w-full text-sm outline-none border-b border-transparent  focus:border-border bg-transparent"
+                    placeholder="Friendly name<hello@example.com>"
+                    onBlur={() => {
+                      if (from === campaign.from || !from) {
+                        return;
+                      }
+                      updateCampaignMutation.mutate(
+                        {
+                          campaignId: campaign.id,
+                          from,
+                        },
+                        {
+                          onError: (e) => {
+                            toast.error(`${e.message}. Reverting changes.`);
+                            setFrom(campaign.from);
+                          },
+                        }
+                      );
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="block text-sm  w-[80px] text-muted-foreground">
+                    Reply To
+                  </label>
+                  <input
+                    type="text"
+                    value={replyTo}
+                    onChange={(e) => {
+                      setReplyTo(e.target.value);
+                    }}
+                    className="mt-1 py-1 text-sm block w-full outline-none border-b border-transparent bg-transparent focus:border-border"
+                    placeholder="hello@example.com"
+                    onBlur={() => {
+                      if (replyTo === campaign.replyTo[0]) {
+                        return;
+                      }
+                      updateCampaignMutation.mutate(
+                        {
+                          campaignId: campaign.id,
+                          replyTo: replyTo ? [replyTo] : [],
+                        },
+                        {
+                          onError: (e) => {
+                            toast.error(`${e.message}. Reverting changes.`);
+                            setReplyTo(campaign.replyTo[0]);
+                          },
+                        }
+                      );
+                    }}
+                  />
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <label className="block text-sm  w-[80px] text-muted-foreground">
+                    Preview
+                  </label>
+                  <input
+                    type="text"
+                    value={previewText ?? undefined}
+                    onChange={(e) => {
+                      setPreviewText(e.target.value);
+                    }}
+                    onBlur={() => {
+                      if (
+                        previewText === campaign.previewText ||
+                        !previewText
+                      ) {
+                        return;
+                      }
+                      updateCampaignMutation.mutate(
+                        {
+                          campaignId: campaign.id,
+                          previewText,
+                        },
+                        {
+                          onError: (e) => {
+                            toast.error(`${e.message}. Reverting changes.`);
+                            setPreviewText(campaign.previewText ?? "");
+                          },
+                        }
+                      );
+                    }}
+                    className="mt-1 py-1 text-sm block w-full outline-none border-b border-transparent bg-transparent  focus:border-border"
+                  />
+                </div>
+                <div className=" flex items-center gap-2">
+                  <label className="block text-sm  w-[80px] text-muted-foreground">
+                    To
+                  </label>
+                  {contactBooksQuery.isLoading ? (
+                    <Spinner className="w-6 h-6" />
+                  ) : (
+                    <Select
+                      value={contactBookId ?? ""}
+                      onValueChange={(val) => {
+                        // Update the campaign's contactBookId
+                        updateCampaignMutation.mutate(
+                          {
+                            campaignId: campaign.id,
+                            contactBookId: val,
+                          },
+                          {
+                            onError: () => {
+                              setContactBookId(campaign.contactBookId);
+                            },
+                          }
+                        );
+                        setContactBookId(val);
+                      }}
+                    >
+                      <SelectTrigger className="w-[300px]">
+                        {contactBook
+                          ? `${contactBook.emoji} ${contactBook.name}`
+                          : "Select a contact book"}
+                      </SelectTrigger>
+                      <SelectContent>
+                        {contactBooksQuery.data?.map((book) => (
+                          <SelectItem key={book.id} value={book.id}>
+                            {book.emoji} {book.name}{" "}
+                            <span className="text-xs text-muted-foreground ml-4">
+                              {" "}
+                              {book._count.contacts} contacts
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              </AccordionContent>
+            </div>
+          </AccordionItem>
+        </Accordion>
+
+        <div className=" rounded-lg bg-gray-50 w-[700px] mx-auto p-10">
+          <div className="w-[600px] mx-auto">
+            <Editor
+              initialContent={json}
+              onUpdate={(content) => {
+                setJson(content.getJSON());
+                setIsSaving(true);
+                deboucedUpdateCampaign();
+              }}
+              variables={["email", "firstName", "lastName"]}
+              uploadImage={
+                campaign.imageUploadSupported ? handleFileChange : undefined
+              }
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

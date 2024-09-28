@@ -87,7 +87,17 @@ export default function EmailsList() {
             <SelectItem value="All statuses" className=" capitalize">
               All statuses
             </SelectItem>
-            {Object.values(EmailStatus).map((status) => (
+            {Object.values([
+              "SENT",
+              "SCHEDULED",
+              "QUEUED",
+              "DELIVERED",
+              "BOUNCED",
+              "CLICKED",
+              "OPENED",
+              "DELIVERY_DELAYED",
+              "COMPLAINED",
+            ]).map((status) => (
               <SelectItem value={status} className=" capitalize">
                 {status.toLowerCase().replace("_", " ")}
               </SelectItem>
@@ -101,7 +111,7 @@ export default function EmailsList() {
       <div className="flex flex-col rounded-xl border shadow">
         <Table className="">
           <TableHeader className="">
-            <TableRow className=" bg-muted/30">
+            <TableRow className=" bg-muted dark:bg-muted/70">
               <TableHead className="rounded-tl-xl">To</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Subject</TableHead>
@@ -129,8 +139,8 @@ export default function EmailsList() {
                 >
                   <TableCell className="font-medium">
                     <div className="flex gap-4 items-center">
-                      <EmailIcon status={email.latestStatus ?? "Sent"} />
-                      <p>{email.to}</p>
+                      {/* <EmailIcon status={email.latestStatus ?? "Sent"} /> */}
+                      <p> {email.to}</p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -155,7 +165,9 @@ export default function EmailsList() {
                       <EmailStatusBadge status={email.latestStatus ?? "Sent"} />
                     )}
                   </TableCell>
-                  <TableCell>{email.subject}</TableCell>
+                  <TableCell className="">
+                    <div className=" max-w-xs truncate">{email.subject}</div>
+                  </TableCell>
                   <TableCell className="text-right">
                     {email.latestStatus !== "SCHEDULED"
                       ? formatDistanceToNow(

@@ -1,4 +1,4 @@
 import { cn } from "./lib/utils";
 
 export { cn };
-export { ThemeProvider } from "next-themes";
+export { ThemeProvider, useTheme } from "next-themes";

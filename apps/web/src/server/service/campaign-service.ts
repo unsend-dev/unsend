@@ -188,6 +188,7 @@ type CampainEmail = {
   from: string;
   subject: string;
   html: string;
+  previewText?: string;
   replyTo?: string[];
   cc?: string[];
   bcc?: string[];
@@ -199,8 +200,17 @@ export async function sendCampaignEmail(
   campaign: Campaign,
   emailData: CampainEmail
 ) {
-  const { campaignId, from, subject, replyTo, cc, bcc, teamId, contacts } =
-    emailData;
+  const {
+    campaignId,
+    from,
+    subject,
+    replyTo,
+    cc,
+    bcc,
+    teamId,
+    contacts,
+    previewText,
+  } = emailData;
 
   const jsonContent = JSON.parse(campaign.content || "{}");
   const renderer = new EmailRenderer(jsonContent);
@@ -242,6 +252,7 @@ export async function sendCampaignEmail(
       from,
       subject,
       html: contact.html,
+      text: previewText,
       teamId,
       campaignId,
       contactId: contact.id,
