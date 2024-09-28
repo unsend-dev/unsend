@@ -94,8 +94,8 @@ export default function ContactList({
                     <div
                       className={`text-center w-[130px] rounded capitalize py-1 text-xs ${
                         contact.subscribed
-                          ? "bg-emerald-500/10 text-emerald-500 border-emerald-600/10"
-                          : "bg-red-500/10 text-red-600 border-red-600/10"
+                          ? "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25"
+                          : "bg-red-500/10 text-red-600 dark:text-red-700/90 border border-red-600/10"
                       }`}
                     >
                       {contact.subscribed ? "Subscribed" : "Unsubscribed"}

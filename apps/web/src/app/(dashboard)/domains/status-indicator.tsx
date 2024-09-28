@@ -22,5 +22,5 @@ export const StatusIndicator: React.FC<{ status: DomainStatus }> = ({
       badgeColor = "bg-gray-400";
   }
 
-  return <div className={` w-[1px] ${badgeColor} my-1.5 rounded-full`}></div>;
+  return <div className={` w-[2px] ${badgeColor} my-1.5 rounded-full`}></div>;
 };

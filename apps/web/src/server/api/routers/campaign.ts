@@ -1,5 +1,6 @@
-import { Prisma } from "@prisma/client";
+import { CampaignStatus, Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { z } from "zod";
 import { env } from "~/env";
 import {
@@ -20,11 +21,14 @@ import {
   isStorageConfigured,
 } from "~/server/service/storage-service";
 
+const statuses = Object.values(CampaignStatus) as [CampaignStatus];
+
 export const campaignRouter = createTRPCRouter({
   getCampaigns: teamProcedure
     .input(
       z.object({
         page: z.number().optional(),
+        status: z.enum(statuses).optional().nullable(),
       })
     )
     .query(async ({ ctx: { db, team }, input }) => {
@@ -35,6 +39,10 @@ export const campaignRouter = createTRPCRouter({
       const whereConditions: Prisma.CampaignFindManyArgs["where"] = {
         teamId: team.id,
       };
+
+      if (input.status) {
+        whereConditions.status = input.status;
+      }
 
       const countP = db.campaign.count({ where: whereConditions });
 
@@ -48,6 +56,7 @@ export const campaignRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
           status: true,
+          html: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -92,6 +101,7 @@ export const campaignRouter = createTRPCRouter({
         previewText: z.string().optional(),
         content: z.string().optional(),
         contactBookId: z.string().optional(),
+        replyTo: z.string().array().optional(),
       })
     )
     .mutation(async ({ ctx: { db, team, campaign: campaignOld }, input }) => {
@@ -113,10 +123,21 @@ export const campaignRouter = createTRPCRouter({
         const domain = await validateDomainFromEmail(data.from, team.id);
         domainId = domain.id;
       }
+
+      let html: string | null = null;
+
+      if (data.content) {
+        const jsonContent = data.content ? JSON.parse(data.content) : null;
+
+        const renderer = new EmailRenderer(jsonContent);
+        html = await renderer.render();
+      }
+
       const campaign = await db.campaign.update({
         where: { id: campaignId },
         data: {
           ...data,
+          html,
           domainId,
         },
       });

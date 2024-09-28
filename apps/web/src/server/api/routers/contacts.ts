@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { CampaignStatus, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
@@ -43,19 +43,31 @@ export const contactsRouter = createTRPCRouter({
 
   getContactBookDetails: contactBookProcedure.query(
     async ({ ctx: { contactBook, db } }) => {
-      const [totalContacts, unsubscribedContacts] = await Promise.all([
-        db.contact.count({
-          where: { contactBookId: contactBook.id },
-        }),
-        db.contact.count({
-          where: { contactBookId: contactBook.id, subscribed: false },
-        }),
-      ]);
+      const [totalContacts, unsubscribedContacts, campaigns] =
+        await Promise.all([
+          db.contact.count({
+            where: { contactBookId: contactBook.id },
+          }),
+          db.contact.count({
+            where: { contactBookId: contactBook.id, subscribed: false },
+          }),
+          db.campaign.findMany({
+            where: {
+              contactBookId: contactBook.id,
+              status: CampaignStatus.SENT,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 2,
+          }),
+        ]);
 
       return {
         ...contactBook,
         totalContacts,
         unsubscribedContacts,
+        campaigns,
       };
     }
   ),
@@ -66,6 +78,7 @@ export const contactsRouter = createTRPCRouter({
         contactBookId: z.string(),
         name: z.string().optional(),
         properties: z.record(z.string()).optional(),
+        emoji: z.string().optional(),
       })
     )
     .mutation(async ({ ctx: { db }, input }) => {

@@ -10,7 +10,7 @@ import { Color } from "@tiptap/extension-color";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import Placeholder from "@tiptap/extension-placeholder";
-import GlobalDragHandle from "tiptap-extension-global-drag-handle";
+import GlobalDragHandle from "./dragHandle";
 import { ButtonExtension } from "./ButtonExtension";
 import { SlashCommand, getSlashCommandSuggestions } from "./SlashCommand";
 import { VariableExtension } from "./VariableExtension";

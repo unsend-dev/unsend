@@ -77,8 +77,8 @@ export const DeleteContactBook: React.FC<{
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Trash2 className="h-4 w-4 text-red-600/80" />
+        <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent ">
+          <Trash2 className="h-[18px] w-[18px] text-red-600/80 hover:text-red-600/70" />
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -103,7 +103,7 @@ export const DeleteContactBook: React.FC<{
                 name="name"
                 render={({ field, formState }) => (
                   <FormItem>
-                    <FormLabel>name</FormLabel>
+                    <FormLabel>Contact book name</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

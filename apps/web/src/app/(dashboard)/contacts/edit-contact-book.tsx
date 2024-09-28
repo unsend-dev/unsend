@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@unsend/ui/src/form";
-
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { Edit } from "lucide-react";
@@ -73,8 +72,13 @@ export const EditContactBook: React.FC<{
       onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
     >
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Edit className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-0 hover:bg-transparent"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Edit className="h-4 w-4 text-primary/80 hover:text-primary/70" />
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -102,7 +106,7 @@ export const EditContactBook: React.FC<{
               />
               <div className="flex justify-end">
                 <Button
-                  className=" w-[100px] bg-white hover:bg-gray-100 focus:bg-gray-100"
+                  className=" w-[100px]"
                   type="submit"
                   disabled={updateContactBookMutation.isPending}
                 >

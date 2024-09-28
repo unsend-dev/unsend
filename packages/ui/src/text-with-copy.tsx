@@ -25,7 +25,7 @@ export const TextWithCopyButton: React.FC<{
       <div className={className}>{value}</div>
       <Button
         variant="ghost"
-        className={`hover:bg-transparent p-0 cursor-pointer text-muted-foreground ${
+        className={`hover:bg-transparent p-0 h-6 cursor-pointer text-muted-foreground ${
           alwaysShowCopy ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         }`}
         onClick={copyToClipboard}
