@@ -187,9 +187,7 @@ export default function ContactsPage({
                   </div>
                 </Link>
                 <div className="text-muted-foreground text-xs">
-                  {formatDistanceToNow(campaign.createdAt, {
-                    addSuffix: true,
-                  })}
+                  {formatDistanceToNow(campaign.createdAt, {})}
                 </div>
               </div>
             ))}
