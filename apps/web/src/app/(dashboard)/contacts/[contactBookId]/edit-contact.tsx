@@ -153,7 +153,7 @@ export const EditContact: React.FC<{
               />
               <div className="flex justify-end">
                 <Button
-                  className=" w-[100px] bg-white hover:bg-gray-100 focus:bg-gray-100"
+                  className=" w-[100px] "
                   type="submit"
                   disabled={updateContactMutation.isPending}
                 >
