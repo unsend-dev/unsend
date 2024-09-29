@@ -6,6 +6,9 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
+  AreaChart,
+  Area,
 } from "recharts";
 import { EmailStatusIcon } from "../emails/email-status-badge";
 import { EmailStatus } from "@prisma/client";
@@ -113,7 +116,7 @@ export default function DashboardChart() {
                   bottom: 5,
                 }}
               >
-                {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="name" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip
@@ -134,38 +137,57 @@ export default function DashboardChart() {
                       return null;
 
                     return (
-                      <div className=" bg-black border shadow-lg p-2 rounded flex flex-col gap-4 px-4">
+                      <div className=" bg-background border shadow-lg p-2 rounded flex flex-col gap-2 px-4">
                         <p className="text-sm text-muted-foreground">
                           {data.name}
                         </p>
                         {data.DELIVERED ? (
-                          <div>
-                            <p className="text-sm text-[#10b981]">Delivered</p>
-                            <p className="text-xs">{data.DELIVERED} emails</p>
+                          <div className="flex gap-2 items-center">
+                            <div className="w-2.5 h-2.5 bg-[#10b981] rounded-[2px]"></div>
+                            <p className="text-xs text-muted-foreground w-[60px]">
+                              Delivered
+                            </p>
+                            <p className="text-xs font-mono">
+                              {data.DELIVERED}
+                            </p>
                           </div>
                         ) : null}
                         {data.BOUNCED ? (
-                          <div>
-                            <p className="text-sm text-[#ef4444]">Bounced</p>
-                            <p className="text-xs">{data.BOUNCED} emails</p>
+                          <div className="flex gap-2 items-center">
+                            <div className="w-2.5 h-2.5 bg-[#ef4444] rounded-[2px]"></div>
+                            <p className="text-xs text-muted-foreground w-[60px]">
+                              Bounced
+                            </p>
+                            <p className="text-xs font-mono">{data.BOUNCED}</p>
                           </div>
                         ) : null}
                         {data.COMPLAINED ? (
-                          <div>
-                            <p className="text-sm text-[#eab308]">Complained</p>
-                            <p className="text-xs">{data.COMPLAINED} emails</p>
+                          <div className="flex gap-2 items-center">
+                            <div className="w-2.5 h-2.5 bg-[#eab308] rounded-[2px]"></div>
+                            <p className="text-xs text-muted-foreground w-[60px]">
+                              Complained
+                            </p>
+                            <p className="text-xs font-mono">
+                              {data.COMPLAINED}
+                            </p>
                           </div>
                         ) : null}
                         {data.OPENED ? (
-                          <div>
-                            <p className="text-sm text-[#6366f1]">Opened</p>
-                            <p className="text-xs">{data.OPENED} emails</p>
+                          <div className="flex gap-2 items-center">
+                            <div className="w-2.5 h-2.5 bg-[#6366f1] rounded-[2px]"></div>
+                            <p className="text-xs text-muted-foreground w-[60px]">
+                              Opened
+                            </p>
+                            <p className="text-xs font-mono">{data.OPENED}</p>
                           </div>
                         ) : null}
                         {data.CLICKED ? (
-                          <div>
-                            <p className="text-sm text-[#06b6d4]">Clicked</p>
-                            <p className="text-xs">{data.CLICKED} emails</p>
+                          <div className="flex gap-2 items-center">
+                            <div className="w-2.5 h-2.5 bg-[#06b6d4] rounded-[2px]"></div>
+                            <p className="text-xs text-muted-foreground w-[60px]">
+                              Clicked
+                            </p>
+                            <p className="text-xs font-mono">{data.CLICKED}</p>
                           </div>
                         ) : null}
                       </div>
