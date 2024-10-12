@@ -66,6 +66,10 @@ export const env = createEnv({
       .string()
       .default("false")
       .transform((str) => str === "true"),
+    NEXT_PUBLIC_SELF_HOSTED_ALLOW_NEW_USERS: z
+      .string()
+      .default("false")
+      .transform((str) => str === "true"),
   },
 
   /**
@@ -87,6 +91,8 @@ export const env = createEnv({
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
+    NEXT_PUBLIC_SELF_HOSTED_ALLOW_NEW_USERS: 
+      process.env.NEXT_PUBLIC_SELF_HOSTED_ALLOW_NEW_USERS,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
     REDIS_URL: process.env.REDIS_URL,
