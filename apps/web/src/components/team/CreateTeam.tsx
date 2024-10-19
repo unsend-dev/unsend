@@ -17,6 +17,7 @@ import { Input } from "@unsend/ui/src/input";
 import { Spinner } from "@unsend/ui/src/spinner";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
+import { toast } from "@unsend/ui/src/toaster";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -42,6 +43,9 @@ export default function CreateTeam() {
       onSuccess: () => {
         utils.team.invalidate();
         router.replace("/dashboard");
+      },
+      onError: (e) => {
+        toast.error(e.message);
       },
     });
   }
