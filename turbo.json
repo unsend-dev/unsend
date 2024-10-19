@@ -37,7 +37,8 @@
         "S3_COMPATIBLE_ACCESS_KEY",
         "S3_COMPATIBLE_SECRET_KEY",
         "S3_COMPATIBLE_API_URL",
-        "S3_COMPATIBLE_PUBLIC_URL"
+        "S3_COMPATIBLE_PUBLIC_URL",
+        "ENABLE_PRISMA_CLIENT"
       ]
     },
     "lint": {
