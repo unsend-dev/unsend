@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { FullScreenLoading } from "~/components/FullScreenLoading";
 import { AddSesSettings } from "~/components/settings/AddSesSettings";
 import CreateTeam from "~/components/team/CreateTeam";
+import TeamCreationDisabled from "~/components/team/TeamCreationDisabled";
 import { env } from "~/env";
 import { api } from "~/trpc/react";
 
@@ -24,6 +25,14 @@ export const DashboardProvider = ({
     (settingsStatus === "pending" && !env.NEXT_PUBLIC_IS_CLOUD)
   ) {
     return <FullScreenLoading />;
+  }
+
+  if (
+    !env.NEXT_PUBLIC_IS_CLOUD &&
+    !env.NEXT_PUBLIC_SELF_HOSTED_ALLOW_NEW_USERS &&
+    (!teams || teams.length === 0)
+  ) {
+    return <TeamCreationDisabled />;
   }
 
   if (
