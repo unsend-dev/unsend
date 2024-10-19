@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+---
+
+<Layout title="Unsend">
+  <div class="mt-20">
+    <h1 class="text-5xl font-bold leading-[3.5rem] text-balance">
+      Open source sending infrastructure for your business
+    </h1>
+    <h2 class="text-xl text-neutral-500 mt-8 text-balance">
+      Unsend is the most affordable way to send your transactional, marketing
+      emails, product updates, newsletters, and more.
+    </h2>
+  </div>
+
+  <div class="mt-12 flex gap-6">
+    <a
+      href="mailto:hello@unsend.dev?subject=Join%20unsend%20waitlist&body=hey,%20i%20would%20like%20to%20join%20unsend%20waitlist"
+      class="bg-black text-white px-4 py-2 rounded-md"
+    >
+      Join waitlist
+    </a>
+
+    <button class="bg-white text-black border px-4 py-2 rounded-md">
+      Star on Github
+    </button>
+  </div>
+
+  <div class="mt-20">
+    <video
+      src="https://unsend.dev/hero.mp4"
+      class="w-full h-full border rounded-xl shadow-lg"></video>
+  </div>
+</Layout>
