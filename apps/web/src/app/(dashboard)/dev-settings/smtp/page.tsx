@@ -30,36 +30,38 @@ export default function ExampleCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
             <strong>Host:</strong>
             <TextWithCopyButton
-              className="ml-1 text-zinc-500 rounded-lg mt-1 p-2 w-full bg-gray-900"
+              className="ml-1 border bg-primary/10  rounded-lg mt-1 p-2 w-full "
               value={"smtp.unsend.dev"}
             ></TextWithCopyButton>
           </div>
           <div>
             <strong>Port:</strong>
             <TextWithCopyButton
-              className="ml-1 text-zinc-500 rounded-lg mt-1 p-2 w-full bg-gray-900"
+              className="ml-1 rounded-lg mt-1 p-2 w-full bg-primary/10 font-mono"
               value={"465"}
             ></TextWithCopyButton>
-            <p className="ml-1 mt-1 text-zinc-500 ">
-              For encrypted/TLS connections use <strong>2465</strong>,{" "}
-              <strong>587</strong> or <strong>2587</strong>
+            <p className="ml-1 mt-1 text-zinc-500 text-sm ">
+              For encrypted/TLS connections use{" "}
+              <strong className="font-mono">2465</strong>,{" "}
+              <strong className="font-mono">587</strong> or{" "}
+              <strong className="font-mono">2587</strong>
             </p>
           </div>
           <div>
             <strong>User:</strong>
             <TextWithCopyButton
-              className="ml-1 text-zinc-500 rounded-lg mt-1 p-2 w-full bg-gray-900"
+              className="ml-1 rounded-lg mt-1 p-2 w-full bg-primary/10"
               value={"unsend"}
             ></TextWithCopyButton>
           </div>
           <div>
             <strong>Password:</strong>
             <TextWithCopyButton
-              className="ml-1 text-zinc-500 rounded-lg mt-1 p-2 w-full bg-gray-900"
+              className="ml-1 rounded-lg mt-1 p-2 w-full bg-primary/10"
               value={"YOUR_API_KEY"}
             ></TextWithCopyButton>
           </div>
