@@ -5,6 +5,7 @@ import { api } from "~/trpc/react";
 import { Separator } from "@unsend/ui/src/separator";
 import { EmailStatusBadge, EmailStatusIcon } from "./email-status-badge";
 import { formatDate } from "date-fns";
+import { motion } from "framer-motion";
 import { EmailStatus } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 import {
@@ -19,10 +20,7 @@ import {
   COMPLAINT_ERROR_MESSAGES,
   DELIVERY_DELAY_ERRORS,
 } from "~/lib/constants/ses-errors";
-import { Button } from "@unsend/ui/src/button";
-import { Edit2, Edit3, Trash2 } from "lucide-react";
 import CancelEmail from "./cancel-email";
-import EditSchedule from "./edit-schedule";
 
 export default function EmailDetails({ emailId }: { emailId: string }) {
   const emailQuery = api.email.getEmail.useQuery({ id: emailId });
@@ -35,7 +33,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
           <EmailStatusBadge status={emailQuery.data?.latestStatus ?? "SENT"} />
         </div>
       </div>
-      <div className="flex flex-col mt-8 items-start">
+      <div className="flex flex-col mt-8 items-start gap-8">
         <div className="p-2 rounded-lg border  flex flex-col gap-2 w-full shadow">
           {/* <div className="flex gap-2">
             <span className="w-[100px] text-muted-foreground text-sm">
@@ -84,13 +82,19 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
               </div>
             </>
           ) : null}
-          <div className=" dark:bg-slate-200 h-[350px] overflow-visible  rounded border-t ">
-            <iframe
-              className="w-full h-full"
-              srcDoc={emailQuery.data?.html ?? ""}
-              sandbox="allow-same-origin"
-            />
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, delay: 0.3 }}
+          >
+            <div className=" dark:bg-slate-200 h-[350px] overflow-visible  rounded border-t ">
+              <iframe
+                className="w-full h-full"
+                srcDoc={emailQuery.data?.html ?? ""}
+                sandbox="allow-same-origin"
+              />
+            </div>
+          </motion.div>
         </div>
         {emailQuery.data?.latestStatus !== "SCHEDULED" ? (
           <div className=" border rounded-lg w-full shadow mb-2 ">
