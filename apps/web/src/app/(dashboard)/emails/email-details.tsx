@@ -35,8 +35,8 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
           <EmailStatusBadge status={emailQuery.data?.latestStatus ?? "SENT"} />
         </div>
       </div>
-      <div className="flex flex-col gap-8 mt-8 items-start">
-        <div className="p-2 rounded-lg border  flex flex-col gap-4 w-full shadow">
+      <div className="flex flex-col mt-8 items-start">
+        <div className="p-2 rounded-lg border  flex flex-col gap-2 w-full shadow">
           {/* <div className="flex gap-2">
             <span className="w-[100px] text-muted-foreground text-sm">
               From
@@ -68,7 +68,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
           emailQuery.data?.scheduledAt ? (
             <>
               <Separator />
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center px-4">
                 <span className="w-[100px] text-muted-foreground text-sm ">
                   Scheduled at
                 </span>
