@@ -93,7 +93,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
           </div>
         </div>
         {emailQuery.data?.latestStatus !== "SCHEDULED" ? (
-          <div className=" border rounded-lg w-full shadow ">
+          <div className=" border rounded-lg w-full shadow mb-2 ">
             <div className="  p-4 flex flex-col gap-8 w-full">
               <div className="font-medium">Events History</div>
               <div className="flex items-stretch px-4 w-full">

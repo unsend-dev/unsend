@@ -26,6 +26,7 @@ import { env } from "~/env";
 import { BuiltInProviderType, Provider } from "next-auth/providers/index";
 import Spinner from "@unsend/ui/src/spinner";
 import Link from "next/link";
+import { useTheme } from "@unsend/ui";
 
 const emailSchema = z.object({
   email: z
@@ -110,15 +111,17 @@ export default function LoginPage({
     signIn(provider);
   };
 
+  const { resolvedTheme } = useTheme();
+
   return (
     <main className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-6">
         <Image
-          src="/logo-dark.png"
+          src={resolvedTheme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
           alt="Unsend"
-          width={60}
-          height={60}
-          className="mx-auto border rounded-lg p-2 bg-black"
+          width={50}
+          height={50}
+          className="mx-auto"
         />
         <div>
           <p className="text-2xl text-center font-semibold">
