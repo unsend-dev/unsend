@@ -21,8 +21,13 @@ import {
   DELIVERY_DELAY_ERRORS,
 } from "~/lib/constants/ses-errors";
 import CancelEmail from "./cancel-email";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useState } from "react";
 
 export default function EmailDetails({ emailId }: { emailId: string }) {
+  const queryClient = useQueryClient();
+
   const emailQuery = api.email.getEmail.useQuery({ id: emailId });
 
   return (
@@ -82,19 +87,15 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
               </div>
             </>
           ) : null}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2, delay: 0.3 }}
-          >
-            <div className=" dark:bg-slate-200 h-[350px] overflow-visible  rounded border-t ">
-              <iframe
-                className="w-full h-full"
-                srcDoc={emailQuery.data?.html ?? ""}
-                sandbox="allow-same-origin"
-              />
-            </div>
-          </motion.div>
+          {emailQuery.data?.html ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2, delay: 0.3 }}
+            >
+              <EmailPreview html={emailQuery.data?.html ?? ""} />
+            </motion.div>
+          ) : null}
         </div>
         {emailQuery.data?.latestStatus !== "SCHEDULED" ? (
           <div className=" border rounded-lg w-full shadow mb-2 ">
@@ -136,6 +137,34 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
     </div>
   );
 }
+
+const EmailPreview = ({ html }: { html: string }) => {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!show) {
+    return (
+      <div className="dark:bg-slate-200 h-[350px] overflow-visible rounded border-t"></div>
+    );
+  }
+
+  return (
+    <div className="dark:bg-slate-200 h-[350px] overflow-visible rounded border-t">
+      <iframe
+        className="w-full h-full"
+        srcDoc={html}
+        sandbox="allow-same-origin"
+      />
+    </div>
+  );
+};
 
 const EmailStatusText = ({
   status,
