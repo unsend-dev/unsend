@@ -21,13 +21,10 @@ import {
   DELIVERY_DELAY_ERRORS,
 } from "~/lib/constants/ses-errors";
 import CancelEmail from "./cancel-email";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useState } from "react";
 
 export default function EmailDetails({ emailId }: { emailId: string }) {
-  const queryClient = useQueryClient();
-
   const emailQuery = api.email.getEmail.useQuery({ id: emailId });
 
   return (
@@ -87,15 +84,14 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
               </div>
             </>
           ) : null}
-          {emailQuery.data?.html ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2, delay: 0.3 }}
-            >
-              <EmailPreview html={emailQuery.data?.html ?? ""} />
-            </motion.div>
-          ) : null}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, delay: 0.3 }}
+          >
+            <EmailPreview html={emailQuery.data?.html ?? ""} />
+          </motion.div>
         </div>
         {emailQuery.data?.latestStatus !== "SCHEDULED" ? (
           <div className=" border rounded-lg w-full shadow mb-2 ">
