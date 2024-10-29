@@ -41,8 +41,6 @@ export const emailRouter = createTRPCRouter({
           subject: true,
           to: true,
           scheduledAt: true,
-          html: true,
-          text: true,
         },
         orderBy: {
           createdAt: "desc",
