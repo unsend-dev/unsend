@@ -37,6 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@unsend/ui/src/tooltip";
+import { useQueryClient } from "@tanstack/react-query";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -54,12 +55,20 @@ export default function EmailsList() {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
 
+  const queryClient = useQueryClient();
+
   const pageNumber = Number(page);
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
     status: status?.toUpperCase() as EmailStatus,
   });
+
+  if (emailsQuery.data?.emails) {
+    emailsQuery.data.emails.forEach((email) => {
+      queryClient.setQueryData(["email", email.id], email);
+    });
+  }
 
   const handleSelectEmail = (emailId: string) => {
     setSelectedEmail(emailId);
