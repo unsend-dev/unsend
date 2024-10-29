@@ -18,8 +18,8 @@ export default function ContactBooksList() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {contactBooksQuery.data?.map((contactBook) => (
           <motion.div
-            whileHover={{ scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 600, damping: 10 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 200, damping: 10 }}
             whileTap={{ scale: 0.99 }}
             className="border rounded-xl shadow hover:shadow-lg"
           >
@@ -28,7 +28,9 @@ export default function ContactBooksList() {
                 <div className="flex justify-between items-center p-4 mb-4">
                   <div className="flex items-center gap-2">
                     <div>{contactBook.emoji}</div>
-                    <div className="font-semibold">{contactBook.name}</div>
+                    <div className="font-semibold truncate whitespace-nowrap overflow-ellipsis w-[180px]">
+                      {contactBook.name}
+                    </div>
                   </div>
                   <div className="text-sm">
                     <span className="font-mono">
