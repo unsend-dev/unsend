@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   teamProcedure,
   protectedProcedure,
+  domainProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import {
@@ -27,14 +28,12 @@ export const domainRouter = createTRPCRouter({
       return createDomain(ctx.team.id, input.name, input.region);
     }),
 
-  startVerification: teamProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.domain.update({
-        where: { id: input.id },
-        data: { isVerifying: true },
-      });
-    }),
+  startVerification: domainProcedure.mutation(async ({ ctx, input }) => {
+    await ctx.db.domain.update({
+      where: { id: input.id },
+      data: { isVerifying: true },
+    });
+  }),
 
   domains: teamProcedure.query(async ({ ctx }) => {
     const domains = await db.domain.findMany({
@@ -49,16 +48,13 @@ export const domainRouter = createTRPCRouter({
     return domains;
   }),
 
-  getDomain: teamProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ input }) => {
-      return getDomain(input.id);
-    }),
+  getDomain: domainProcedure.query(async ({ input }) => {
+    return getDomain(input.id);
+  }),
 
-  updateDomain: teamProcedure
+  updateDomain: domainProcedure
     .input(
       z.object({
-        id: z.number(),
         clickTracking: z.boolean().optional(),
         openTracking: z.boolean().optional(),
       })
@@ -70,43 +66,39 @@ export const domainRouter = createTRPCRouter({
       });
     }),
 
-  deleteDomain: teamProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
-      await deleteDomain(input.id);
-      return { success: true };
-    }),
+  deleteDomain: domainProcedure.mutation(async ({ input }) => {
+    await deleteDomain(input.id);
+    return { success: true };
+  }),
 
-  sendTestEmailFromDomain: teamProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(
-      async ({
-        ctx: {
-          session: { user },
-          team,
-        },
-        input,
-      }) => {
-        const domain = await db.domain.findFirst({
-          where: { id: input.id, teamId: team.id },
-        });
+  sendTestEmailFromDomain: domainProcedure.mutation(
+    async ({
+      ctx: {
+        session: { user },
+        team,
+      },
+      input,
+    }) => {
+      const domain = await db.domain.findFirst({
+        where: { id: input.id, teamId: team.id },
+      });
 
-        if (!domain) {
-          throw new Error("Domain not found");
-        }
-
-        if (!user.email) {
-          throw new Error("User email not found");
-        }
-
-        return sendEmail({
-          teamId: team.id,
-          to: user.email,
-          from: `hello@${domain.name}`,
-          subject: "Unsend test email",
-          text: "hello,\n\nUnsend is the best open source sending platform\n\ncheck out https://unsend.dev",
-          html: "<p>hello,</p><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
-        });
+      if (!domain) {
+        throw new Error("Domain not found");
       }
-    ),
+
+      if (!user.email) {
+        throw new Error("User email not found");
+      }
+
+      return sendEmail({
+        teamId: team.id,
+        to: user.email,
+        from: `hello@${domain.name}`,
+        subject: "Unsend test email",
+        text: "hello,\n\nUnsend is the best open source sending platform\n\ncheck out https://unsend.dev",
+        html: "<p>hello,</p><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
+      });
+    }
+  ),
 });

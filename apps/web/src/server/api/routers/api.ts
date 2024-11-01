@@ -34,9 +34,7 @@ export const apiRouter = createTRPCRouter({
     return keys;
   }),
 
-  deleteApiKey: teamProcedure
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
-      return deleteApiKey(input.id);
-    }),
+  deleteApiKey: apiKeyProcedure.mutation(async ({ input }) => {
+    return deleteApiKey(input.id);
+  }),
 });
