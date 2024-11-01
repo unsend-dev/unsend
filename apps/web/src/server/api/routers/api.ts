@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
+import {
+  apiKeyProcedure,
+  createTRPCRouter,
+  teamProcedure,
+} from "~/server/api/trpc";
 import { addApiKey, deleteApiKey } from "~/server/service/api-service";
 
 export const apiRouter = createTRPCRouter({
