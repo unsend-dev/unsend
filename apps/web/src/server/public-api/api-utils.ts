@@ -25,3 +25,11 @@ export const getContactBook = async (c: Context, teamId: number) => {
 
   return contactBook;
 };
+
+export const checkIsValidEmailId = async (emailId: string, teamId: number) => {
+  const email = await db.email.findUnique({ where: { id: emailId, teamId } });
+
+  if (!email) {
+    throw new UnsendApiError({ code: "NOT_FOUND", message: "Email not found" });
+  }
+};

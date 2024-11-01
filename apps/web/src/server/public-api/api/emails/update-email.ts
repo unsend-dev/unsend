@@ -2,6 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { PublicAPIApp } from "~/server/public-api/hono";
 import { getTeamFromToken } from "~/server/public-api/auth";
 import { updateEmail } from "~/server/service/email-service";
+import { checkIsValidEmailId } from "../../api-utils";
 
 const route = createRoute({
   method: "patch",
@@ -44,8 +45,10 @@ const route = createRoute({
 
 function updateEmailScheduledAt(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    await getTeamFromToken(c);
+    const team = await getTeamFromToken(c);
     const emailId = c.req.param("emailId");
+
+    await checkIsValidEmailId(emailId, team.id);
 
     await updateEmail(emailId, {
       scheduledAt: c.req.valid("json").scheduledAt,

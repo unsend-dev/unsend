@@ -2,7 +2,11 @@ import { EmailStatus } from "@prisma/client";
 import { format, subDays } from "date-fns";
 import { z } from "zod";
 
-import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  emailProcedure,
+  teamProcedure,
+} from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { cancelEmail, updateEmail } from "~/server/service/email-service";
 
@@ -167,43 +171,39 @@ export const emailRouter = createTRPCRouter({
       return { emailStatusCounts, totalCount, emailDailyStatusCounts };
     }),
 
-  getEmail: teamProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const email = await db.email.findUnique({
-        where: {
-          id: input.id,
-        },
-        select: {
-          emailEvents: {
-            orderBy: {
-              status: "desc",
-            },
+  getEmail: emailProcedure.query(async ({ input }) => {
+    const email = await db.email.findUnique({
+      where: {
+        id: input.id,
+      },
+      select: {
+        emailEvents: {
+          orderBy: {
+            status: "desc",
           },
-          id: true,
-          createdAt: true,
-          latestStatus: true,
-          subject: true,
-          to: true,
-          from: true,
-          domainId: true,
-          text: true,
-          html: true,
-          scheduledAt: true,
         },
-      });
+        id: true,
+        createdAt: true,
+        latestStatus: true,
+        subject: true,
+        to: true,
+        from: true,
+        domainId: true,
+        text: true,
+        html: true,
+        scheduledAt: true,
+      },
+    });
 
-      return email;
-    }),
+    return email;
+  }),
 
-  cancelEmail: teamProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      await cancelEmail(input.id);
-    }),
+  cancelEmail: emailProcedure.mutation(async ({ input }) => {
+    await cancelEmail(input.id);
+  }),
 
-  updateEmailScheduledAt: teamProcedure
-    .input(z.object({ id: z.string(), scheduledAt: z.string().datetime() }))
+  updateEmailScheduledAt: emailProcedure
+    .input(z.object({ scheduledAt: z.string().datetime() }))
     .mutation(async ({ input }) => {
       await updateEmail(input.id, { scheduledAt: input.scheduledAt });
     }),

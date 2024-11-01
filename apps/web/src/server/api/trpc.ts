@@ -125,6 +125,45 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   });
 });
 
+export const domainProcedure = teamProcedure
+  .input(z.object({ id: z.number() }))
+  .use(async ({ ctx, next, input }) => {
+    const domain = await db.domain.findUnique({
+      where: { id: input.id, teamId: ctx.team.id },
+    });
+    if (!domain) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Domain not found" });
+    }
+
+    return next({ ctx: { ...ctx, domain } });
+  });
+
+export const emailProcedure = teamProcedure
+  .input(z.object({ id: z.string() }))
+  .use(async ({ ctx, next, input }) => {
+    const email = await db.email.findUnique({
+      where: { id: input.id, teamId: ctx.team.id },
+    });
+    if (!email) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Email not found" });
+    }
+
+    return next({ ctx: { ...ctx, email } });
+  });
+
+export const apiKeyProcedure = teamProcedure
+  .input(z.object({ id: z.number() }))
+  .use(async ({ ctx, next, input }) => {
+    const apiKey = await db.apiKey.findUnique({
+      where: { id: input.id, teamId: ctx.team.id },
+    });
+    if (!apiKey) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "API key not found" });
+    }
+
+    return next({ ctx: { ...ctx, apiKey } });
+  });
+
 export const contactBookProcedure = teamProcedure
   .input(
     z.object({
@@ -133,19 +172,12 @@ export const contactBookProcedure = teamProcedure
   )
   .use(async ({ ctx, next, input }) => {
     const contactBook = await db.contactBook.findUnique({
-      where: { id: input.contactBookId },
+      where: { id: input.contactBookId, teamId: ctx.team.id },
     });
     if (!contactBook) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Contact book not found",
-      });
-    }
-
-    if (contactBook.teamId !== ctx.team.id) {
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "You are not authorized to access this contact book",
       });
     }
 
@@ -160,19 +192,12 @@ export const campaignProcedure = teamProcedure
   )
   .use(async ({ ctx, next, input }) => {
     const campaign = await db.campaign.findUnique({
-      where: { id: input.campaignId },
+      where: { id: input.campaignId, teamId: ctx.team.id },
     });
     if (!campaign) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Campaign not found",
-      });
-    }
-
-    if (campaign.teamId !== ctx.team.id) {
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "You are not authorized to access this campaign",
       });
     }
 
