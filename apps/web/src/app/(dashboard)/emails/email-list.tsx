@@ -185,8 +185,9 @@ export default function EmailsList() {
                   </TableCell>
                   <TableCell className="text-right">
                     {email.latestStatus !== "SCHEDULED"
-                      ? formatDistanceToNow(
-                          email.scheduledAt ?? email.createdAt
+                      ? formatDate(
+                          email.scheduledAt ?? email.createdAt,
+                          "MMM do, hh:mm a"
                         )
                       : "--"}
                   </TableCell>
