@@ -1,6 +1,7 @@
-import { EmailStatus } from "@prisma/client";
+import { EmailStatus, Prisma, Email } from "@prisma/client";
 import { format, subDays } from "date-fns";
 import { z } from "zod";
+import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 
 import {
   createTRPCRouter,
@@ -12,8 +13,6 @@ import { cancelEmail, updateEmail } from "~/server/service/email-service";
 
 const statuses = Object.values(EmailStatus) as [EmailStatus];
 
-const DEFAULT_LIMIT = 30;
-
 export const emailRouter = createTRPCRouter({
   emails: teamProcedure
     .input(
@@ -21,41 +20,43 @@ export const emailRouter = createTRPCRouter({
         page: z.number().optional(),
         status: z.enum(statuses).optional().nullable(),
         domain: z.number().optional(),
+        search: z.string().optional().nullable(),
       })
     )
     .query(async ({ ctx, input }) => {
       const page = input.page || 1;
-      const limit = DEFAULT_LIMIT;
+      const limit = DEFAULT_QUERY_LIMIT;
       const offset = (page - 1) * limit;
 
-      const whereConditions = {
-        teamId: ctx.team.id,
-        ...(input.status ? { latestStatus: input.status } : {}),
-        ...(input.domain ? { domainId: input.domain } : {}),
-      };
+      const emails = await db.$queryRaw<Array<Email>>`
+        SELECT 
+          id, 
+          "createdAt", 
+          "latestStatus", 
+          subject, 
+          "to", 
+          "scheduledAt"
+        FROM "Email"
+        WHERE "teamId" = ${ctx.team.id}
+        ${input.status ? Prisma.sql`AND "latestStatus" = ${input.status}` : Prisma.sql``}
+        ${input.domain ? Prisma.sql`AND "domainId" = ${input.domain}` : Prisma.sql``}
+        ${
+          input.search
+            ? Prisma.sql`AND (
+          "subject" ILIKE ${`%${input.search}%`} 
+          OR EXISTS (
+            SELECT 1 FROM unnest("to") AS email 
+            WHERE email ILIKE ${`%${input.search}%`}
+          )
+        )`
+            : Prisma.sql``
+        }
+        ORDER BY "createdAt" DESC
+        LIMIT ${DEFAULT_QUERY_LIMIT}
+        OFFSET ${offset}
+      `;
 
-      const countP = db.email.count({ where: whereConditions });
-
-      const emailsP = db.email.findMany({
-        where: whereConditions,
-        select: {
-          id: true,
-          createdAt: true,
-          latestStatus: true,
-          subject: true,
-          to: true,
-          scheduledAt: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        skip: offset,
-        take: limit,
-      });
-
-      const [emails, count] = await Promise.all([emailsP, countP]);
-
-      return { emails, totalPage: Math.ceil(count / limit) };
+      return { emails };
     }),
 
   dashboard: teamProcedure

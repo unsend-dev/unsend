@@ -37,6 +37,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@unsend/ui/src/tooltip";
+import { Input } from "@unsend/ui/src/input";
+import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
+import { useDebouncedCallback } from "use-debounce";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -53,12 +56,14 @@ export default function EmailsList() {
   const [selectedEmail, setSelectedEmail] = useUrlState("emailId");
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
+  const [search, setSearch] = useUrlState("search");
 
   const pageNumber = Number(page);
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
     status: status?.toUpperCase() as EmailStatus,
+    search,
   });
 
   const handleSelectEmail = (emailId: string) => {
@@ -71,9 +76,19 @@ export default function EmailsList() {
     }
   };
 
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+  }, 1000);
+
   return (
     <div className="mt-10 flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <Input
+          placeholder="Search by subject or email"
+          className="w-[350px] mr-4"
+          defaultValue={search ?? ""}
+          onChange={(e) => debouncedSearch(e.target.value)}
+        />
         <Select
           value={status ?? "All statuses"}
           onValueChange={(val) =>
@@ -207,7 +222,7 @@ export default function EmailsList() {
         <Button
           size="sm"
           onClick={() => setPage((pageNumber + 1).toString())}
-          disabled={pageNumber >= (emailsQuery.data?.totalPage ?? 0)}
+          disabled={emailsQuery.data?.emails.length !== DEFAULT_QUERY_LIMIT}
         >
           Next
         </Button>
