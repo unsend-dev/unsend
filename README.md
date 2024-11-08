@@ -105,3 +105,14 @@ Checkout the [Self hosting](https://docs.unsend.dev/get-started/self-hosting) gu
 Also
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/QbMnwX?referralCode=oaAwvp)
+
+
+## Star History
+
+<a href="https://star-history.com/#unsend-dev/unsend&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=unsend-dev/unsend&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=unsend-dev/unsend&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=unsend-dev/unsend&type=Date" />
+ </picture>
+</a>
