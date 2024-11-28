@@ -7,7 +7,7 @@ import { getTeamAndApiKey } from "../service/api-service";
 
 const rateLimitCache = new TTLCache({
   ttl: 1000, // 1 second
-  max: env.API_RATE_LIMIT,
+  max: 10000,
 });
 
 /**
@@ -72,7 +72,7 @@ const checkRateLimit = (token: string) => {
 
   rateLimit = rateLimit ?? 0;
 
-  if (rateLimit >= 2) {
+  if (rateLimit >= env.API_RATE_LIMIT) {
     throw new UnsendApiError({
       code: "RATE_LIMITED",
       message: `Rate limit exceeded, ${env.API_RATE_LIMIT} requests per second`,
