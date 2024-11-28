@@ -204,9 +204,9 @@ export async function sendEmailWithAttachments({
   const boundary = "NextPart";
   let rawEmail = `From: ${from}\n`;
   rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
-  rawEmail += `Cc: ${cc ? cc.join(", ") : ""}\n`;
-  rawEmail += `Bcc: ${bcc ? bcc.join(", ") : ""}\n`;
-  rawEmail += `Reply-To: ${replyTo}\n`;
+  rawEmail += cc && cc.length ? `Cc: ${cc.join(", ")}\n` : "";
+  rawEmail += bcc && bcc.length ? `Bcc: ${bcc.join(", ")}\n` : "";
+  rawEmail += replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
   rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
@@ -256,7 +256,7 @@ export async function addWebhookConfiguration(
   configName: string,
   topicArn: string,
   eventTypes: EventType[],
-  region: string
+  region: string,
 ) {
   const sesClient = getSesClient(region);
 
