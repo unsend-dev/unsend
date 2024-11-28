@@ -18,6 +18,7 @@ import { EmailContent } from "~/types";
 function getSesClient(region: string) {
   return new SESv2Client({
     region: region,
+    endpoint: env.AWS_SES_ENDPOINT,
     credentials: {
       accessKeyId: env.AWS_ACCESS_KEY,
       secretAccessKey: env.AWS_SECRET_KEY,
