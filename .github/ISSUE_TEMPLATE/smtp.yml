@@ -1,0 +1,23 @@
+name: SMTP Issue
+description: Issue relataed to SMTP
+labels: ["smtp"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create this issue
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: replication
+    attributes:
+      label: Replication Steps
+      description: Provide clear steps as to how this happened
+      value: "1. First click this \n2. Navigate to this \n3. Click this \n4. See this"
+    validations:
+      required: false
