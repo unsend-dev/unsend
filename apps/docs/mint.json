@@ -55,6 +55,12 @@
       ]
     },
     {
+      "group": "Guides",
+      "pages": [
+        "guides/use-with-react-email"
+      ]
+    },
+    {
       "group": "Community SDKs",
       "pages": [
         "community-sdk/python"

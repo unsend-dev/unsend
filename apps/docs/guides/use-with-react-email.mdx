@@ -1,0 +1,92 @@
+---
+title: Use with React Email
+description: "A guide on how to use Unsend with React Email"
+---
+
+## Introduction
+
+[React Email](https://react.email/docs/introduction) is a library for building emails with React. In this guide, we will show you how to use Unsend with React Email.
+
+## Install dependencies
+
+<CodeGroup>
+  ```sh npm
+  npm install unsend @react-email/render
+  ```
+
+```sh yarn
+yarn add unsend @react-email/render
+```
+
+```sh pnpm
+pnpm add unsend @react-email/render
+```
+
+```sh bun
+bun add unsend @react-email/render
+```
+
+</CodeGroup>
+
+## Create an email template
+
+```tsx
+import * as React from "react";
+import { Html } from "@react-email/html";
+import { Button } from "@react-email/button";
+
+export function Email(props) {
+  const { url } = props;
+
+  return (
+    <Html lang="en">
+      <Button href={url}>Click me</Button>
+    </Html>
+  );
+}
+```
+
+## Send an email using Unsend
+
+```ts
+import { Unsend } from "unsend";
+import { render } from "@react-email/render";
+import { Email } from "./email";
+
+const unsend = new Unsend({ apiKey: "us_your_unsend_api_key" });
+
+  const html = await render(<Email url="https://unsend.dev" />);
+
+const response = await unsend.emails.send({
+  to: "hello@unsend.dev",
+  from: "hello@unsend.dev",
+  subject: "Unsend email",
+  html,
+});
+```
+
+## Build your project
+
+### JavaScript
+
+If you're using nodejs, importing `email.jsx` might fail. make sure to add these to your babel config:
+
+```js
+{
+  "plugins": ["@babel/plugin-proposal-class-properties"]
+}
+```
+
+Checkout this [example](https://github.com/unsend-dev/unsend-js-examples/tree/main/react-email-js)
+
+### TypeScript
+
+Just add `jsx` to your `tsconfig.json`
+
+```json
+{
+  "compilerOptions": { "jsx": "react-jsx" }
+}
+```
+
+Checkout this [example](https://github.com/unsend-dev/unsend-js-examples/tree/main/react-email-ts)
