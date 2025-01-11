@@ -54,6 +54,7 @@ export const env = createEnv({
     S3_COMPATIBLE_SECRET_KEY: z.string().optional(),
     S3_COMPATIBLE_API_URL: z.string().optional(),
     S3_COMPATIBLE_PUBLIC_URL: z.string().optional(),
+    RATE_LIMIT_BY: z.enum(['DOMAIN', "RECIEVER"]).optional()
   },
 
   /**
@@ -98,6 +99,7 @@ export const env = createEnv({
     S3_COMPATIBLE_SECRET_KEY: process.env.S3_COMPATIBLE_SECRET_KEY,
     S3_COMPATIBLE_API_URL: process.env.S3_COMPATIBLE_API_URL,
     S3_COMPATIBLE_PUBLIC_URL: process.env.S3_COMPATIBLE_PUBLIC_URL,
+    RATE_LIMIT_BY: process.env.RATE_LIMIT_BY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

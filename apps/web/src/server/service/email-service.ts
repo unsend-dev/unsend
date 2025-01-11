@@ -3,6 +3,9 @@ import { db } from "../db";
 import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
+import { RedisRateLimiter } from "./rate-limitter";
+
+const rateLimiter = new RedisRateLimiter(process.env.REDIS_URL, 1, 10);
 
 async function checkIfValidEmail(emailId: string) {
   const email = await db.email.findUnique({
@@ -50,7 +53,10 @@ export async function sendEmail(
     scheduledAt,
   } = emailContent;
 
-  const domain = await validateDomainFromEmail(from, teamId);
+  const [domain] = await Promise.all([
+    await validateDomainFromEmail(from, teamId),
+    await emailRateLimiter(to, "DOMAIN")
+  ])
 
   const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
   const delay = scheduledAtDate
@@ -164,4 +170,56 @@ export async function cancelEmail(emailId: string) {
       status: "CANCELLED",
     },
   });
+}
+
+async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | 'RECIEVER'): Promise<void>  {
+  let identifiers: string | string[];
+
+  switch (rateLimitBy) {
+    case 'DOMAIN':
+      if (typeof to === 'string') {
+        const domain = to.split('@')[1];
+        if (!domain) {
+          throw new UnsendApiError({
+            code: "BAD_REQUEST",
+            message: "Invalid email address format for rate limiting by domain.",
+          });
+        }
+        identifiers = [domain];
+      } else {
+        identifiers = to.map(email => {
+          const domain = email.split('@')[1];
+          if (!domain) {
+            throw new UnsendApiError({
+              code: "BAD_REQUEST",
+              message: "Invalid email address format for rate limiting by domain.",
+            });
+          }
+
+          return domain;
+        });
+      }
+      break;
+
+    case 'RECIEVER':
+      identifiers = Array.isArray(to) ? to : [to];
+      break;
+
+    default:
+      throw new UnsendApiError({
+        code: "BAD_REQUEST",
+        message: "Invalid rate limiting strategy",
+      });
+  }
+
+  await Promise.all(
+    identifiers.map(identifier => checkAndApplyRateLimit(rateLimitBy, identifier))
+  );
+
+  console.log(`Email to ${identifiers.join(", ")} is within the rate limit.`);
+}
+
+async function checkAndApplyRateLimit(rateLimitBy: 'DOMAIN' | 'RECIEVER', identifier: string) {
+  const key = rateLimiter.getRateLimitKey(`${rateLimitBy}:${identifier}`)
+  await rateLimiter.checkRateLimit(key);
 }
