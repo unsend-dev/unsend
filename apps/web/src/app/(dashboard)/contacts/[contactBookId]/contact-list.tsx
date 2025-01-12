@@ -1,15 +1,5 @@
 "use client";
 
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@unsend/ui/src/table";
-import { api } from "~/trpc/react";
-import { useUrlState } from "~/hooks/useUrlState";
 import { Button } from "@unsend/ui/src/button";
 import {
   Select,
@@ -18,7 +8,19 @@ import {
   SelectTrigger,
 } from "@unsend/ui/src/select";
 import Spinner from "@unsend/ui/src/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@unsend/ui/src/table";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
+import { useUrlState } from "~/hooks/useUrlState";
+import { api } from "~/trpc/react";
+import { getGravatarUrl } from "~/utils/gravatar-utils";
 import DeleteContact from "./delete-contact";
 import EditContact from "./edit-contact";
 
@@ -89,7 +91,21 @@ export default function ContactList({
             ) : contactsQuery.data?.contacts.length ? (
               contactsQuery.data?.contacts.map((contact) => (
                 <TableRow key={contact.id} className="">
-                  <TableCell className="font-medium">{contact.email}</TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={getGravatarUrl(contact.email, {
+                          size: 35,
+                          defaultImage: "identicon",
+                        })}
+                        alt={contact.email + "'s gravatar"}
+                        width={35}
+                        height={35}
+                        className="rounded-full"
+                      />
+                      {contact.email}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div
                       className={`text-center w-[130px] rounded capitalize py-1 text-xs ${
