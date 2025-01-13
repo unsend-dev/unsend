@@ -1,4 +1,4 @@
-import { EmailStatus, Prisma, Email } from "@prisma/client";
+import { Email, EmailStatus, Prisma } from "@prisma/client";
 import { format, subDays } from "date-fns";
 import { z } from "zod";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
@@ -38,7 +38,7 @@ export const emailRouter = createTRPCRouter({
           "scheduledAt"
         FROM "Email"
         WHERE "teamId" = ${ctx.team.id}
-        ${input.status ? Prisma.sql`AND "latestStatus" = ${input.status}` : Prisma.sql``}
+        ${input.status ? Prisma.sql`AND "latestStatus"::text = ${input.status}` : Prisma.sql``}
         ${input.domain ? Prisma.sql`AND "domainId" = ${input.domain}` : Prisma.sql``}
         ${
           input.search
