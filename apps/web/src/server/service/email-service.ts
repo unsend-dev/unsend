@@ -53,7 +53,7 @@ export async function sendEmail(
     scheduledAt,
   } = emailContent;
 
-  const [domain] = await Promise.all([
+  const [domain, rateLimitInfo] = await Promise.all([
     await validateDomainFromEmail(from, teamId),
     await emailRateLimiter(to, "DOMAIN")
   ])
@@ -63,9 +63,9 @@ export async function sendEmail(
     ? Math.max(0, scheduledAtDate.getTime() - Date.now())
     : undefined;
 
-  const email = await db.email.create({
+  const withinLimitEmail = await db.email.create({
     data: {
-      to: Array.isArray(to) ? to : [to],
+      to: rateLimitInfo.withinLimits,
       from,
       subject,
       replyTo: replyTo
@@ -85,9 +85,35 @@ export async function sendEmail(
     },
   });
 
+  
+  let rateLimittedEmail = {id: ''}
+  if (rateLimitInfo.rateLimited.length > 0) {
+    rateLimittedEmail = await db.email.create({
+      data: {
+        to: rateLimitInfo.rateLimited,
+        from,
+        subject,
+        replyTo: replyTo
+          ? Array.isArray(replyTo)
+            ? replyTo
+            : [replyTo]
+          : undefined,
+        cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+        bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+        text,
+        html,
+        teamId,
+        domainId: domain.id,
+        attachments: attachments ? JSON.stringify(attachments) : undefined,
+        scheduledAt: scheduledAtDate,
+        latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
+      },
+    });
+  } 
+
   try {
     await EmailQueueService.queueEmail(
-      email.id,
+      withinLimitEmail.id,
       domain.region,
       true,
       undefined,
@@ -96,7 +122,7 @@ export async function sendEmail(
   } catch (error: any) {
     await db.emailEvent.create({
       data: {
-        emailId: email.id,
+        emailId: withinLimitEmail.id,
         status: "FAILED",
         data: {
           error: error.toString(),
@@ -104,13 +130,41 @@ export async function sendEmail(
       },
     });
     await db.email.update({
-      where: { id: email.id },
+      where: { id: withinLimitEmail.id },
       data: { latestStatus: "FAILED" },
     });
     throw error;
   }
 
-  return email;
+  if (Object.hasOwn(rateLimittedEmail, 'id') && rateLimittedEmail.id !== '') {
+    try {
+      const retryDelay = 1 * 1000;
+      await EmailQueueService.queueEmail(
+        rateLimittedEmail?.id,
+        domain.region,
+        true,
+        undefined,
+        delay ? delay + retryDelay : retryDelay
+      );
+    } catch (error: any) {
+      await db.emailEvent.create({
+        data: {
+          emailId: rateLimittedEmail.id,
+          status: "FAILED",
+          data: {
+            error: error.toString(),
+          },
+        },
+      });
+      await db.email.update({
+        where: { id: rateLimittedEmail.id },
+        data: { latestStatus: "FAILED" },
+      });
+      throw error;
+    }
+  }
+
+  return {withinLimitEmail, rateLimittedEmail};
 }
 
 export async function updateEmail(
@@ -172,7 +226,7 @@ export async function cancelEmail(emailId: string) {
   });
 }
 
-async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | 'RECIEVER'): Promise<void>  {
+async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | 'RECIEVER'): Promise<{rateLimited: string[], withinLimits: string[]}>  {
   let identifiers: string | string[];
 
   switch (rateLimitBy) {
@@ -212,14 +266,31 @@ async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | '
       });
   }
 
-  await Promise.all(
-    identifiers.map(identifier => checkAndApplyRateLimit(rateLimitBy, identifier))
-  );
-
-  console.log(`Email to ${identifiers.join(", ")} is within the rate limit.`);
+  return await processRateLimits(rateLimitBy, identifiers);
 }
 
-async function checkAndApplyRateLimit(rateLimitBy: 'DOMAIN' | 'RECIEVER', identifier: string) {
-  const key = rateLimiter.getRateLimitKey(`${rateLimitBy}:${identifier}`)
-  await rateLimiter.checkRateLimit(key);
+async function processRateLimits(
+  rateLimitBy: 'DOMAIN' | 'RECIEVER',
+  identifiers: string[]
+) {
+  const rateLimited: string[] = [];
+  const withinLimits: string[] = [];
+
+  await Promise.all(
+      identifiers.map(async (identifier) => {
+          try {
+              const key = rateLimiter.getRateLimitKey(`${rateLimitBy}:${identifier}`);
+              await rateLimiter.checkRateLimit(key);
+              withinLimits.push(identifier);
+          } catch (error) {
+              console.error(`Rate limiting failed for ${identifier}`);
+              rateLimited.push(identifier);
+          }
+      })
+  );
+
+  console.log(`Rate-limited: ${rateLimited.join(", ")}`);
+  console.log(`Within limit: ${withinLimits.join(", ")}`);
+
+  return { rateLimited, withinLimits }
 }

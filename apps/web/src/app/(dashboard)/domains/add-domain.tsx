@@ -49,6 +49,7 @@ export default function AddDomain() {
   const [open, setOpen] = useState(false);
 
   const regionQuery = api.domain.getAvailableRegions.useQuery();
+  console.log(regionQuery, "region query")
 
   const addDomainMutation = api.domain.createDomain.useMutation();
 
