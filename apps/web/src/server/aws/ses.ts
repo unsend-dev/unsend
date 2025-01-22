@@ -162,7 +162,7 @@ export async function sendEmailThroughSes({
           ...(unsubUrl
             ? [
                 { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
-                { Name: "List-Unsubscribe-Post", Value: "One-Click" },
+                { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
               ]
             : []
           ),
