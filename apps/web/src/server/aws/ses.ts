@@ -114,6 +114,7 @@ export async function sendEmailThroughSes({
   region,
   configurationSetName,
   unsubUrl,
+  isBulk,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
@@ -121,6 +122,7 @@ export async function sendEmailThroughSes({
   bcc?: string[];
   replyTo?: string[];
   to?: string[];
+  isBulk?: boolean;
 }) {
   const sesClient = getSesClient(region);
   const command = new SendEmailCommand({
@@ -155,14 +157,21 @@ export async function sendEmailThroughSes({
               }
             : undefined,
         },
-        ...(unsubUrl
-          ? {
-              Headers: [
+        Headers: [
+          // Spread in any unsubscribe headers if unsubUrl is defined
+          ...(unsubUrl
+            ? [
                 { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
                 { Name: "List-Unsubscribe-Post", Value: "One-Click" },
-              ],
-            }
-          : {}),
+              ]
+            : []
+          ),
+          // Spread in the precedence header if present
+          ...(isBulk
+            ? [{ Name: "Precedence", Value: "bulk" }]
+            : []
+          ),
+        ],
       },
     },
     ConfigurationSetName: configurationSetName,
