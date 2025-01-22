@@ -270,9 +270,10 @@ export async function sendCampaignEmail(
 
   // Queue emails
   await Promise.all(
-    emails.map((email) =>
-      EmailQueueService.queueEmail(email.id, domain.region, false)
-    )
+    emails.map((email) => {
+      const unsubscribeUrl = createUnsubUrl(email.contactId, campaignId);
+      EmailQueueService.queueEmail(email.id, domain.region, false, unsubscribeUrl);
+    })
   );
 }
 
