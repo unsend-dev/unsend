@@ -271,8 +271,16 @@ export async function sendCampaignEmail(
   // Queue emails
   await Promise.all(
     emails.map((email) => {
-      const unsubscribeUrl = createUnsubUrl(email.contactId, campaignId);
-      EmailQueueService.queueEmail(email.id, domain.region, false, unsubscribeUrl);
+      let unsubscribeUrl = undefined;
+      if (email.contactId) {
+        unsubscribeUrl = createUnsubUrl(email.contactId, campaignId);
+      }
+      EmailQueueService.queueEmail(
+        email.id,
+        domain.region,
+        false,
+        unsubscribeUrl
+      );
     })
   );
 }
