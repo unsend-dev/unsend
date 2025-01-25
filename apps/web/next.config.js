@@ -12,6 +12,14 @@ const config = {
     esmExternals: "loose",
     serverComponentsExternalPackages: ["bullmq"],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.gravatar.com",
+      },
+    ],
+  },
 };
 
 export default config;
