@@ -1,5 +1,6 @@
 import { EmailStatus } from "@prisma/client";
 
+// ADD RATE_LIMITED STATUS LATER
 export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
   status,
 }) => {
