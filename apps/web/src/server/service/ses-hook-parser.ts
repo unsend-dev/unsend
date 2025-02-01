@@ -81,6 +81,7 @@ export async function parseSesHook(data: SesEvent) {
         clicked: updateField === "clicked" ? 1 : 0,
         bounced: updateField === "bounced" ? 1 : 0,
         complained: updateField === "complained" ? 1 : 0,
+        sent: updateField === "sent" ? 1 : 0,
       },
       update: {
         [updateField]: {
