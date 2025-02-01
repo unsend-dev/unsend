@@ -43,42 +43,47 @@ export default function DashboardChart() {
             <>
               <DashboardItemCard
                 status={"total"}
-                count={statusQuery.data.totalCount}
+                count={statusQuery.data.totalCounts.sent}
                 percentage={100}
               />
               <DashboardItemCard
                 status={EmailStatus.DELIVERED}
-                count={statusQuery.data.emailStatusCounts.DELIVERED.count}
+                count={statusQuery.data.totalCounts.delivered}
                 percentage={
-                  statusQuery.data.emailStatusCounts.DELIVERED.percentage
+                  statusQuery.data.totalCounts.delivered /
+                  statusQuery.data.totalCounts.sent
                 }
               />
               <DashboardItemCard
                 status={EmailStatus.BOUNCED}
-                count={statusQuery.data.emailStatusCounts.BOUNCED.count}
+                count={statusQuery.data.totalCounts.bounced}
                 percentage={
-                  statusQuery.data.emailStatusCounts.BOUNCED.percentage
+                  statusQuery.data.totalCounts.bounced /
+                  statusQuery.data.totalCounts.sent
                 }
               />
               <DashboardItemCard
                 status={EmailStatus.COMPLAINED}
-                count={statusQuery.data.emailStatusCounts.COMPLAINED.count}
+                count={statusQuery.data.totalCounts.complained}
                 percentage={
-                  statusQuery.data.emailStatusCounts.COMPLAINED.percentage
+                  statusQuery.data.totalCounts.complained /
+                  statusQuery.data.totalCounts.sent
                 }
               />
               <DashboardItemCard
                 status={EmailStatus.CLICKED}
-                count={statusQuery.data.emailStatusCounts.CLICKED.count}
+                count={statusQuery.data.totalCounts.clicked}
                 percentage={
-                  statusQuery.data.emailStatusCounts.CLICKED.percentage
+                  statusQuery.data.totalCounts.clicked /
+                  statusQuery.data.totalCounts.sent
                 }
               />
               <DashboardItemCard
                 status={EmailStatus.OPENED}
-                count={statusQuery.data.emailStatusCounts.OPENED.count}
+                count={statusQuery.data.totalCounts.opened}
                 percentage={
-                  statusQuery.data.emailStatusCounts.OPENED.percentage
+                  statusQuery.data.totalCounts.opened /
+                  statusQuery.data.totalCounts.sent
                 }
               />
             </>
@@ -108,7 +113,7 @@ export default function DashboardChart() {
               <BarChart
                 width={900}
                 height={300}
-                data={statusQuery.data.emailDailyStatusCounts}
+                data={statusQuery.data.result}
                 margin={{
                   top: 20,
                   right: 30,
@@ -117,77 +122,74 @@ export default function DashboardChart() {
                 }}
               >
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="name" fontSize={12} />
+                <XAxis dataKey="date" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip
                   content={({ payload }) => {
                     const data = payload?.[0]?.payload as Record<
-                      EmailStatus,
+                      | "sent"
+                      | "delivered"
+                      | "opened"
+                      | "clicked"
+                      | "bounced"
+                      | "complained",
                       number
-                    > & { name: string };
+                    > & { date: string };
 
-                    if (
-                      !data ||
-                      (!data.BOUNCED &&
-                        !data.COMPLAINED &&
-                        !data.DELIVERED &&
-                        !data.OPENED &&
-                        !data.CLICKED)
-                    )
-                      return null;
+                    if (!data || data.sent === 0) return null;
 
                     return (
                       <div className=" bg-background border shadow-lg p-2 rounded flex flex-col gap-2 px-4">
                         <p className="text-sm text-muted-foreground">
-                          {data.name}
+                          {data.date}
                         </p>
-                        {data.DELIVERED ? (
+                        {data.delivered ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#10b981] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Delivered
                             </p>
                             <p className="text-xs font-mono">
-                              {data.DELIVERED}
+                              {data.delivered}
                             </p>
                           </div>
                         ) : null}
-                        {data.BOUNCED ? (
+                        {data.bounced ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#ef4444] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Bounced
                             </p>
-                            <p className="text-xs font-mono">{data.BOUNCED}</p>
+                            <p className="text-xs font-mono">{data.bounced}</p>
                           </div>
                         ) : null}
-                        {data.COMPLAINED ? (
+                        {data.complained ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#eab308] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Complained
                             </p>
                             <p className="text-xs font-mono">
-                              {data.COMPLAINED}
+                              {data.complained}
                             </p>
                           </div>
                         ) : null}
-                        {data.OPENED ? (
+                        {data.opened ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#6366f1] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Opened
                             </p>
-                            <p className="text-xs font-mono">{data.OPENED}</p>
+                            <p className="text-xs font-mono">{data.opened}</p>
                           </div>
                         ) : null}
-                        {data.CLICKED ? (
+                        {data.clicked ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#06b6d4] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Clicked
                             </p>
-                            <p className="text-xs font-mono">{data.CLICKED}</p>
+                            <p className="text-xs font-mono">{data.clicked}</p>
                           </div>
                         ) : null}
                       </div>
@@ -198,14 +200,14 @@ export default function DashboardChart() {
                 {/* <Legend /> */}
                 <Bar
                   barSize={8}
-                  dataKey="DELIVERED"
+                  dataKey="delivered"
                   stackId="a"
                   fill="#10b981"
                 />
-                <Bar dataKey="BOUNCED" stackId="a" fill="#ef4444" />
-                <Bar dataKey="COMPLAINED" stackId="a" fill="#eab308" />
-                <Bar dataKey="OPENED" stackId="a" fill="#6366f1" />
-                <Bar dataKey="CLICKED" stackId="a" fill="#06b6d4" />
+                <Bar dataKey="bounced" stackId="a" fill="#ef4444" />
+                <Bar dataKey="complained" stackId="a" fill="#eab308" />
+                <Bar dataKey="opened" stackId="a" fill="#6366f1" />
+                <Bar dataKey="clicked" stackId="a" fill="#06b6d4" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -237,7 +239,7 @@ const DashboardItemCard: React.FC<DashboardItemCardProps> = ({
           {count}
         </div>
         {status !== "total" ? (
-          <div className="text-sm pb-1">{percentage}%</div>
+          <div className="text-sm pb-1">{(percentage * 100).toFixed(0)}%</div>
         ) : null}
       </div>
     </div>
