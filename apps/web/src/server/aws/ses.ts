@@ -162,15 +162,14 @@ export async function sendEmailThroughSes({
           ...(unsubUrl
             ? [
                 { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
-                { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
+                {
+                  Name: "List-Unsubscribe-Post",
+                  Value: "List-Unsubscribe=One-Click",
+                },
               ]
-            : []
-          ),
+            : []),
           // Spread in the precedence header if present
-          ...(isBulk
-            ? [{ Name: "Precedence", Value: "bulk" }]
-            : []
-          ),
+          ...(isBulk ? [{ Name: "Precedence", Value: "bulk" }] : []),
         ],
       },
     },
@@ -216,7 +215,8 @@ export async function sendEmailWithAttachments({
   rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
   rawEmail += cc && cc.length ? `Cc: ${cc.join(", ")}\n` : "";
   rawEmail += bcc && bcc.length ? `Bcc: ${bcc.join(", ")}\n` : "";
-  rawEmail += replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
+  rawEmail +=
+    replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
   rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
@@ -266,7 +266,7 @@ export async function addWebhookConfiguration(
   configName: string,
   topicArn: string,
   eventTypes: EventType[],
-  region: string,
+  region: string
 ) {
   const sesClient = getSesClient(region);
 
