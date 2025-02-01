@@ -50,14 +50,6 @@ export async function parseSesHook(data: SesEvent) {
   // Update daily email usage statistics
   const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
 
-  console.log("Is updating daily email usage", {
-    teamId: email.teamId,
-    domainId: email.domainId,
-    date: today,
-    type: email.campaignId ? "MARKETING" : "TRANSACTIONAL",
-    mailStatus,
-  });
-
   if (
     [
       "DELIVERED",
