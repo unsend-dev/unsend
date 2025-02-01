@@ -45,6 +45,7 @@ We are currently in beta and trying to rollout to public slowly. If you're inter
 - [x] Marketing email
 - [x] SMTP support
 - [x] Schedule API
+- [x] API Logs
 - [ ] Webhook support
 - [ ] BYO AWS credentials
 
@@ -57,7 +58,7 @@ We're currently working on opening unsend for public beta.
 - Join the [Discord server](https://discord.gg/BU8n8pJv8S) for any questions and getting to know to other community members.
 - ⭐ the repository to help us raise awareness.
 - Spread the word on Twitter.
-- Fix or create [issues](https://github.com/unsend/unsend/issues), that are needed for the first production release.
+- Fix or create [issues](https://github.com/unsend-dev/unsend/issues), that are needed for the first production release.
 
 ## Tech Stack
 

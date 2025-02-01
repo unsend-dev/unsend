@@ -1,8 +1,8 @@
 import { ApiPermission } from "@prisma/client";
-import { db } from "../db";
 import { randomBytes } from "crypto";
-import { smallNanoid } from "../nanoid";
 import { createSecureHash, verifySecureHash } from "../crypto";
+import { db } from "../db";
+import { smallNanoid } from "../nanoid";
 
 export async function addApiKey({
   name,
@@ -44,6 +44,9 @@ export async function getTeamAndApiKey(apiKey: string) {
     where: {
       clientId,
     },
+    include: {
+      team: true,
+    },
   });
 
   if (!apiKeyRow) {
@@ -56,13 +59,36 @@ export async function getTeamAndApiKey(apiKey: string) {
       return null;
     }
 
-    const team = await db.team.findUnique({
-      where: {
-        id: apiKeyRow.teamId,
-      },
-    });
+    return { team: apiKeyRow.team, apiKey: apiKeyRow };
+  } catch (error) {
+    console.error("Error verifying API key:", error);
+    return null;
+  }
+}
 
-    return { team, apiKey: apiKeyRow };
+export async function getApiKey(apiKey: string) {
+  const [, clientId, token] = apiKey.split("_") as [string, string, string];
+
+  const apiKeyRow = await db.apiKey.findUnique({
+    where: {
+      clientId,
+    },
+    include: {
+      team: true,
+    },
+  });
+
+  if (!apiKeyRow) {
+    return null;
+  }
+
+  try {
+    const isValid = await verifySecureHash(token, apiKeyRow.tokenHash);
+    if (!isValid) {
+      return null;
+    }
+
+    return apiKeyRow;
   } catch (error) {
     console.error("Error verifying API key:", error);
     return null;

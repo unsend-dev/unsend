@@ -1,9 +1,9 @@
 import TTLCache from "@isaacs/ttlcache";
 import { Context } from "hono";
-import { db } from "../db";
-import { UnsendApiError } from "./api-error";
 import { env } from "~/env";
-import { getTeamAndApiKey } from "../service/api-service";
+import { db } from "../db";
+import { getApiKey, getTeamAndApiKey } from "../service/api-service";
+import { UnsendApiError } from "./api-error";
 
 const rateLimitCache = new TTLCache({
   ttl: 1000, // 1 second
@@ -67,6 +67,77 @@ export const getTeamFromToken = async (c: Context) => {
   return team;
 };
 
+/**
+ * Gets the api key from the token. Also will check if the token is valid.
+ */
+export const getApiKeyFromToken = async (c: Context) => {
+  const authHeader = c.req.header("Authorization");
+
+  if (!authHeader) {
+    throw new UnsendApiError({
+      code: "UNAUTHORIZED",
+      message: "No Authorization header provided",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    throw new UnsendApiError({
+      code: "UNAUTHORIZED",
+      message: "No Authorization header provided",
+    });
+  }
+
+  const apiKey = await getApiKey(token);
+
+  if (!apiKey) {
+    throw new UnsendApiError({
+      code: "FORBIDDEN",
+      message: "Invalid API token",
+    });
+  }
+
+  return apiKey;
+};
+
+/**
+ * Gets the api key with team from the token. Also will check if the token is valid.
+ */
+export const getApiKeyAndTeamFromToken = async (c: Context) => {
+  const authHeader = c.req.header("Authorization");
+
+  if (!authHeader) {
+    throw new UnsendApiError({
+      code: "UNAUTHORIZED",
+      message: "No Authorization header provided",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    throw new UnsendApiError({
+      code: "UNAUTHORIZED",
+      message: "No Authorization header provided",
+    });
+  }
+
+  const teamAndApiKey = await getTeamAndApiKey(token);
+
+  if (!teamAndApiKey) {
+    throw new UnsendApiError({
+      code: "FORBIDDEN",
+      message: "Invalid API token",
+    });
+  }
+
+  return { apiKey: teamAndApiKey.apiKey, team: teamAndApiKey.team };
+};
+
+/**
+ * Checks the rate limit for the token.
+ */
 const checkRateLimit = (token: string) => {
   let rateLimit = rateLimitCache.get<number>(token);
 

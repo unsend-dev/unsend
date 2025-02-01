@@ -1,10 +1,52 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
-import { handleError } from "./api-error";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { env } from "~/env";
+import { db } from "~/server/db";
+import { handleError } from "./api-error";
+import { getApiKeyAndTeamFromToken } from "./auth";
 
 export function getApp() {
   const app = new OpenAPIHono().basePath("/api");
+
+  // Add logging middleware
+  app.use("*", async (c, next) => {
+    const start = performance.now();
+
+    await next();
+
+    const end = performance.now();
+
+    const duration = Math.round(end - start);
+
+    try {
+      const { apiKey, team } = await getApiKeyAndTeamFromToken(c);
+      const requestBody = await c.req.json().catch(() => null);
+      const responseBody = c.res.body
+        ? await c.res
+            .clone()
+            .json()
+            .catch(() => null)
+        : null;
+
+      const log = await db.apiLog.create({
+        data: {
+          teamId: team.id,
+          method: c.req.method,
+          path: c.req.path,
+          status: c.res.status,
+          duration: duration,
+          request: JSON.stringify(requestBody),
+          response: JSON.stringify(responseBody),
+          apiKeyId: apiKey.id,
+        },
+      });
+
+      console.log({ log });
+    } catch (error) {
+      // Log error but don't interrupt the request
+      console.error("API logging failed:", error);
+    }
+  });
 
   app.onError(handleError);
 
