@@ -86,15 +86,16 @@ export const emailRouter = createTRPCRouter({
       const result = await db.$queryRaw<Array<DailyEmailUsage>>`
         SELECT 
           date,
-          sent,
-          delivered,
-          opened,
-          clicked,
-          bounced,
-          complained
+          SUM(sent) AS sent,
+          SUM(delivered) AS delivered,
+          SUM(opened) AS opened,
+          SUM(clicked) AS clicked,
+          SUM(bounced) AS bounced,
+          SUM(complained) AS complained
         FROM "DailyEmailUsage"
         WHERE "teamId" = ${team.id}
         AND "date" >= ${isoStartDate}
+        GROUP BY "date"
         ORDER BY "date" ASC
       `;
 
