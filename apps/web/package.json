@@ -58,6 +58,7 @@
     "react-hook-form": "^7.51.3",
     "recharts": "^2.12.5",
     "server-only": "^0.0.1",
+    "stripe": "^17.6.0",
     "superjson": "^2.2.1",
     "tldts": "^6.1.16",
     "ua-parser-js": "^1.0.38",
