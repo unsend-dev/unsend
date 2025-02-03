@@ -100,6 +100,7 @@ export const contactsRouter = createTRPCRouter({
       z.object({
         page: z.number().optional(),
         subscribed: z.boolean().optional(),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx: { db }, input }) => {
@@ -111,6 +112,15 @@ export const contactsRouter = createTRPCRouter({
         contactBookId: input.contactBookId,
         ...(input.subscribed !== undefined
           ? { subscribed: input.subscribed }
+          : {}),
+        ...(input.search
+          ? {
+              OR: [
+                { email: { contains: input.search, mode: "insensitive" } },
+                { firstName: { contains: input.search, mode: "insensitive" } },
+                { lastName: { contains: input.search, mode: "insensitive" } },
+              ],
+            }
           : {}),
       };
 

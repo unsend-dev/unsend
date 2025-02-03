@@ -23,7 +23,8 @@ import { api } from "~/trpc/react";
 import { getGravatarUrl } from "~/utils/gravatar-utils";
 import DeleteContact from "./delete-contact";
 import EditContact from "./edit-contact";
-
+import { Input } from "@unsend/ui/src/input";
+import { useDebouncedCallback } from "use-debounce";
 export default function ContactList({
   contactBookId,
 }: {
@@ -31,12 +32,14 @@ export default function ContactList({
 }) {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
+  const [search, setSearch] = useUrlState("search");
 
   const pageNumber = Number(page);
 
   const contactsQuery = api.contacts.contacts.useQuery({
     contactBookId,
     page: pageNumber,
+    search: search ?? undefined,
     subscribed:
       status === "Subscribed"
         ? true
@@ -45,9 +48,21 @@ export default function ContactList({
           : undefined,
   });
 
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+  }, 1000);
+
   return (
     <div className="mt-10 flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <div>
+          <Input
+            placeholder="Search by email or name"
+            className="w-[350px] mr-4"
+            defaultValue={search ?? ""}
+            onChange={(e) => debouncedSearch(e.target.value)}
+          />
+        </div>
         <Select
           value={status ?? "All"}
           onValueChange={(val) => setStatus(val === "All" ? null : val)}
@@ -95,15 +110,22 @@ export default function ContactList({
                     <div className="flex items-center gap-2">
                       <Image
                         src={getGravatarUrl(contact.email, {
-                          size: 35,
-                          defaultImage: "identicon",
+                          size: 75,
+                          defaultImage: "robohash",
                         })}
                         alt={contact.email + "'s gravatar"}
                         width={35}
                         height={35}
                         className="rounded-full"
                       />
-                      {contact.email}
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">
+                          {contact.email}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {contact.firstName} {contact.lastName}
+                        </span>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
