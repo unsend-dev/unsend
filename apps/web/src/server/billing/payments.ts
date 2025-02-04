@@ -35,23 +35,43 @@ export async function createCheckoutSessionForTeam(teamId: number) {
 
   const stripe = getStripe();
 
-  if (!team.stripeCustomerId) {
+  let customerId = team.stripeCustomerId;
+
+  if (!customerId) {
     await createCustomerForTeam(teamId);
+    customerId = team.stripeCustomerId;
+  }
+
+  if (
+    !env.STRIPE_BASIC_PRICE_ID ||
+    !env.STRIPE_MARKETING_PRICE_ID ||
+    !env.STRIPE_TRANSACTIONAL_PRICE_ID ||
+    !customerId
+  ) {
+    throw new Error("Stripe prices are not set");
   }
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: team.stripeCustomerId,
+    customer: customerId,
     line_items: [
       {
-        price: env.STRIPE_PRICE_ID,
+        price: env.STRIPE_BASIC_PRICE_ID,
         quantity: 1,
       },
+      {
+        price: env.STRIPE_MARKETING_PRICE_ID,
+      },
+      {
+        price: env.STRIPE_TRANSACTIONAL_PRICE_ID,
+      },
     ],
-    success_url: `${env.NEXTAUTH_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${env.NEXTAUTH_URL}/?canceled=true`,
+    success_url: `${env.NEXTAUTH_URL}/payments?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${env.NEXTAUTH_URL}/payments?canceled=true`,
     metadata: {
       teamId,
     },
   });
+
+  return session;
 }
