@@ -53,7 +53,7 @@ function getContacts(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
     const team = await getTeamFromToken(c);
 
-    await getContactBook(c, team.id);
+    const cb = await getContactBook(c, team.id);
 
     const contactIds = c.req.query("ids")?.split(",");
     const emails = c.req.query("emails")?.split(",");
@@ -64,6 +64,7 @@ function getContacts(app: PublicAPIApp) {
       where: {
         id: { in: contactIds },
         email: { in: emails },
+        contactBookId: cb.id,
       },
       skip: (page - 1) * limit,
       take: limit,
