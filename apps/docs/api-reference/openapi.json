@@ -535,9 +535,178 @@
             }
           }
         }
+      },
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "emails",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieve multiple contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "subscribed": {
+                        "type": "boolean",
+                        "default": true
+                      },
+                      "properties": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "contactBookId": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "email",
+                      "properties",
+                      "contactBookId",
+                      "createdAt",
+                      "updatedAt"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/contactBooks/{contactBookId}/contacts/{contactId}": {
+      "patch": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactBookId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "cuiwqdj74rygf74"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "subscribed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retrieve the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contactId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "parameters": [
           {
@@ -615,92 +784,16 @@
           }
         }
       },
-      "patch": {
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "example": "cuiwqdj74rygf74"
-            },
-            "required": true,
-            "name": "contactBookId",
-            "in": "path"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "example": "cuiwqdj74rygf74"
-            },
-            "required": true,
-            "name": "contactId",
-            "in": "path"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string"
-                  },
-                  "lastName": {
-                    "type": "string"
-                  },
-                  "properties": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "string"
-                    }
-                  },
-                  "subscribed": {
-                    "type": "boolean"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Retrieve the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "contactId": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "put": {
-        "summary": "Upsert a contact",
-        "description": "Create a new contact or update an existing one based on the contactId",
         "parameters": [
           {
             "schema": {
               "type": "string",
+              "minLength": 3,
               "example": "cuiwqdj74rygf74"
             },
             "required": true,
             "name": "contactBookId",
-            "in": "path"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "example": "cuiwqdj74rygf74"
-            },
-            "required": true,
-            "name": "contactId",
             "in": "path"
           }
         ],
@@ -748,7 +841,10 @@
                     "contactId": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "contactId"
+                  ]
                 }
               }
             }
@@ -756,8 +852,6 @@
         }
       },
       "delete": {
-        "summary": "Delete a contact",
-        "description": "Delete a contact from a contact book",
         "parameters": [
           {
             "schema": {
@@ -789,7 +883,10 @@
                     "success": {
                       "type": "boolean"
                     }
-                  }
+                  },
+                  "required": [
+                    "success"
+                  ]
                 }
               }
             }
