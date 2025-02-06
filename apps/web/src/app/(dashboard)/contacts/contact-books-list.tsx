@@ -7,14 +7,30 @@ import Link from "next/link";
 import EditContactBook from "./edit-contact-book";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useUrlState } from "~/hooks/useUrlState";
+import { Input } from "@unsend/ui/src/input";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function ContactBooksList() {
-  const contactBooksQuery = api.contacts.getContactBooks.useQuery();
+  const [search, setSearch] = useUrlState("search");
+  const contactBooksQuery = api.contacts.getContactBooks.useQuery({
+    search: search ?? undefined,
+  });
 
   const router = useRouter();
 
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+  }, 1000);
+
   return (
     <div className="mt-10">
+      <Input
+        placeholder="Search contact book"
+        className="w-[300px] mr-4 mb-4"
+        defaultValue={search ?? ""}
+        onChange={(e) => debouncedSearch(e.target.value)}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {contactBooksQuery.data?.map((contactBook) => (
           <motion.div
