@@ -9,18 +9,23 @@ import {
 import * as contactService from "~/server/service/contact-service";
 
 export const contactsRouter = createTRPCRouter({
-  getContactBooks: teamProcedure.query(async ({ ctx: { db, team } }) => {
-    return db.contactBook.findMany({
-      where: {
-        teamId: team.id,
-      },
-      include: {
-        _count: {
-          select: { contacts: true },
+  getContactBooks: teamProcedure
+    .input(z.object({ search: z.string().optional() }))
+    .query(async ({ ctx: { db, team }, input }) => {
+      return db.contactBook.findMany({
+        where: {
+          teamId: team.id,
+          ...(input.search
+            ? { name: { contains: input.search, mode: "insensitive" } }
+            : {}),
         },
-      },
-    });
-  }),
+        include: {
+          _count: {
+            select: { contacts: true },
+          },
+        },
+      });
+    }),
 
   createContactBook: teamProcedure
     .input(
