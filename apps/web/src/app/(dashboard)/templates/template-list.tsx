@@ -60,11 +60,11 @@ export default function TemplateList() {
                       className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
                       href={`/templates/${template.id}`}
                     >
-                      <TextWithCopyButton
-                        value={template.id}
-                        className="w-[200px] overflow-hidden"
-                      />
                     </Link>
+                    <TextWithCopyButton
+                      value={template.id}
+                      className="w-[200px] overflow-hidden"
+                    />
                   </TableCell>
 
                   <TableCell>
