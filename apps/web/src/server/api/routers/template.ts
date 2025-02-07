@@ -1,4 +1,4 @@
-import { CampaignStatus, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { z } from "zod";
@@ -20,14 +20,11 @@ import {
   isStorageConfigured
 } from "~/server/service/storage-service";
 
-const statuses = Object.values(CampaignStatus) as [CampaignStatus];
-
-export const campaignRouter = createTRPCRouter({
-  getCampaigns: teamProcedure
+export const templateRouter = createTRPCRouter({
+  getTemplates: teamProcedure
     .input(
       z.object({
         page: z.number().optional(),
-        status: z.enum(statuses).optional().nullable(),
       })
     )
     .query(async ({ ctx: { db, team }, input }) => {
@@ -35,26 +32,22 @@ export const campaignRouter = createTRPCRouter({
       const limit = 30;
       const offset = (page - 1) * limit;
 
-      const whereConditions: Prisma.CampaignFindManyArgs["where"] = {
+
+      const whereConditions: Prisma.TemplateFindManyArgs["where"] = {
         teamId: team.id,
       };
 
-      if (input.status) {
-        whereConditions.status = input.status;
-      }
 
-      const countP = db.campaign.count({ where: whereConditions });
+      const countP = db.template.count({ where: whereConditions });
 
-      const campaignsP = db.campaign.findMany({
+      const templatesP = db.template.findMany({
         where: whereConditions,
         select: {
           id: true,
           name: true,
-          from: true,
           subject: true,
           createdAt: true,
           updatedAt: true,
-          status: true,
           html: true,
         },
         orderBy: {
@@ -64,31 +57,27 @@ export const campaignRouter = createTRPCRouter({
         take: limit,
       });
 
-      const [campaigns, count] = await Promise.all([campaignsP, countP]);
+      const [templates, count] = await Promise.all([templatesP, countP]);
 
-      return { campaigns, totalPage: Math.ceil(count / limit) };
+      return { templates, totalPage: Math.ceil(count / limit) };
     }),
 
-  createCampaign: teamProcedure
+  createTemplate: teamProcedure
     .input(
       z.object({
         name: z.string(),
-        from: z.string(),
         subject: z.string(),
       })
     )
     .mutation(async ({ ctx: { db, team }, input }) => {
-      const domain = await validateDomainFromEmail(input.from, team.id);
-
-      const campaign = await db.campaign.create({
+      const template = await db.template.create({
         data: {
           ...input,
           teamId: team.id,
-          domainId: domain.id,
         },
       });
 
-      return campaign;
+      return template;
     }),
 
   updateCampaign: campaignProcedure
