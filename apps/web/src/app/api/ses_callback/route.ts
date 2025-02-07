@@ -83,7 +83,6 @@ async function handleSubscription(message: any) {
  * A simple check to ensure that the event is from the correct topic
  */
 async function checkEventValidity(message: SnsNotificationMessage) {
-  return true;
   const { TopicArn } = message;
   const configuredTopicArn = await SesSettingsService.getTopicArns();
 
