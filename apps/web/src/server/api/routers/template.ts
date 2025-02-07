@@ -6,15 +6,9 @@ import { env } from "~/env";
 import {
   teamProcedure,
   createTRPCRouter,
-  campaignProcedure,
-  publicProcedure,
+  templateProcedure
 } from "~/server/api/trpc";
 import { nanoid } from "~/server/nanoid";
-import {
-  sendCampaign,
-  subscribeContact,
-} from "~/server/service/campaign-service";
-import { validateDomainFromEmail } from "~/server/service/domain-service";
 import {
   getDocumentUploadUrl,
   isStorageConfigured
@@ -80,38 +74,16 @@ export const templateRouter = createTRPCRouter({
       return template;
     }),
 
-  updateCampaign: campaignProcedure
+  updateTemplate: templateProcedure
     .input(
       z.object({
         name: z.string().optional(),
-        from: z.string().optional(),
         subject: z.string().optional(),
-        previewText: z.string().optional(),
         content: z.string().optional(),
-        contactBookId: z.string().optional(),
-        replyTo: z.string().array().optional(),
       })
     )
-    .mutation(async ({ ctx: { db, team, campaign: campaignOld }, input }) => {
-      const { campaignId, ...data } = input;
-      if (data.contactBookId) {
-        const contactBook = await db.contactBook.findUnique({
-          where: { id: data.contactBookId },
-        });
-
-        if (!contactBook) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Contact book not found",
-          });
-        }
-      }
-      let domainId = campaignOld.domainId;
-      if (data.from) {
-        const domain = await validateDomainFromEmail(data.from, team.id);
-        domainId = domain.id;
-      }
-
+    .mutation(async ({ ctx: { db }, input }) => {
+      const { templateId, ...data } = input;
       let html: string | null = null;
 
       if (data.content) {
@@ -121,89 +93,61 @@ export const templateRouter = createTRPCRouter({
         html = await renderer.render();
       }
 
-      const campaign = await db.campaign.update({
-        where: { id: campaignId },
+      const template = await db.template.update({
+        where: { id: templateId },
         data: {
           ...data,
           html,
-          domainId,
         },
       });
-      return campaign;
+      return template;
     }),
 
-  deleteCampaign: campaignProcedure.mutation(
+  deleteTemplate: templateProcedure.mutation(
     async ({ ctx: { db, team }, input }) => {
-      const campaign = await db.campaign.delete({
-        where: { id: input.campaignId, teamId: team.id },
+      const template = await db.template.delete({
+        where: { id: input.templateId, teamId: team.id },
       });
-      return campaign;
+      return template;
     }
   ),
 
-  getCampaign: campaignProcedure.query(async ({ ctx: { db, team }, input }) => {
-    const campaign = await db.campaign.findUnique({
-      where: { id: input.campaignId, teamId: team.id },
+  getTemplate: templateProcedure.query(async ({ ctx: { db, team }, input }) => {
+    const template = await db.template.findUnique({
+      where: { id: input.templateId, teamId: team.id },
     });
 
-    if (!campaign) {
+    if (!template) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "Campaign not found",
+        message: "Template not found",
       });
     }
 
     const imageUploadSupported = isStorageConfigured();
 
-    if (campaign?.contactBookId) {
-      const contactBook = await db.contactBook.findUnique({
-        where: { id: campaign.contactBookId },
-      });
-      return { ...campaign, contactBook, imageUploadSupported };
-    }
     return {
-      ...campaign,
-      contactBook: null,
+      ...template,
       imageUploadSupported,
     };
   }),
 
-  sendCampaign: campaignProcedure.mutation(
-    async ({ ctx: { db, team }, input }) => {
-      await sendCampaign(input.campaignId);
-    }
-  ),
-
-  reSubscribeContact: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        hash: z.string(),
-      })
-    )
-    .mutation(async ({ ctx: { db }, input }) => {
-      await subscribeContact(input.id, input.hash);
-    }),
-
-  duplicateCampaign: campaignProcedure.mutation(
-    async ({ ctx: { db, team, campaign }, input }) => {
-      const newCampaign = await db.campaign.create({
+  duplicateTemplate: templateProcedure.mutation(
+    async ({ ctx: { db, team, template }, input }) => {
+      const newTemplate = await db.template.create({
         data: {
-          name: `${campaign.name} (Copy)`,
-          from: campaign.from,
-          subject: campaign.subject,
-          content: campaign.content,
-          teamId: team.id,
-          domainId: campaign.domainId,
-          contactBookId: campaign.contactBookId,
+          name: `${template.name} (Copy)`,
+          subject: template.subject,
+          content: template.content,
+          teamId: team.id
         },
       });
 
-      return newCampaign;
+      return newTemplate;
     }
   ),
 
-  generateImagePresignedUrl: campaignProcedure
+  generateImagePresignedUrl: templateProcedure
     .input(
       z.object({
         name: z.string(),

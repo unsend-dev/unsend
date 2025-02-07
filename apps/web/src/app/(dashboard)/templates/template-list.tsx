@@ -17,6 +17,10 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 // import DuplicateCampaign from "./duplicate-campaign";
 
+import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
+import DeleteTemplate from "./delete-template";
+import DuplicateTemplate from "./duplicate-template";
+
 export default function TemplateList() {
   const [page, setPage] = useUrlState("page", "1");
 
@@ -32,7 +36,8 @@ export default function TemplateList() {
         <Table className="">
           <TableHeader className="">
             <TableRow className=" bg-muted/30">
-              <TableHead className="rounded-tl-xl">Name</TableHead>
+              <TableHead className="rounded-tl-xl">ID</TableHead>
+              <TableHead className="">Name</TableHead>
               <TableHead className="">Created At</TableHead>
               <TableHead className="rounded-tr-xl">Actions</TableHead>
             </TableRow>
@@ -53,11 +58,18 @@ export default function TemplateList() {
                   <TableCell className="font-medium">
                     <Link
                       className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
-                      href={`/templates/${template.id}/edit`}
+                      href={`/templates/${template.id}`}
                     >
-                      {template.name}
+                      <TextWithCopyButton
+                        value={template.id}
+                        className="w-[200px] overflow-hidden"
+                      />
                     </Link>
                   </TableCell>
+
+                  <TableCell>
+                      {template.name}
+                  </TableCell>                  
                   <TableCell className="">
                     {formatDistanceToNow(new Date(template.createdAt), {
                       addSuffix: true,
@@ -65,8 +77,8 @@ export default function TemplateList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      {/* <DuplicateCampaign campaign={campaign} /> */}
-                      {/* <DeleteCampaign campaign={campaign} /> */}
+                      <DuplicateTemplate template={template} />
+                      <DeleteTemplate template={template} />
                     </div>
                   </TableCell>
                 </TableRow>
