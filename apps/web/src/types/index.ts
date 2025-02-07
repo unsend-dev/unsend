@@ -1,7 +1,7 @@
 export type EmailContent = {
   to: string | string[];
   from: string;
-  subject: string;
+  subject?: string;
   templateId?: string;
   variables?: Record<string, string>,
   text?: string;

@@ -36,8 +36,8 @@ export default function TemplateList() {
         <Table className="">
           <TableHeader className="">
             <TableRow className=" bg-muted/30">
-              <TableHead className="rounded-tl-xl">ID</TableHead>
-              <TableHead className="">Name</TableHead>
+              <TableHead className="rounded-tl-xl">Name</TableHead>
+              <TableHead className="">ID</TableHead>
               <TableHead className="">Created At</TableHead>
               <TableHead className="rounded-tr-xl">Actions</TableHead>
             </TableRow>
@@ -60,16 +60,15 @@ export default function TemplateList() {
                       className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
                       href={`/templates/${template.id}`}
                     >
+                      {template.name}
                     </Link>
+                  </TableCell>
+                  <TableCell>
                     <TextWithCopyButton
                       value={template.id}
                       className="w-[200px] overflow-hidden"
                     />
                   </TableCell>
-
-                  <TableCell>
-                      {template.name}
-                  </TableCell>                  
                   <TableCell className="">
                     {formatDistanceToNow(new Date(template.createdAt), {
                       addSuffix: true,

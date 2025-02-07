@@ -91,7 +91,7 @@ export async function sendEmail(
     data: {
       to: Array.isArray(to) ? to : [to],
       from,
-      subject,
+      subject: subject as string,
       replyTo: replyTo
         ? Array.isArray(replyTo)
           ? replyTo
