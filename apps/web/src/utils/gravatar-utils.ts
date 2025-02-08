@@ -32,7 +32,7 @@ export function getGravatarUrl(
     size: 80,
     defaultImage: "identicon",
     rating: "g",
-  },
+  }
 ) {
   const trimmedEmail = email.trim().toLowerCase();
   const hash = crypto.createHash("sha256").update(trimmedEmail).digest("hex");

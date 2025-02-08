@@ -91,16 +91,17 @@ model User {
 }
 
 model Team {
-  id           Int           @id @default(autoincrement())
-  name         String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  teamUsers    TeamUser[]
-  domains      Domain[]
-  apiKeys      ApiKey[]
-  emails       Email[]
-  contactBooks ContactBook[]
-  campaigns    Campaign[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  teamUsers        TeamUser[]
+  domains          Domain[]
+  apiKeys          ApiKey[]
+  emails           Email[]
+  contactBooks     ContactBook[]
+  campaigns        Campaign[]
+  dailyEmailUsages DailyEmailUsage[]
   ApiLog       ApiLog[]
 }
 
@@ -205,6 +206,8 @@ model Email {
   contactId    String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
+
+  @@index([createdAt(sort: Desc)])
 }
 
 model EmailEvent {
@@ -214,6 +217,8 @@ model EmailEvent {
   data      Json?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
 }
 
 model ContactBook {
@@ -279,6 +284,32 @@ model Campaign {
   updatedAt     DateTime       @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+}
+
+enum EmailUsageType {
+  TRANSACTIONAL
+  MARKETING
+}
+
+model DailyEmailUsage {
+  teamId     Int
+  date       String
+  type       EmailUsageType
+  domainId   Int
+  sent       Int            @default(0)
+  delivered  Int            @default(0)
+  opened     Int            @default(0)
+  clicked    Int            @default(0)
+  bounced    Int            @default(0)
+  complained Int            @default(0)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, domainId, date, type])
 }
 
 model ApiLog {

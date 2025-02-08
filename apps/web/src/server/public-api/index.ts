@@ -7,6 +7,9 @@ import updateContactInfo from "./api/contacts/update-contact";
 import getContact from "./api/contacts/get-contact";
 import updateEmailScheduledAt from "./api/emails/update-email";
 import cancelScheduledEmail from "./api/emails/cancel-email";
+import getContacts from "./api/contacts/get-contacts";
+import upsertContact from "./api/contacts/upsert-contact";
+import deleteContact from "./api/contacts/delete-contact";
 
 export const app = getApp();
 
@@ -23,5 +26,8 @@ cancelScheduledEmail(app);
 addContact(app);
 updateContactInfo(app);
 getContact(app);
+getContacts(app);
+upsertContact(app);
+deleteContact(app);
 
 export default app;

@@ -68,108 +68,88 @@ export const emailRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { team } = ctx;
       const days = input.days !== 7 ? 30 : 7;
-      const daysInMs = days * 24 * 60 * 60 * 1000;
 
-      const rawEmailStatusCounts = await db.email.findMany({
-        where: {
-          teamId: team.id,
-          createdAt: {
-            gt: new Date(Date.now() - daysInMs),
-          },
-        },
-        select: {
-          latestStatus: true,
-          createdAt: true,
-        },
-      });
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      const isoStartDate = startDate.toISOString().split("T")[0];
 
-      const totalCount = rawEmailStatusCounts.length;
+      type DailyEmailUsage = {
+        date: string;
+        sent: number;
+        delivered: number;
+        opened: number;
+        clicked: number;
+        bounced: number;
+        complained: number;
+      };
 
-      const emailStatusCounts = rawEmailStatusCounts.reduce(
-        (acc, cur) => {
-          acc[cur.latestStatus] = {
-            count: (acc[cur.latestStatus]?.count || 0) + 1,
-            percentage: Number(
-              (
-                (((acc[cur.latestStatus]?.count || 0) + 1) / totalCount) *
-                100
-              ).toFixed(0)
-            ),
-          };
+      const result = await db.$queryRaw<Array<DailyEmailUsage>>`
+        SELECT 
+          date,
+          SUM(sent)::integer AS sent,
+          SUM(delivered)::integer AS delivered,
+          SUM(opened)::integer AS opened,
+          SUM(clicked)::integer AS clicked,
+          SUM(bounced)::integer AS bounced,
+          SUM(complained)::integer AS complained
+        FROM "DailyEmailUsage"
+        WHERE "teamId" = ${team.id}
+        AND "date" >= ${isoStartDate}
+        GROUP BY "date"
+        ORDER BY "date" ASC
+      `;
+
+      console.log({ result });
+
+      // Fill in any missing dates with 0 values
+      const filledResult: DailyEmailUsage[] = [];
+      const endDateObj = new Date();
+
+      for (let i = days; i > -1; i--) {
+        const dateStr = subDays(endDateObj, i)
+          .toISOString()
+          .split("T")[0] as string;
+        const existingData = result.find((r) => r.date === dateStr);
+
+        if (existingData) {
+          filledResult.push({
+            ...existingData,
+            date: format(dateStr, "MMM dd"),
+          });
+        } else {
+          filledResult.push({
+            date: format(dateStr, "MMM dd"),
+            sent: 0,
+            delivered: 0,
+            opened: 0,
+            clicked: 0,
+            bounced: 0,
+            complained: 0,
+          });
+        }
+      }
+
+      const totalCounts = result.reduce(
+        (acc, curr) => {
+          acc.sent += curr.sent;
+          acc.delivered += curr.delivered;
+          acc.opened += curr.opened;
+          acc.clicked += curr.clicked;
+          acc.bounced += curr.bounced;
+          acc.complained += curr.complained;
           return acc;
         },
         {
-          DELIVERED: { count: 0, percentage: 0 },
-          COMPLAINED: { count: 0, percentage: 0 },
-          OPENED: { count: 0, percentage: 0 },
-          CLICKED: { count: 0, percentage: 0 },
-          BOUNCED: { count: 0, percentage: 0 },
-        } as Record<EmailStatus, { count: number; percentage: number }>
+          sent: 0,
+          delivered: 0,
+          opened: 0,
+          clicked: 0,
+          bounced: 0,
+          complained: 0,
+        }
       );
 
-      const dateRecord: Record<
-        string,
-        Record<
-          "DELIVERED" | "COMPLAINED" | "OPENED" | "CLICKED" | "BOUNCED",
-          number
-        >
-      > = {};
-
-      const currentDate = new Date();
-
-      for (let i = 0; i < (input.days || 7); i++) {
-        const actualDate = subDays(currentDate, i);
-        dateRecord[format(actualDate, "MMM dd")] = {
-          DELIVERED: 0,
-          COMPLAINED: 0,
-          OPENED: 0,
-          CLICKED: 0,
-          BOUNCED: 0,
-        };
-      }
-
-      const _emailDailyStatusCounts = rawEmailStatusCounts.reduce(
-        (acc, { latestStatus, createdAt }) => {
-          const day = format(createdAt, "MMM dd");
-
-          if (
-            !day ||
-            ![
-              "DELIVERED",
-              "COMPLAINED",
-              "OPENED",
-              "CLICKED",
-              "BOUNCED",
-            ].includes(latestStatus)
-          ) {
-            return acc;
-          }
-
-          if (!acc[day]) {
-            return acc;
-          }
-
-          acc[day]![
-            latestStatus as
-              | "DELIVERED"
-              | "COMPLAINED"
-              | "OPENED"
-              | "CLICKED"
-              | "BOUNCED"
-          ]++;
-          return acc;
-        },
-        dateRecord
-      );
-
-      const emailDailyStatusCounts = Object.entries(_emailDailyStatusCounts)
-        .reverse()
-        .map(([date, counts]) => ({
-          name: date,
-          ...counts,
-        }));
-
-      return { emailStatusCounts, totalCount, emailDailyStatusCounts };
+      return { result: filledResult, totalCounts };
     }),
 
   getEmail: emailProcedure.query(async ({ input }) => {
