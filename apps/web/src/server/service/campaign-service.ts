@@ -283,30 +283,29 @@ export async function sendCampaignEmail(
 
   const domain = await validateDomainFromEmail(from, teamId);
 
-  // Queue each contact for processing
-  await Promise.all(
-    contacts.map((contact) =>
-      CampaignEmailService.queueContact({
-        contact,
-        campaign,
-        emailConfig: {
-          from,
-          subject,
-          replyTo: replyTo
-            ? Array.isArray(replyTo)
-              ? replyTo
-              : [replyTo]
-            : undefined,
-          cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
-          bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
-          teamId,
-          campaignId,
-          previewText,
-          domainId: domain.id,
-          region: domain.region,
-        },
-      })
-    )
+  console.log("Bulk queueing contacts");
+
+  await CampaignEmailService.queueBulkContacts(
+    contacts.map((contact) => ({
+      contact,
+      campaign,
+      emailConfig: {
+        from,
+        subject,
+        replyTo: replyTo
+          ? Array.isArray(replyTo)
+            ? replyTo
+            : [replyTo]
+          : undefined,
+        cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+        bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+        teamId,
+        campaignId,
+        previewText,
+        domainId: domain.id,
+        region: domain.region,
+      },
+    }))
   );
 }
 
@@ -353,7 +352,7 @@ export async function updateCampaignAnalytics(
   });
 }
 
-const CAMPAIGN_EMAIL_CONCURRENCY = 500;
+const CAMPAIGN_EMAIL_CONCURRENCY = 200;
 
 class CampaignEmailService {
   private static campaignQueue = new Queue(CAMPAIGN_MAIL_PROCESSING_QUEUE, {
@@ -376,6 +375,18 @@ class CampaignEmailService {
       `contact-${data.contact.id}`,
       data,
       DEFAULT_QUEUE_OPTIONS
+    );
+  }
+
+  static async queueBulkContacts(data: CampaignEmailJob[]) {
+    return await this.campaignQueue.addBulk(
+      data.map((item) => ({
+        name: `contact-${item.contact.id}`,
+        data: item,
+        opts: {
+          ...DEFAULT_QUEUE_OPTIONS,
+        },
+      }))
     );
   }
 }
