@@ -8,7 +8,7 @@ import { Queue, Worker } from "bullmq";
 import {
   DEFAULT_QUEUE_OPTIONS,
   SES_WEBHOOK_QUEUE,
-} from "../queue/queue-contants";
+} from "../queue/queue-constants";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);

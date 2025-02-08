@@ -6,7 +6,7 @@ import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { getRedis } from "../redis";
-import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-contants";
+import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
 
 function createQueueAndWorker(region: string, quota: number, suffix: string) {
   const connection = getRedis();

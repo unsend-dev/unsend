@@ -10,7 +10,7 @@ import { getRedis } from "../redis";
 import {
   CAMPAIGN_MAIL_PROCESSING_QUEUE,
   DEFAULT_QUEUE_OPTIONS,
-} from "../queue/queue-contants";
+} from "../queue/queue-constants";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
