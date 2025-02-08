@@ -102,6 +102,7 @@ model Team {
   contactBooks     ContactBook[]
   campaigns        Campaign[]
   dailyEmailUsages DailyEmailUsage[]
+  ApiLog       ApiLog[]
 }
 
 enum Role {
@@ -164,6 +165,7 @@ model ApiKey {
   lastUsed     DateTime?
   teamId       Int
   team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  ApiLog       ApiLog[]
 }
 
 enum EmailStatus {
@@ -308,4 +310,24 @@ model DailyEmailUsage {
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([teamId, domainId, date, type])
+}
+
+model ApiLog {
+  id        String   @id @default(cuid())
+  method    String
+  path      String
+  status    Int
+  duration  Int // in milliseconds
+  request   String? // Store request body
+  response  String? // Store response data
+  error     String? // Store error message if any
+  teamId    Int
+  apiKeyId  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team   Team    @relation(fields: [teamId], references: [id])
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id])
+
+  @@index([teamId, createdAt(sort: Desc)])
 }
