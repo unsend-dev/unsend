@@ -22,8 +22,7 @@ import {
   REGEXP_ONLY_DIGITS_AND_CHARS,
 } from "@unsend/ui/src/input-otp";
 import { Input } from "@unsend/ui/src/input";
-import { env } from "~/env";
-import { BuiltInProviderType, Provider } from "next-auth/providers/index";
+import { BuiltInProviderType } from "next-auth/providers/index";
 import Spinner from "@unsend/ui/src/spinner";
 import Link from "next/link";
 import { useTheme } from "@unsend/ui";

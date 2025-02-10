@@ -2,7 +2,6 @@
 
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
-import { Label } from "@unsend/ui/src/label";
 import {
   Dialog,
   DialogContent,
