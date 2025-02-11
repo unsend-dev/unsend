@@ -55,7 +55,7 @@ function send(app: PublicAPIApp) {
       teamId: team.id,
     });
 
-    return c.json({ emailId: email?.id });
+    return c.json({ emailId: email.withinLimitEmail?.id });
   });
 }
 
