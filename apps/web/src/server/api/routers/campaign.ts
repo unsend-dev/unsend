@@ -16,9 +16,8 @@ import {
 } from "~/server/service/campaign-service";
 import { validateDomainFromEmail } from "~/server/service/domain-service";
 import {
-  DEFAULT_BUCKET,
   getDocumentUploadUrl,
-  isStorageConfigured,
+  isStorageConfigured
 } from "~/server/service/storage-service";
 
 const statuses = Object.values(CampaignStatus) as [CampaignStatus];

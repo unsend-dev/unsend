@@ -11,6 +11,7 @@ import {
   Globe,
   Home,
   LayoutDashboard,
+  LayoutTemplate,
   LineChart,
   Mail,
   Menu,
@@ -65,6 +66,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <NavButton href="/contacts">
                   <BookUser className="h-4 w-4" />
                   Contacts
+                </NavButton>
+
+                <NavButton href="/templates">
+                  <LayoutTemplate className="h-4 w-4" />
+                  Templates
                 </NavButton>
 
                 <NavButton href="/campaigns">

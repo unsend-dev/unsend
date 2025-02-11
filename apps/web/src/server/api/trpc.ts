@@ -204,6 +204,27 @@ export const campaignProcedure = teamProcedure
     return next({ ctx: { ...ctx, campaign } });
   });
 
+export const templateProcedure = teamProcedure
+  .input(
+    z.object({
+      templateId: z.string(),
+    })
+  )
+  .use(async ({ ctx, next, input }) => {
+    const template = await db.template.findUnique({
+      where: { id: input.templateId, teamId: ctx.team.id },
+    });
+    if (!template) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Template not found",
+      });
+    }
+
+    return next({ ctx: { ...ctx, template } });
+  });
+
+
 /**
  * To manage application settings, for hosted version, authenticated users will be considered as admin
  */
