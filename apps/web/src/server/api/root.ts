@@ -1,11 +1,12 @@
 import { domainRouter } from "~/server/api/routers/domain";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { adminRouter } from "./routers/admin";
 import { apiRouter } from "./routers/api";
+import { apiLogsRouter } from "./routers/api-logs";
+import { campaignRouter } from "./routers/campaign";
+import { contactsRouter } from "./routers/contacts";
 import { emailRouter } from "./routers/email";
 import { teamRouter } from "./routers/team";
-import { adminRouter } from "./routers/admin";
-import { contactsRouter } from "./routers/contacts";
-import { campaignRouter } from "./routers/campaign";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   contacts: contactsRouter,
   campaign: campaignRouter,
+  apiLogs: apiLogsRouter,
 });
 
 // export type definition of API

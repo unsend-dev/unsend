@@ -1,28 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { LogoutButton, NavButton } from "./nav-button";
-import {
-  BookOpenText,
-  BookUser,
-  CircleUser,
-  Code,
-  Globe,
-  Home,
-  LayoutDashboard,
-  LineChart,
-  Mail,
-  Menu,
-  Package,
-  Package2,
-  Server,
-  ShoppingCart,
-  Users,
-  Volume2,
-} from "lucide-react";
-import { env } from "~/env";
-import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
 import { Button } from "@unsend/ui/src/button";
 import {
   DropdownMenu,
@@ -32,7 +9,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@unsend/ui/src/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@unsend/ui/src/sheet";
+import {
+  BookOpenText,
+  BookUser,
+  CircleUser,
+  Code,
+  Globe,
+  Home,
+  LayoutDashboard,
+  LineChart,
+  List,
+  Mail,
+  Menu,
+  Package,
+  Package2,
+  Server,
+  ShoppingCart,
+  Users,
+  Volume2,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { ThemeSwitcher } from "~/components/theme/ThemeSwitcher";
+import { env } from "~/env";
+import { LogoutButton, NavButton } from "./nav-button";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -75,6 +76,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <NavButton href="/domains">
                   <Globe className="h-4 w-4" />
                   Domains
+                </NavButton>
+
+                <NavButton href="/api-logs">
+                  <List className="h-4 w-4" />
+                  API Logs
                 </NavButton>
 
                 <NavButton href="/dev-settings">
