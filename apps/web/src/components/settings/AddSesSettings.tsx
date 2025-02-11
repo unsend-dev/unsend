@@ -94,8 +94,11 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
 
   const onRegionInputOutOfFocus = async () => {
     const region = form.getValues("region");
-    const quota = await utils.admin.getQuotaForRegion.fetch({ region });
-    form.setValue("sendRate", quota ?? 1);
+
+    if (region) {
+      const quota = await utils.admin.getQuotaForRegion.fetch({ region });
+      form.setValue("sendRate", quota ?? 1);
+    }
   };
 
   return (
