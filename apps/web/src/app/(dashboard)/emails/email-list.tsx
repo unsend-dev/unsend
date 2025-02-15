@@ -45,12 +45,12 @@ import { useState } from "react";
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
-  { ssr: false }
+  { ssr: false },
 );
 
 const DynamicSheetContentWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.SheetContent),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function EmailsList() {
@@ -58,30 +58,45 @@ export default function EmailsList() {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
   const [search, setSearch] = useUrlState("search");
+  const [domainName, setDomainName] = useUrlState("domain");
+  const [apiKeyName, setApiKeyName] = useUrlState("apikey");
   const [domain, setDomain] = useState<string | null>(null);
-  const [domainName, setDomainName] = useUrlState("domain ")
+  const [apikey, setApikey] = useState<string | null>(null);
 
   const pageNumber = Number(page);
   const domainId = Number(domain);
+  const apiId = Number(apikey);
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
     status: status?.toUpperCase() as EmailStatus,
     domain: domainId,
     search,
+    apiId: apiId,
   });
 
   const { data: domainsQuery } = api.domain.domains.useQuery();
+  const { data: apiKeysQuery } = api.apiKey.getApiKeys.useQuery();
 
   const handleSelectEmail = (emailId: string) => {
     setSelectedEmail(emailId);
   };
 
   const handleDomainName = (val: string) => {
-    setDomain(val === "All Domain" ? null : val)
-    const nameOfDomain = domainsQuery?.find((item) => item.id.toString() === val)
-    setDomainName(nameOfDomain?.name || "All Domain")
-  }
+    setDomain(val === "All Domain" ? null : val);
+    const nameOfDomain = domainsQuery?.find(
+      (item) => item.id.toString() === val,
+    );
+    setDomainName(nameOfDomain?.name || "All Domain");
+  };
+
+  const handleApiKeyName = (val: string) => {
+    setApikey(val === "All ApiKey" ? null : val);
+    const nameOfApiKey = apiKeysQuery?.find(
+      (item) => item.id.toString() === val,
+    );
+    setApiKeyName(nameOfApiKey?.name || "All ApiKey");
+  };
 
   const handleSheetChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -103,60 +118,81 @@ export default function EmailsList() {
           onChange={(e) => debouncedSearch(e.target.value)}
         />
         <div className="flex justify-center items-center gap-x-3">
-        <Select
-          value={domain ?? "All Domain"}
-          onValueChange={(val) => handleDomainName(val)}
-        >
-          <SelectTrigger className="w-[180px]">
-            {domainName ? domainName : "All Domain"}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All Domain" className=" capitalize">
-              All Domain
-            </SelectItem>
-            {domainsQuery && domainsQuery.map((domain) => (
-              <SelectItem value={domain.id.toString()} >
-                {domain.name}
-              </SelectItem>
-            ))}
-            {/* <SelectItem value="light">Light</SelectItem>
+          <Select
+            value={apikey ?? "All ApiKey"}
+            onValueChange={(val) => handleApiKeyName(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {apiKeyName ? apiKeyName : "All ApiKey"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All ApiKey">All ApiKey</SelectItem>
+              {apiKeysQuery &&
+                apiKeysQuery.map((apikey) => (
+                  <SelectItem value={apikey.id.toString()}>
+                    {apikey.name}
+                  </SelectItem>
+                ))}
+              {/* <SelectItem value="light">Light</SelectItem>
             <SelectItem value="dark">Dark</SelectItem>
             <SelectItem value="system">System</SelectItem> */}
-          </SelectContent>
-        </Select>
-        <Select
-          value={status ?? "All statuses"}
-          onValueChange={(val) =>
-            setStatus(val === "All statuses" ? null : val)
-          }
-        >
-          <SelectTrigger className="w-[180px] capitalize">
-            {status ? status.toLowerCase().replace("_", " ") : "All statuses"}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All statuses" className=" capitalize">
-              All statuses
-            </SelectItem>
-            {Object.values([
-              "SENT",
-              "SCHEDULED",
-              "QUEUED",
-              "DELIVERED",
-              "BOUNCED",
-              "CLICKED",
-              "OPENED",
-              "DELIVERY_DELAYED",
-              "COMPLAINED",
-            ]).map((status) => (
-              <SelectItem value={status} className=" capitalize">
-                {status.toLowerCase().replace("_", " ")}
+            </SelectContent>
+          </Select>
+          <Select
+            value={domain ?? "All Domain"}
+            onValueChange={(val) => handleDomainName(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {domainName ? domainName : "All Domain"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Domain" className=" capitalize">
+                All Domain
               </SelectItem>
-            ))}
-            {/* <SelectItem value="light">Light</SelectItem>
+              {domainsQuery &&
+                domainsQuery.map((domain) => (
+                  <SelectItem value={domain.id.toString()}>
+                    {domain.name}
+                  </SelectItem>
+                ))}
+              {/* <SelectItem value="light">Light</SelectItem>
             <SelectItem value="dark">Dark</SelectItem>
             <SelectItem value="system">System</SelectItem> */}
-          </SelectContent>
-        </Select>
+            </SelectContent>
+          </Select>
+          <Select
+            value={status ?? "All statuses"}
+            onValueChange={(val) =>
+              setStatus(val === "All statuses" ? null : val)
+            }
+          >
+            <SelectTrigger className="w-[180px] capitalize">
+              {status ? status.toLowerCase().replace("_", " ") : "All statuses"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All statuses" className=" capitalize">
+                All statuses
+              </SelectItem>
+              {Object.values([
+                "SENT",
+                "SCHEDULED",
+                "QUEUED",
+                "DELIVERED",
+                "BOUNCED",
+                "CLICKED",
+                "OPENED",
+                "DELIVERY_DELAYED",
+                "COMPLAINED",
+              ]).map((status) => (
+                <SelectItem value={status} className=" capitalize">
+                  {status.toLowerCase().replace("_", " ")}
+                </SelectItem>
+              ))}
+              {/* <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="system">System</SelectItem> */}
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div className="flex flex-col rounded-xl border shadow">
@@ -207,7 +243,7 @@ export default function EmailsList() {
                             Scheduled at{" "}
                             {formatDate(
                               email.scheduledAt,
-                              "MMM dd'th', hh:mm a"
+                              "MMM dd'th', hh:mm a",
                             )}
                           </TooltipContent>
                         </Tooltip>
@@ -223,7 +259,7 @@ export default function EmailsList() {
                     {email.latestStatus !== "SCHEDULED"
                       ? formatDate(
                           email.scheduledAt ?? email.createdAt,
-                          "MMM do, hh:mm a"
+                          "MMM do, hh:mm a",
                         )
                       : "--"}
                   </TableCell>
