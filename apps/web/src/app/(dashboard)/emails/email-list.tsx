@@ -40,6 +40,7 @@ import {
 import { Input } from "@unsend/ui/src/input";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 import { useDebouncedCallback } from "use-debounce";
+import { useState } from "react";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -57,18 +58,30 @@ export default function EmailsList() {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
   const [search, setSearch] = useUrlState("search");
+  const [domain, setDomain] = useState<string | null>(null);
+  const [domainName, setDomainName] = useUrlState("domain ")
 
   const pageNumber = Number(page);
+  const domainId = Number(domain);
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
     status: status?.toUpperCase() as EmailStatus,
+    domain: domainId,
     search,
   });
+
+  const { data: domainsQuery } = api.domain.domains.useQuery();
 
   const handleSelectEmail = (emailId: string) => {
     setSelectedEmail(emailId);
   };
+
+  const handleDomainName = (val: string) => {
+    setDomain(val === "All Domain" ? null : val)
+    const nameOfDomain = domainsQuery?.find((item) => item.id.toString() === val)
+    setDomainName(nameOfDomain?.name || "All Domain")
+  }
 
   const handleSheetChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -89,6 +102,28 @@ export default function EmailsList() {
           defaultValue={search ?? ""}
           onChange={(e) => debouncedSearch(e.target.value)}
         />
+        <div className="flex justify-center items-center gap-x-3">
+        <Select
+          value={domain ?? "All Domain"}
+          onValueChange={(val) => handleDomainName(val)}
+        >
+          <SelectTrigger className="w-[180px]">
+            {domainName ? domainName : "All Domain"}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All Domain" className=" capitalize">
+              All Domain
+            </SelectItem>
+            {domainsQuery && domainsQuery.map((domain) => (
+              <SelectItem value={domain.id.toString()} >
+                {domain.name}
+              </SelectItem>
+            ))}
+            {/* <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="system">System</SelectItem> */}
+          </SelectContent>
+        </Select>
         <Select
           value={status ?? "All statuses"}
           onValueChange={(val) =>
@@ -122,6 +157,7 @@ export default function EmailsList() {
             <SelectItem value="system">System</SelectItem> */}
           </SelectContent>
         </Select>
+        </div>
       </div>
       <div className="flex flex-col rounded-xl border shadow">
         <Table className="">
