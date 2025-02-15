@@ -21,7 +21,8 @@ export const emailRouter = createTRPCRouter({
         status: z.enum(statuses).optional().nullable(),
         domain: z.number().optional(),
         search: z.string().optional().nullable(),
-      })
+        apiId: z.number().optional(),
+      }),
     )
     .query(async ({ ctx, input }) => {
       const page = input.page || 1;
@@ -40,6 +41,7 @@ export const emailRouter = createTRPCRouter({
         WHERE "teamId" = ${ctx.team.id}
         ${input.status ? Prisma.sql`AND "latestStatus"::text = ${input.status}` : Prisma.sql``}
         ${input.domain ? Prisma.sql`AND "domainId" = ${input.domain}` : Prisma.sql``}
+        ${input.apiId ? Prisma.sql`AND "apiId" = ${input.apiId}` : Prisma.sql``}
         ${
           input.search
             ? Prisma.sql`AND (
@@ -63,7 +65,7 @@ export const emailRouter = createTRPCRouter({
     .input(
       z.object({
         days: z.number().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { team } = ctx;
@@ -146,7 +148,7 @@ export const emailRouter = createTRPCRouter({
           clicked: 0,
           bounced: 0,
           complained: 0,
-        }
+        },
       );
 
       return { result: filledResult, totalCounts };

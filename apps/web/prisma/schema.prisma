@@ -196,6 +196,7 @@ model Email {
   latestStatus EmailStatus  @default(QUEUED)
   teamId       Int
   domainId     Int?
+  apiId        Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   scheduledAt  DateTime?
