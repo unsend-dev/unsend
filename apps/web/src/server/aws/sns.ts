@@ -2,6 +2,7 @@ import {
   SNSClient,
   CreateTopicCommand,
   SubscribeCommand,
+  DeleteTopicCommand,
 } from "@aws-sdk/client-sns";
 import { env } from "~/env";
 
@@ -23,6 +24,11 @@ export async function createTopic(topic: string, region: string) {
 
   const data = await client.send(command);
   return data.TopicArn;
+}
+
+export async function deleteTopic(topicArn: string, region: string) {
+  const client = getSnsClient(region);
+  await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
 }
 
 export async function subscribeEndpoint(
