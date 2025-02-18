@@ -78,31 +78,60 @@ export class SesSettingsService {
     }
 
     const idPrefix = smallNanoid(10);
+    let topicArn: string | undefined;
 
-    const setting = await db.sesSetting.create({
-      data: {
+    try {
+      const topicName = `${idPrefix}-${region}-unsend`;
+      topicArn = await sns.createTopic(topicName, region);
+      if (!topicArn) {
+        throw new Error("Failed to create SNS topic");
+      }
+
+      const setting = await db.$transaction(async (tx) => {
+        const setting = await tx.sesSetting.create({
+          data: {
+            region,
+            callbackUrl: `${parsedUrl}/api/ses_callback`,
+            topic: topicName,
+            topicArn,
+            sesEmailRateLimit: sendingRateLimit,
+            transactionalQuota,
+            idPrefix,
+          },
+        });
+
+        await sns.subscribeEndpoint(
+          topicArn!,
+          `${setting.callbackUrl}`,
+          setting.region
+        );
+
+        return setting;
+      });
+
+      if (!setting) {
+        throw new Error("Failed to create setting");
+      }
+
+      await registerConfigurationSet(setting);
+
+      EmailQueueService.initializeQueue(
         region,
-        callbackUrl: `${parsedUrl}/api/ses_callback`,
-        topic: `${idPrefix}-${region}-unsend`,
-        sesEmailRateLimit: sendingRateLimit,
-        transactionalQuota,
-        idPrefix,
-      },
-    });
+        setting.sesEmailRateLimit,
+        setting.transactionalQuota
+      );
 
-    await createSettingInAws(setting);
-
-    EmailQueueService.initializeQueue(
-      region,
-      setting.sesEmailRateLimit,
-      setting.transactionalQuota
-    );
-    console.log(
-      EmailQueueService.transactionalQueue,
-      EmailQueueService.marketingQueue
-    );
-
-    await this.invalidateCache();
+      await this.invalidateCache();
+    } catch (error) {
+      if (topicArn) {
+        try {
+          await sns.deleteTopic(topicArn, region);
+        } catch (deleteError) {
+          console.error('Failed to delete SNS topic after error:', deleteError);
+        }
+      }
+      throw error;
+    }
   }
 
   public static async updateSesSetting({
@@ -161,41 +190,6 @@ export class SesSettingsService {
       }
     });
   }
-}
-
-async function createSettingInAws(setting: SesSetting) {
-  await registerTopicInAws(setting).then(registerConfigurationSet);
-}
-
-/**
- * Creates a new topic in AWS and subscribes the callback URL to it
- */
-async function registerTopicInAws(setting: SesSetting) {
-  const topicArn = await sns.createTopic(setting.topic, setting.region);
-
-  if (!topicArn) {
-    throw new Error("Failed to create SNS topic");
-  }
-
-  const _setting = await db.sesSetting.update({
-    where: {
-      id: setting.id,
-    },
-    data: {
-      topicArn,
-    },
-  });
-
-  // Invalidate the cache to update the topicArn list
-  SesSettingsService.invalidateCache();
-
-  await sns.subscribeEndpoint(
-    topicArn,
-    `${setting.callbackUrl}`,
-    setting.region
-  );
-
-  return _setting;
 }
 
 /**
