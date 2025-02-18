@@ -120,6 +120,10 @@ export class SesSettingsService {
         setting.sesEmailRateLimit,
         setting.transactionalQuota
       );
+      console.log(
+        EmailQueueService.transactionalQueue,
+        EmailQueueService.marketingQueue
+      );
 
       await this.invalidateCache();
     } catch (error) {
