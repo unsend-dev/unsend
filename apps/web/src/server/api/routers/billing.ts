@@ -1,4 +1,6 @@
+import { DailyEmailUsage } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { format } from "date-fns";
 import { z } from "zod";
 
 import {
@@ -7,6 +9,7 @@ import {
   teamProcedure,
 } from "~/server/api/trpc";
 import { createCheckoutSessionForTeam } from "~/server/billing/payments";
+import { db } from "~/server/db";
 import { addApiKey, deleteApiKey } from "~/server/service/api-service";
 
 export const billingRouter = createTRPCRouter({
@@ -19,5 +22,23 @@ export const billingRouter = createTRPCRouter({
     }
 
     return (await createCheckoutSessionForTeam(ctx.team.id)).url;
+  }),
+
+  getThisMonthUsage: teamProcedure.query(async ({ ctx }) => {
+    const isoStartDate = format(new Date(), "yyyy-MM-00");
+
+    console.log({ isoStartDate });
+
+    const usage = await db.$queryRaw<Array<{ type: string; sent: number }>>`
+      SELECT 
+        type,
+        SUM(sent)::integer AS sent
+      FROM "DailyEmailUsage"
+      WHERE "teamId" = ${ctx.team.id}
+      AND "date" >= ${isoStartDate}
+      GROUP BY "type"
+    `;
+
+    return usage;
   }),
 });

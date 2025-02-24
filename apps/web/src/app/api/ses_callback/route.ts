@@ -90,7 +90,7 @@ async function checkEventValidity(message: SnsNotificationMessage) {
   const { TopicArn } = message;
   const configuredTopicArn = await SesSettingsService.getTopicArns();
 
-  if (!configuredTopicArn.includes(TopicArn)) {
+  if (!configuredTopicArn.includes(TopicArn) && env.NODE_ENV === "production") {
     return false;
   }
 

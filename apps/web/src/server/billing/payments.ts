@@ -10,7 +10,7 @@ function getStripe() {
   return new Stripe(env.STRIPE_SECRET_KEY);
 }
 
-export async function createCustomerForTeam(teamId: number) {
+async function createCustomerForTeam(teamId: number) {
   const stripe = getStripe();
   const customer = await stripe.customers.create({ metadata: { teamId } });
 
@@ -42,12 +42,7 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     customerId = team.stripeCustomerId;
   }
 
-  if (
-    !env.STRIPE_BASIC_PRICE_ID ||
-    !env.STRIPE_MARKETING_PRICE_ID ||
-    !env.STRIPE_TRANSACTIONAL_PRICE_ID ||
-    !customerId
-  ) {
+  if (!env.STRIPE_BASIC_PRICE_ID || !customerId) {
     throw new Error("Stripe prices are not set");
   }
 
@@ -57,13 +52,6 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     line_items: [
       {
         price: env.STRIPE_BASIC_PRICE_ID,
-        quantity: 1,
-      },
-      {
-        price: env.STRIPE_MARKETING_PRICE_ID,
-      },
-      {
-        price: env.STRIPE_TRANSACTIONAL_PRICE_ID,
       },
     ],
     success_url: `${env.NEXTAUTH_URL}/payments?success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -71,7 +59,75 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     metadata: {
       teamId,
     },
+    client_reference_id: teamId.toString(),
   });
 
   return session;
+}
+
+function getPlanFromPriceId(priceId: string) {
+  if (priceId === env.STRIPE_BASIC_PRICE_ID) {
+    return "BASIC";
+  }
+
+  return "FREE";
+}
+
+export async function syncStripeData(customerId: string) {
+  const stripe = getStripe();
+
+  const team = await db.team.findUnique({
+    where: { stripeCustomerId: customerId },
+  });
+
+  if (!team) {
+    return;
+  }
+
+  const subscriptions = await stripe.subscriptions.list({
+    customer: customerId,
+    limit: 1,
+    status: "all",
+    expand: ["data.default_payment_method"],
+  });
+
+  const subscription = subscriptions.data[0];
+
+  if (!subscription) {
+    return;
+  }
+
+  await db.subscription.upsert({
+    where: { id: subscription.id },
+    update: {
+      status: subscription.status,
+      priceId: subscription.items.data[0]?.price?.id || "",
+      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPeriodStart: new Date(subscription.current_period_start * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at
+        ? new Date(subscription.cancel_at * 1000)
+        : null,
+      paymentMethod: JSON.stringify(subscription.default_payment_method),
+      teamId: team.id,
+    },
+    create: {
+      id: subscription.id,
+      status: subscription.status,
+      priceId: subscription.items.data[0]?.price?.id || "",
+      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPeriodStart: new Date(subscription.current_period_start * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at
+        ? new Date(subscription.cancel_at * 1000)
+        : null,
+      paymentMethod: JSON.stringify(subscription.default_payment_method),
+      teamId: team.id,
+    },
+  });
+
+  await db.team.update({
+    where: { id: team.id },
+    data: {
+      plan: getPlanFromPriceId(subscription.items.data[0]?.price?.id || ""),
+    },
+  });
 }
