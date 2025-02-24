@@ -1,3 +1,4 @@
+import { env } from "~/env";
 import { db } from "~/server/db";
 import { parseSesHook, SesHookParser } from "~/server/service/ses-hook-parser";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
@@ -86,7 +87,7 @@ async function checkEventValidity(message: SnsNotificationMessage) {
   const { TopicArn } = message;
   const configuredTopicArn = await SesSettingsService.getTopicArns();
 
-  if (!configuredTopicArn.includes(TopicArn)) {
+  if (!configuredTopicArn.includes(TopicArn) && env.NODE_ENV === "production") {
     return false;
   }
 

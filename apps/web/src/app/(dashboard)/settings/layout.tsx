@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingsNavButton } from "./settings-nav-button";
+import { SettingsNavButton } from "../dev-settings/settings-nav-button";
 
 export const dynamic = "force-static";
 
@@ -11,10 +11,10 @@ export default function ApiKeysPage({
 }) {
   return (
     <div>
-      <h1 className="font-bold text-lg">Developer settings</h1>
+      <h1 className="font-bold text-lg">Settings</h1>
       <div className="flex gap-4 mt-4">
-        <SettingsNavButton href="/dev-settings">API Keys</SettingsNavButton>
-        <SettingsNavButton href="/dev-settings/smtp">SMTP</SettingsNavButton>
+        <SettingsNavButton href="/settings">Usage</SettingsNavButton>
+        <SettingsNavButton href="/settings/billing">Billing</SettingsNavButton>
       </div>
       <div className="mt-8">{children}</div>
     </div>

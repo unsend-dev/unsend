@@ -102,6 +102,7 @@ model Team {
   updatedAt        DateTime          @updatedAt
   plan             Plan              @default(FREE)
   stripeCustomerId String?           @unique
+  billingEmail     String?
   teamUsers        TeamUser[]
   domains          Domain[]
   apiKeys          ApiKey[]
@@ -125,7 +126,7 @@ model Subscription {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  org Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
