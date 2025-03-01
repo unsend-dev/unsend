@@ -1,4 +1,4 @@
-import { DailyEmailUsage } from "@prisma/client";
+import { DailyEmailUsage, EmailUsageType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { format } from "date-fns";
 import { z } from "zod";
@@ -29,7 +29,9 @@ export const billingRouter = createTRPCRouter({
 
     console.log({ isoStartDate });
 
-    const usage = await db.$queryRaw<Array<{ type: string; sent: number }>>`
+    const usage = await db.$queryRaw<
+      Array<{ type: EmailUsageType; sent: number }>
+    >`
       SELECT 
         type,
         SUM(sent)::integer AS sent
