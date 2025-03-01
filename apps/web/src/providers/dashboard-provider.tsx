@@ -6,6 +6,7 @@ import { AddSesSettings } from "~/components/settings/AddSesSettings";
 import CreateTeam from "~/components/team/CreateTeam";
 import { env } from "~/env";
 import { api } from "~/trpc/react";
+import { TeamProvider } from "./team-context";
 
 export const DashboardProvider = ({
   children,
@@ -37,5 +38,5 @@ export const DashboardProvider = ({
     return <CreateTeam />;
   }
 
-  return <>{children}</>;
+  return <TeamProvider>{children}</TeamProvider>;
 };
