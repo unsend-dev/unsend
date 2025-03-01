@@ -5,6 +5,10 @@ import { updateCampaignAnalytics } from "./campaign-service";
 import { env } from "~/env";
 import { getRedis } from "../redis";
 import { Queue, Worker } from "bullmq";
+import {
+  DEFAULT_QUEUE_OPTIONS,
+  SES_WEBHOOK_QUEUE,
+} from "../queue/queue-constants";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -157,12 +161,12 @@ function getEmailData(data: SesEvent) {
 }
 
 export class SesHookParser {
-  private static sesHookQueue = new Queue("ses-web-hook", {
+  private static sesHookQueue = new Queue(SES_WEBHOOK_QUEUE, {
     connection: getRedis(),
   });
 
   private static worker = new Worker(
-    "ses-web-hook",
+    SES_WEBHOOK_QUEUE,
     async (job) => {
       await this.execute(job.data);
     },
@@ -177,6 +181,10 @@ export class SesHookParser {
   }
 
   static async queue(data: { event: SesEvent; messageId: string }) {
-    return await this.sesHookQueue.add(data.messageId, data.event);
+    return await this.sesHookQueue.add(
+      data.messageId,
+      data.event,
+      DEFAULT_QUEUE_OPTIONS
+    );
   }
 }
