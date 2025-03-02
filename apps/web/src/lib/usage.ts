@@ -14,7 +14,6 @@ export const UNIT_PRICE = 0.001;
  * Marketing emails consume 1 credit per email, while transactional emails consume 0.25 credits per email.
  */
 export const PLAN_CREDIT_UNITS = {
-  [Plan.FREE]: 750,
   [Plan.BASIC]: 10_000,
 };
 
