@@ -14,7 +14,9 @@ const route = createRoute({
           schema: z.object({
             to: z.string().or(z.array(z.string())),
             from: z.string(),
-            subject: z.string(),
+            subject: z.string().optional().openapi({ description: 'Optional when templateId is provided' }),
+            templateId: z.string().optional().openapi({ description: 'ID of a template from the dashboard' }),
+            variables: z.record(z.string()).optional(),
             replyTo: z.string().or(z.array(z.string())).optional(),
             cc: z.string().or(z.array(z.string())).optional(),
             bcc: z.string().or(z.array(z.string())).optional(),
@@ -29,7 +31,10 @@ const route = createRoute({
               )
               .optional(),
             scheduledAt: z.string().datetime().optional(),
-          }),
+          }).refine(
+            data => !!data.subject || !!data.templateId,
+            'Either subject or templateId should be passed.',
+          ),
         },
       },
     },
