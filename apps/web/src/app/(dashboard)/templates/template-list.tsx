@@ -58,7 +58,7 @@ export default function TemplateList() {
                   <TableCell className="font-medium">
                     <Link
                       className="underline underline-offset-4 decoration-dashed text-foreground hover:text-primary"
-                      href={`/templates/${template.id}`}
+                      href={`/templates/${template.id}/edit`}
                     >
                       {template.name}
                     </Link>
