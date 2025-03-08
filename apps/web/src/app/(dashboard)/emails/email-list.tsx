@@ -45,12 +45,12 @@ import { useState } from "react";
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
-  { ssr: false },
+  { ssr: false }
 );
 
 const DynamicSheetContentWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.SheetContent),
-  { ssr: false },
+  { ssr: false }
 );
 
 export default function EmailsList() {
@@ -58,14 +58,12 @@ export default function EmailsList() {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
   const [search, setSearch] = useUrlState("search");
-  const [domainName, setDomainName] = useUrlState("domain");
-  const [apiKeyName, setApiKeyName] = useUrlState("apikey");
-  const [domain, setDomain] = useState<string | null>(null);
-  const [apikey, setApikey] = useState<string | null>(null);
+  const [domain, setDomain] = useUrlState("domain");
+  const [apiKey, setApiKey] = useUrlState("apikey");
 
   const pageNumber = Number(page);
-  const domainId = Number(domain);
-  const apiId = Number(apikey);
+  const domainId = domain ? Number(domain) : undefined;
+  const apiId = apiKey ? Number(apiKey) : undefined;
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
@@ -82,20 +80,12 @@ export default function EmailsList() {
     setSelectedEmail(emailId);
   };
 
-  const handleDomainName = (val: string) => {
+  const handleDomain = (val: string) => {
     setDomain(val === "All Domain" ? null : val);
-    const nameOfDomain = domainsQuery?.find(
-      (item) => item.id.toString() === val,
-    );
-    setDomainName(nameOfDomain?.name || "All Domain");
   };
 
-  const handleApiKeyName = (val: string) => {
-    setApikey(val === "All ApiKey" ? null : val);
-    const nameOfApiKey = apiKeysQuery?.find(
-      (item) => item.id.toString() === val,
-    );
-    setApiKeyName(nameOfApiKey?.name || "All ApiKey");
+  const handleApiKey = (val: string) => {
+    setApiKey(val === "All ApiKey" ? null : val);
   };
 
   const handleSheetChange = (isOpen: boolean) => {
@@ -119,11 +109,14 @@ export default function EmailsList() {
         />
         <div className="flex justify-center items-center gap-x-3">
           <Select
-            value={apikey ?? "All ApiKey"}
-            onValueChange={(val) => handleApiKeyName(val)}
+            value={apiKey ?? "All ApiKey"}
+            onValueChange={(val) => handleApiKey(val)}
           >
             <SelectTrigger className="w-[180px]">
-              {apiKeyName ? apiKeyName : "All ApiKey"}
+              {apiKey
+                ? apiKeysQuery?.find((apikey) => apikey.id === Number(apiKey))
+                    ?.name
+                : "All ApiKey"}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All ApiKey">All ApiKey</SelectItem>
@@ -133,17 +126,16 @@ export default function EmailsList() {
                     {apikey.name}
                   </SelectItem>
                 ))}
-              {/* <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem> */}
             </SelectContent>
           </Select>
           <Select
             value={domain ?? "All Domain"}
-            onValueChange={(val) => handleDomainName(val)}
+            onValueChange={(val) => handleDomain(val)}
           >
             <SelectTrigger className="w-[180px]">
-              {domainName ? domainName : "All Domain"}
+              {domain
+                ? domainsQuery?.find((d) => d.id === Number(domain))?.name
+                : "All Domain"}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All Domain" className=" capitalize">
@@ -155,9 +147,6 @@ export default function EmailsList() {
                     {domain.name}
                   </SelectItem>
                 ))}
-              {/* <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem> */}
             </SelectContent>
           </Select>
           <Select
@@ -188,9 +177,6 @@ export default function EmailsList() {
                   {status.toLowerCase().replace("_", " ")}
                 </SelectItem>
               ))}
-              {/* <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
@@ -243,7 +229,7 @@ export default function EmailsList() {
                             Scheduled at{" "}
                             {formatDate(
                               email.scheduledAt,
-                              "MMM dd'th', hh:mm a",
+                              "MMM dd'th', hh:mm a"
                             )}
                           </TooltipContent>
                         </Tooltip>
@@ -259,7 +245,7 @@ export default function EmailsList() {
                     {email.latestStatus !== "SCHEDULED"
                       ? formatDate(
                           email.scheduledAt ?? email.createdAt,
-                          "MMM do, hh:mm a",
+                          "MMM do, hh:mm a"
                         )
                       : "--"}
                   </TableCell>

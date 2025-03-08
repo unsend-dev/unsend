@@ -64,7 +64,7 @@ export const getTeamFromToken = async (c: Context) => {
     })
     .catch(console.error);
 
-  return team;
+  return { ...team, apiKeyId: apiKey.id };
 };
 
 const checkRateLimit = (token: string) => {
