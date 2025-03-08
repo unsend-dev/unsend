@@ -31,9 +31,12 @@ async function checkIfValidEmail(emailId: string) {
   return { email, domain };
 }
 
-export const replaceVariables = (text: string, variables: Record<string, string>) => {
+export const replaceVariables = (
+  text: string,
+  variables: Record<string, string>
+) => {
   return Object.keys(variables).reduce((accum, key) => {
-    const re = new RegExp(`{{${key}}}`, 'g');
+    const re = new RegExp(`{{${key}}}`, "g");
     const returnTxt = accum.replace(re, variables[key] as string);
     return returnTxt;
   }, text);
@@ -69,15 +72,28 @@ export async function sendEmail(
     const template = await db.template.findUnique({
       where: { id: templateId },
     });
-    
+
     if (template) {
       const jsonContent = JSON.parse(template.content || "{}");
       const renderer = new EmailRenderer(jsonContent);
 
-      subject = replaceVariables(template.subject || '', variables || {});
+      subject = replaceVariables(template.subject || "", variables || {});
+
+      // {{}} for link replacements
+      const modifiedVariables = {
+        ...variables,
+        ...Object.keys(variables || {}).reduce(
+          (acc, key) => {
+            acc[`{{${key}}}`] = variables?.[key] || "";
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
+      };
+
       html = await renderer.render({
         shouldReplaceVariableValues: true,
-        variableValues: variables,
+        variableValues: modifiedVariables,
       });
     }
   }
