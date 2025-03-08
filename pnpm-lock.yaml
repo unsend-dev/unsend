@@ -736,6 +736,7 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: false
 
+
   /@auth/prisma-adapter@1.5.0(@prisma/client@6.3.1):
     resolution: {integrity: sha512-TNDY7z5VhC3E5xetb4qhTmSmjvyEurafaTM6dlYlhTGj+7K3xTki7fJ0oJwgkFsQ2fT1weJJJSBmjtH8Nqsnuw==}
     peerDependencies:
@@ -8241,6 +8242,7 @@ packages:
       negotiator: 0.6.3
     dev: true
 
+
   /acorn-jsx@5.3.2(acorn@8.11.3):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -8267,7 +8269,6 @@ packages:
     resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
-    dev: false
 
   /add@2.0.6:
     resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
@@ -13724,6 +13725,7 @@ packages:
       - babel-plugin-macros
     dev: false
 
+
   /next@14.2.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-SF3TJnKdH43PMkCcErLPv+x/DY1YCklslk3ZmwaVoyUfDgHKexuKlf9sEfBQ69w+ue8jQ3msLb+hSj1T19hGag==}
     engines: {node: '>=18.17.0'}
@@ -15719,6 +15721,7 @@ packages:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
     dev: true
+
 
   /resolve-alpn@1.2.1:
     resolution: {integrity: sha512-0a1F4l73/ZFZOakJnQ3FvkJ2+gSTQWz/r2KE5OdDY0TxPm5h4GkqkWWfM47T7HsbnOtcJVEF4epCVy6u7Q3K+g==}
