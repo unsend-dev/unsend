@@ -46,10 +46,6 @@ export const env = createEnv({
     ADMIN_EMAIL: z.string().optional(),
     DISCORD_WEBHOOK_URL: z.string().optional(),
     REDIS_URL: z.string(),
-    ENABLE_PRISMA_CLIENT: z
-      .string()
-      .default("false")
-      .transform((str) => str === "true"), // Converts string "true" to boolean true
     S3_COMPATIBLE_ACCESS_KEY: z.string().optional(),
     S3_COMPATIBLE_SECRET_KEY: z.string().optional(),
     S3_COMPATIBLE_API_URL: z.string().optional(),
@@ -93,7 +89,6 @@ export const env = createEnv({
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
     REDIS_URL: process.env.REDIS_URL,
     FROM_EMAIL: process.env.FROM_EMAIL,
-    ENABLE_PRISMA_CLIENT: process.env.ENABLE_PRISMA_CLIENT, // Add this line
     S3_COMPATIBLE_ACCESS_KEY: process.env.S3_COMPATIBLE_ACCESS_KEY,
     S3_COMPATIBLE_SECRET_KEY: process.env.S3_COMPATIBLE_SECRET_KEY,
     S3_COMPATIBLE_API_URL: process.env.S3_COMPATIBLE_API_URL,
