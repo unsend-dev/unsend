@@ -46,7 +46,7 @@ export const replaceVariables = (
  Send transactional email
  */
 export async function sendEmail(
-  emailContent: EmailContent & { teamId: number }
+  emailContent: EmailContent & { teamId: number; apiKeyId?: number }
 ) {
   const {
     to,
@@ -62,6 +62,7 @@ export async function sendEmail(
     cc,
     bcc,
     scheduledAt,
+    apiKeyId,
   } = emailContent;
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
@@ -122,6 +123,7 @@ export async function sendEmail(
       attachments: attachments ? JSON.stringify(attachments) : undefined,
       scheduledAt: scheduledAtDate,
       latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
+      apiId: apiKeyId,
     },
   });
 
