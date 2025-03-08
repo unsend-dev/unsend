@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["tracing"]
+  previewFeatures = []
 }
 
 datasource db {
@@ -101,6 +101,7 @@ model Team {
   emails           Email[]
   contactBooks     ContactBook[]
   campaigns        Campaign[]
+  templates        Template[]
   dailyEmailUsages DailyEmailUsage[]
 }
 
@@ -284,6 +285,20 @@ model Campaign {
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@index([createdAt(sort: Desc)])
+}
+
+model Template {
+  id            String         @id @default(cuid())
+  name          String
+  teamId        Int
+  subject       String
+  html          String?
+  content       String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   @@index([createdAt(sort: Desc)])
 }
 

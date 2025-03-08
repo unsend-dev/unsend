@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { withOptimize } from "@prisma/extension-optimize";
 import { env } from "~/env";
 
 const createPrismaClient = () => {
@@ -7,9 +6,6 @@ const createPrismaClient = () => {
     log:
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
-  if (env.ENABLE_PRISMA_CLIENT) {
-    return client.$extends(withOptimize());
-  }
 
   return client;
 };

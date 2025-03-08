@@ -3,6 +3,7 @@ import { db } from "../db";
 import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
+import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 
 async function checkIfValidEmail(emailId: string) {
   const email = await db.email.findUnique({
@@ -30,6 +31,17 @@ async function checkIfValidEmail(emailId: string) {
   return { email, domain };
 }
 
+export const replaceVariables = (
+  text: string,
+  variables: Record<string, string>
+) => {
+  return Object.keys(variables).reduce((accum, key) => {
+    const re = new RegExp(`{{${key}}}`, "g");
+    const returnTxt = accum.replace(re, variables[key] as string);
+    return returnTxt;
+  }, text);
+};
+
 /**
  Send transactional email
  */
@@ -39,9 +51,11 @@ export async function sendEmail(
   const {
     to,
     from,
-    subject,
+    subject: subjectFromApiCall,
+    templateId,
+    variables,
     text,
-    html,
+    html: htmlFromApiCall,
     teamId,
     attachments,
     replyTo,
@@ -49,8 +63,40 @@ export async function sendEmail(
     bcc,
     scheduledAt,
   } = emailContent;
+  let subject = subjectFromApiCall;
+  let html = htmlFromApiCall;
 
   const domain = await validateDomainFromEmail(from, teamId);
+
+  if (templateId) {
+    const template = await db.template.findUnique({
+      where: { id: templateId },
+    });
+
+    if (template) {
+      const jsonContent = JSON.parse(template.content || "{}");
+      const renderer = new EmailRenderer(jsonContent);
+
+      subject = replaceVariables(template.subject || "", variables || {});
+
+      // {{}} for link replacements
+      const modifiedVariables = {
+        ...variables,
+        ...Object.keys(variables || {}).reduce(
+          (acc, key) => {
+            acc[`{{${key}}}`] = variables?.[key] || "";
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
+      };
+
+      html = await renderer.render({
+        shouldReplaceVariableValues: true,
+        variableValues: modifiedVariables,
+      });
+    }
+  }
 
   const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
   const delay = scheduledAtDate
@@ -61,7 +107,7 @@ export async function sendEmail(
     data: {
       to: Array.isArray(to) ? to : [to],
       from,
-      subject,
+      subject: subject as string,
       replyTo: replyTo
         ? Array.isArray(replyTo)
           ? replyTo
