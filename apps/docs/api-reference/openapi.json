@@ -340,7 +340,18 @@
                     "type": "string"
                   },
                   "subject": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Optional when templateId is provided"
+                  },
+                  "templateId": {
+                    "type": "string",
+                    "description": "ID of a template from the dashboard"
+                  },
+                  "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   },
                   "replyTo": {
                     "anyOf": [
@@ -412,8 +423,7 @@
                 },
                 "required": [
                   "to",
-                  "from",
-                  "subject"
+                  "from"
                 ]
               }
             }
