@@ -8,26 +8,31 @@ import {
   createTRPCRouter,
   teamProcedure,
 } from "~/server/api/trpc";
-import { createCheckoutSessionForTeam } from "~/server/billing/payments";
+import {
+  createCheckoutSessionForTeam,
+  getManageSessionUrl,
+} from "~/server/billing/payments";
 import { db } from "~/server/db";
-import { addApiKey, deleteApiKey } from "~/server/service/api-service";
 
 export const billingRouter = createTRPCRouter({
   createCheckoutSession: teamProcedure.mutation(async ({ ctx }) => {
-    if (ctx.team.plan !== "FREE") {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Team is already on a paid plan",
-      });
-    }
-
     return (await createCheckoutSessionForTeam(ctx.team.id)).url;
+  }),
+
+  // getSubscriptionDetails: teamProcedure.query(async ({ ctx }) => {
+  //   const subscription = await db.subscription.findUnique({
+  //     where: { teamId: ctx.team.id },
+  //   });
+
+  //   return subscription;
+  // }),
+
+  getManageSessionUrl: teamProcedure.mutation(async ({ ctx }) => {
+    return await getManageSessionUrl(ctx.team.id);
   }),
 
   getThisMonthUsage: teamProcedure.query(async ({ ctx }) => {
     const isoStartDate = format(new Date(), "yyyy-MM-00");
-
-    console.log({ isoStartDate });
 
     const usage = await db.$queryRaw<
       Array<{ type: EmailUsageType; sent: number }>

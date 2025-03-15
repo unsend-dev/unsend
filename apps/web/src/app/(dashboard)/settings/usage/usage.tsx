@@ -151,6 +151,17 @@ function PaidPlanUsage({
           ))}
           <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
             <div>
+              <div className="font-medium capitalize">Subscription cost</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                {currentTeam?.plan}
+              </div>
+            </div>
+            <div className="font-mono font-medium">
+              ${planCreditCost.toFixed(2)}
+            </div>
+          </div>
+          <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
+            <div>
               <div className="font-medium capitalize">Plan Credits</div>
               <div className="text-sm text-muted-foreground mt-1">
                 {currentTeam?.plan}

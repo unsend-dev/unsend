@@ -33,6 +33,10 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     throw new Error("Team not found");
   }
 
+  if (team.isActive && team.plan !== "FREE") {
+    throw new Error("Team is already active");
+  }
+
   const stripe = getStripe();
 
   let customerId = team.stripeCustomerId;
@@ -71,6 +75,29 @@ function getPlanFromPriceId(priceId: string) {
   }
 
   return "FREE";
+}
+
+export async function getManageSessionUrl(teamId: number) {
+  const team = await db.team.findUnique({
+    where: { id: teamId },
+  });
+
+  if (!team) {
+    throw new Error("Team not found");
+  }
+
+  if (!team.stripeCustomerId) {
+    throw new Error("Team has no Stripe customer ID");
+  }
+
+  const stripe = getStripe();
+
+  const subscriptions = await stripe.billingPortal.sessions.create({
+    customer: team.stripeCustomerId,
+    return_url: `${env.NEXTAUTH_URL}`,
+  });
+
+  return subscriptions.url;
 }
 
 export async function syncStripeData(customerId: string) {
@@ -128,6 +155,7 @@ export async function syncStripeData(customerId: string) {
     where: { id: team.id },
     data: {
       plan: getPlanFromPriceId(subscription.items.data[0]?.price?.id || ""),
+      isActive: subscription.status === "active",
     },
   });
 }
