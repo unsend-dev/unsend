@@ -100,7 +100,7 @@ export const authOptions: NextAuthOptions = {
   events: {
     createUser: async ({ user }) => {
       // No waitlist for self hosting
-      if (!env.NEXT_PUBLIC_IS_CLOUD) {
+      if (!env.NEXT_PUBLIC_IS_CLOUD || env.NODE_ENV === "development") {
         await db.user.update({
           where: { id: user.id },
           data: { isBetaUser: true },

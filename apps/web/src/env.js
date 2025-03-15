@@ -37,6 +37,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     AWS_SES_ENDPOINT: z.string().optional(),
+    AWS_SNS_ENDPOINT: z.string().optional(),
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
     API_RATE_LIMIT: z
       .string()
@@ -83,6 +84,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     AWS_SES_ENDPOINT: process.env.AWS_SES_ENDPOINT,
+    AWS_SNS_ENDPOINT: process.env.AWS_SNS_ENDPOINT,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,

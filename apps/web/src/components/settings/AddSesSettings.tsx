@@ -17,6 +17,7 @@ import { Input } from "@unsend/ui/src/input";
 import { Button } from "@unsend/ui/src/button";
 import Spinner from "@unsend/ui/src/spinner";
 import { toast } from "@unsend/ui/src/toaster";
+import { isLocalhost } from "~/utils/client";
 
 const FormSchema = z.object({
   region: z.string(),
@@ -65,14 +66,16 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    if (!data.unsendUrl.startsWith("https://")) {
+    const localhost = isLocalhost();
+
+    if (!data.unsendUrl.startsWith("https://") && !localhost) {
       form.setError("unsendUrl", {
         message: "URL must start with https://",
       });
       return;
     }
 
-    if (data.unsendUrl.includes("localhost")) {
+    if (data.unsendUrl.includes("localhost") && !localhost) {
       form.setError("unsendUrl", {
         message: "URL must be a valid url",
       });
