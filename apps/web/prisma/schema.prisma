@@ -235,16 +235,23 @@ model ContactBook {
   @@index([teamId])
 }
 
+enum UnsubscribeReason {
+  BOUNCED
+  COMPLAINED
+  UNSUBSCRIBED
+}
+
 model Contact {
-  id            String   @id @default(cuid())
-  firstName     String?
-  lastName      String?
-  email         String
-  subscribed    Boolean  @default(true)
-  properties    Json
-  contactBookId String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String             @id @default(cuid())
+  firstName         String?
+  lastName          String?
+  email             String
+  subscribed        Boolean            @default(true)
+  unsubscribeReason UnsubscribeReason?
+  properties        Json
+  contactBookId     String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   contactBook ContactBook @relation(fields: [contactBookId], references: [id], onDelete: Cascade)
 

@@ -31,7 +31,9 @@ services:
     ports:
       - "5350:3000"
     environment:
-      WEBHOOK_URL: http://localhost:3000/api/ses_callback
+      WEBHOOK_URL: http://host.docker.internal:3000/api/ses_callback
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   minio:
     image: minio/minio

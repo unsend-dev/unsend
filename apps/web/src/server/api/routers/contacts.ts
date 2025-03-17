@@ -141,6 +141,7 @@ export const contactsRouter = createTRPCRouter({
           subscribed: true,
           createdAt: true,
           contactBookId: true,
+          unsubscribeReason: true,
         },
         orderBy: {
           createdAt: "desc",

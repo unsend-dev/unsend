@@ -25,6 +25,27 @@ import DeleteContact from "./delete-contact";
 import EditContact from "./edit-contact";
 import { Input } from "@unsend/ui/src/input";
 import { useDebouncedCallback } from "use-debounce";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@unsend/ui/src/tooltip";
+import { UnsubscribeReason } from "@prisma/client";
+
+function getUnsubscribeReason(reason: UnsubscribeReason) {
+  switch (reason) {
+    case UnsubscribeReason.BOUNCED:
+      return "Email bounced";
+    case UnsubscribeReason.COMPLAINED:
+      return "User complained";
+    case UnsubscribeReason.UNSUBSCRIBED:
+      return "User unsubscribed";
+    default:
+      return "User unsubscribed";
+  }
+}
+
 export default function ContactList({
   contactBookId,
 }: {
@@ -53,131 +74,145 @@ export default function ContactList({
   }, 1000);
 
   return (
-    <div className="mt-10 flex flex-col gap-4">
-      <div className="flex justify-between">
-        <div>
-          <Input
-            placeholder="Search by email or name"
-            className="w-[350px] mr-4"
-            defaultValue={search ?? ""}
-            onChange={(e) => debouncedSearch(e.target.value)}
-          />
+    <TooltipProvider>
+      <div className="mt-10 flex flex-col gap-4">
+        <div className="flex justify-between">
+          <div>
+            <Input
+              placeholder="Search by email or name"
+              className="w-[350px] mr-4"
+              defaultValue={search ?? ""}
+              onChange={(e) => debouncedSearch(e.target.value)}
+            />
+          </div>
+          <Select
+            value={status ?? "All"}
+            onValueChange={(val) => setStatus(val === "All" ? null : val)}
+          >
+            <SelectTrigger className="w-[180px] capitalize">
+              {status || "All statuses"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All" className=" capitalize">
+                All statuses
+              </SelectItem>
+              <SelectItem value="Subscribed" className=" capitalize">
+                Subscribed
+              </SelectItem>
+              <SelectItem value="Unsubscribed" className=" capitalize">
+                Unsubscribed
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Select
-          value={status ?? "All"}
-          onValueChange={(val) => setStatus(val === "All" ? null : val)}
-        >
-          <SelectTrigger className="w-[180px] capitalize">
-            {status || "All statuses"}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All" className=" capitalize">
-              All statuses
-            </SelectItem>
-            <SelectItem value="Subscribed" className=" capitalize">
-              Subscribed
-            </SelectItem>
-            <SelectItem value="Unsubscribed" className=" capitalize">
-              Unsubscribed
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col rounded-xl border border-broder shadow">
-        <Table className="">
-          <TableHeader className="">
-            <TableRow className=" bg-muted/30">
-              <TableHead className="rounded-tl-xl">Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="">Created At</TableHead>
-              <TableHead className="rounded-tr-xl">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {contactsQuery.isLoading ? (
-              <TableRow className="h-32">
-                <TableCell colSpan={4} className="text-center py-4">
-                  <Spinner
-                    className="w-6 h-6 mx-auto"
-                    innerSvgClass="stroke-primary"
-                  />
-                </TableCell>
+        <div className="flex flex-col rounded-xl border border-broder shadow">
+          <Table className="">
+            <TableHeader className="">
+              <TableRow className=" bg-muted/30">
+                <TableHead className="rounded-tl-xl">Email</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="">Created At</TableHead>
+                <TableHead className="rounded-tr-xl">Actions</TableHead>
               </TableRow>
-            ) : contactsQuery.data?.contacts.length ? (
-              contactsQuery.data?.contacts.map((contact) => (
-                <TableRow key={contact.id} className="">
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={getGravatarUrl(contact.email, {
-                          size: 75,
-                          defaultImage: "robohash",
-                        })}
-                        alt={contact.email + "'s gravatar"}
-                        width={35}
-                        height={35}
-                        className="rounded-full"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">
-                          {contact.email}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {contact.firstName} {contact.lastName}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      className={`text-center w-[130px] rounded capitalize py-1 text-xs ${
-                        contact.subscribed
-                          ? "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25"
-                          : "bg-red-500/10 text-red-600 dark:text-red-700/90 border border-red-600/10"
-                      }`}
-                    >
-                      {contact.subscribed ? "Subscribed" : "Unsubscribed"}
-                    </div>
-                  </TableCell>
-                  <TableCell className="">
-                    {formatDistanceToNow(new Date(contact.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <EditContact contact={contact} />
-                      <DeleteContact contact={contact} />
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {contactsQuery.isLoading ? (
+                <TableRow className="h-32">
+                  <TableCell colSpan={4} className="text-center py-4">
+                    <Spinner
+                      className="w-6 h-6 mx-auto"
+                      innerSvgClass="stroke-primary"
+                    />
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow className="h-32">
-                <TableCell colSpan={4} className="text-center py-4">
-                  No contacts found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ) : contactsQuery.data?.contacts.length ? (
+                contactsQuery.data?.contacts.map((contact) => (
+                  <TableRow key={contact.id} className="">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={getGravatarUrl(contact.email, {
+                            size: 75,
+                            defaultImage: "robohash",
+                          })}
+                          alt={contact.email + "'s gravatar"}
+                          width={35}
+                          height={35}
+                          className="rounded-full"
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">
+                            {contact.email}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {contact.firstName} {contact.lastName}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {contact.subscribed ? (
+                        <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border border-green-500/25 dark:border-green-700/25">
+                          Subscribed
+                        </div>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-red-500/10 text-red-600 dark:text-red-700/90 border border-red-600/10">
+                              Unsubscribed
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {getUnsubscribeReason(
+                                contact.unsubscribeReason ??
+                                  UnsubscribeReason.UNSUBSCRIBED
+                              )}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </TableCell>
+                    <TableCell className="">
+                      {formatDistanceToNow(new Date(contact.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <EditContact contact={contact} />
+                        <DeleteContact contact={contact} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="h-32">
+                  <TableCell colSpan={4} className="text-center py-4">
+                    No contacts found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex gap-4 justify-end">
+          <Button
+            size="sm"
+            onClick={() => setPage((pageNumber - 1).toString())}
+            disabled={pageNumber === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setPage((pageNumber + 1).toString())}
+            disabled={pageNumber >= (contactsQuery.data?.totalPage ?? 0)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
-      <div className="flex gap-4 justify-end">
-        <Button
-          size="sm"
-          onClick={() => setPage((pageNumber - 1).toString())}
-          disabled={pageNumber === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => setPage((pageNumber + 1).toString())}
-          disabled={pageNumber >= (contactsQuery.data?.totalPage ?? 0)}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+    </TooltipProvider>
   );
 }
