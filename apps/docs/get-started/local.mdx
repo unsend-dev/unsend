@@ -101,7 +101,11 @@ openssl rand -base64 32
 ```
 
   </Step>
-  <Step title="Setup Github Oauth">
+  <Step title="Setup Github Oauth (optional)">
+  <Note>
+    You don't need this setup if you have `FROM_EMAIL` set in your environment
+    variables. for development email link will logged in the console.
+  </Note>
 
 Next, [create a new GitHub App](https://github.com/settings/applications/new). This will allow you to sign in to Unsend with your GitHub account.4
 
