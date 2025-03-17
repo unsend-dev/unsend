@@ -24,6 +24,15 @@ services:
       - redis:/data
     command: ["redis-server", "--maxmemory-policy", "noeviction"]
 
+  local-sen-sns:
+    image: unsend/local-ses-sns:latest
+    container_name: local-ses-sns
+    restart: always
+    ports:
+      - "5350:3000"
+    environment:
+      WEBHOOK_URL: http://localhost:3000/api/ses_callback
+
   minio:
     image: minio/minio
     container_name: unsend-storage-dev

@@ -18,7 +18,7 @@ export async function sendSignUpEmail(
   const { host } = new URL(url);
 
   if (env.NODE_ENV === "development") {
-    console.log("Sending sign in email", email, url, token);
+    console.log("Sending sign in email", { email, url, token });
     return;
   }
 

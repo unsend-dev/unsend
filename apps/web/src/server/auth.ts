@@ -44,13 +44,17 @@ declare module "next-auth" {
  * Auth providers
  */
 
-const providers: Provider[] = [
-  GitHubProvider({
-    clientId: env.GITHUB_ID,
-    clientSecret: env.GITHUB_SECRET,
-    allowDangerousEmailAccountLinking: true,
-  }),
-];
+const providers: Provider[] = [];
+
+if (env.GITHUB_ID && env.GITHUB_SECRET) {
+  providers.push(
+    GitHubProvider({
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    })
+  );
+}
 
 if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
   providers.push(
@@ -74,6 +78,10 @@ if (env.FROM_EMAIL) {
       },
     })
   );
+}
+
+if (providers.length === 0) {
+  throw new Error("No auth providers found, need atleast one");
 }
 
 /**
@@ -100,7 +108,7 @@ export const authOptions: NextAuthOptions = {
   events: {
     createUser: async ({ user }) => {
       // No waitlist for self hosting
-      if (!env.NEXT_PUBLIC_IS_CLOUD) {
+      if (!env.NEXT_PUBLIC_IS_CLOUD || env.NODE_ENV === "development") {
         await db.user.update({
           where: { id: user.id },
           data: { isBetaUser: true },

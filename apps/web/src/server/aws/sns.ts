@@ -8,6 +8,7 @@ import { env } from "~/env";
 
 function getSnsClient(region: string) {
   return new SNSClient({
+    endpoint: env.AWS_SNS_ENDPOINT,
     region: region,
     credentials: {
       accessKeyId: env.AWS_ACCESS_KEY,
@@ -44,6 +45,5 @@ export async function subscribeEndpoint(
   const client = getSnsClient(region);
 
   const data = await client.send(subscribeCommand);
-  console.log(data.SubscriptionArn);
   return data.SubscriptionArn;
 }

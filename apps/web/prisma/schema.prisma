@@ -289,16 +289,17 @@ model Campaign {
 }
 
 model Template {
-  id            String         @id @default(cuid())
-  name          String
-  teamId        Int
-  subject       String
-  html          String?
-  content       String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  teamId    Int
+  subject   String
+  html      String?
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
   @@index([createdAt(sort: Desc)])
 }
 
