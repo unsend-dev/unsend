@@ -1,7 +1,10 @@
-import { EmailStatus, Prisma } from "@prisma/client";
+import { EmailStatus, Prisma, UnsubscribeReason } from "@prisma/client";
 import { SesClick, SesEvent, SesEventDataKey } from "~/types/aws-types";
 import { db } from "../db";
-import { updateCampaignAnalytics } from "./campaign-service";
+import {
+  unsubscribeContact,
+  updateCampaignAnalytics,
+} from "./campaign-service";
 import { env } from "~/env";
 import { getRedis } from "../redis";
 import { Queue, Worker } from "bullmq";
@@ -100,6 +103,8 @@ export async function parseSesHook(data: SesEvent) {
       mailStatus !== "CLICKED" ||
       !(mailData as SesClick).link.startsWith(`${env.NEXTAUTH_URL}/unsubscribe`)
     ) {
+      await checkUnsubscribe(email.campaignId, email.contactId!, mailStatus);
+
       const mailEvent = await db.emailEvent.findFirst({
         where: {
           emailId: email.id,
@@ -122,6 +127,22 @@ export async function parseSesHook(data: SesEvent) {
   });
 
   return true;
+}
+
+function checkUnsubscribe(
+  campaignId: string,
+  contactId: string,
+  event: EmailStatus
+) {
+  if (event === EmailStatus.BOUNCED || event === EmailStatus.COMPLAINED) {
+    return unsubscribeContact(
+      contactId,
+      campaignId,
+      event === EmailStatus.BOUNCED
+        ? UnsubscribeReason.BOUNCED
+        : UnsubscribeReason.COMPLAINED
+    );
+  }
 }
 
 function getEmailStatus(data: SesEvent) {

@@ -50,6 +50,8 @@ export async function createDomain(
 ) {
   const domainStr = tldts.getDomain(name);
 
+  console.log("Creating domain", { domainStr, name, region });
+
   if (!domainStr) {
     throw new Error("Invalid domain");
   }
@@ -61,7 +63,9 @@ export async function createDomain(
   }
 
   const subdomain = tldts.getSubdomain(name);
+  console.log("Subdomain", { subdomain });
   const publicKey = await ses.addDomain(name, region);
+  console.log("Public key", { publicKey });
 
   const domain = await db.domain.create({
     data: {
@@ -72,6 +76,8 @@ export async function createDomain(
       region,
     },
   });
+
+  console.log("Domain created", { domain });
 
   return domain;
 }

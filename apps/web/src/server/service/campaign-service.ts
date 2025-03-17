@@ -2,7 +2,12 @@ import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { db } from "../db";
 import { createHash } from "crypto";
 import { env } from "~/env";
-import { Campaign, Contact, EmailStatus } from "@prisma/client";
+import {
+  Campaign,
+  Contact,
+  EmailStatus,
+  UnsubscribeReason,
+} from "@prisma/client";
 import { validateDomainFromEmail } from "./domain-service";
 import { EmailQueueService } from "./email-queue-service";
 import { Queue, Worker } from "bullmq";
@@ -91,7 +96,7 @@ export function createUnsubUrl(contactId: string, campaignId: string) {
   return `${env.NEXTAUTH_URL}/unsubscribe?id=${unsubId}&hash=${unsubHash}`;
 }
 
-export async function unsubscribeContact(id: string, hash: string) {
+export async function unsubscribeContactFromLink(id: string, hash: string) {
   const [contactId, campaignId] = id.split("-");
 
   if (!contactId || !campaignId) {
@@ -107,6 +112,18 @@ export async function unsubscribeContact(id: string, hash: string) {
     throw new Error("Invalid unsubscribe link");
   }
 
+  return await unsubscribeContact(
+    contactId,
+    campaignId,
+    UnsubscribeReason.UNSUBSCRIBED
+  );
+}
+
+export async function unsubscribeContact(
+  contactId: string,
+  campaignId: string,
+  reason: UnsubscribeReason
+) {
   // Update the contact's subscription status
   try {
     const contact = await db.contact.findUnique({
@@ -120,7 +137,7 @@ export async function unsubscribeContact(id: string, hash: string) {
     if (contact.subscribed) {
       await db.contact.update({
         where: { id: contactId },
-        data: { subscribed: false },
+        data: { subscribed: false, unsubscribeReason: reason },
       });
 
       await db.campaign.update({

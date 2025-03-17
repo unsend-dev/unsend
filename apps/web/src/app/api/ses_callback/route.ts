@@ -35,9 +35,8 @@ export async function POST(req: Request) {
       event: message,
       messageId: data.MessageId,
     });
-    console.log("Error is parsing hook", !status);
     if (!status) {
-      return Response.json({ data: "Error is parsing hook" });
+      return Response.json({ data: "Error in parsing hook" });
     }
 
     return Response.json({ data: "Success" });
