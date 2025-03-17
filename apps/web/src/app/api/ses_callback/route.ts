@@ -1,3 +1,4 @@
+import { env } from "~/env";
 import { db } from "~/server/db";
 import { parseSesHook, SesHookParser } from "~/server/service/ses-hook-parser";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
@@ -83,6 +84,10 @@ async function handleSubscription(message: any) {
  * A simple check to ensure that the event is from the correct topic
  */
 async function checkEventValidity(message: SnsNotificationMessage) {
+  if (env.NODE_ENV === "development") {
+    return true;
+  }
+
   const { TopicArn } = message;
   const configuredTopicArn = await SesSettingsService.getTopicArns();
 

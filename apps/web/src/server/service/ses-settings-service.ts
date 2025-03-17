@@ -131,9 +131,10 @@ export class SesSettingsService {
         try {
           await sns.deleteTopic(topicArn, region);
         } catch (deleteError) {
-          console.error('Failed to delete SNS topic after error:', deleteError);
+          console.error("Failed to delete SNS topic after error:", deleteError);
         }
       }
+      console.error("Failed to create SES setting", error);
       throw error;
     }
   }
