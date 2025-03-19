@@ -14,6 +14,7 @@ import { generateKeyPairSync } from "crypto";
 import mime from "mime-types";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
+import { nanoid } from "../nanoid";
 
 function getSesClient(region: string) {
   return new SESv2Client({
@@ -170,6 +171,10 @@ export async function sendEmailThroughSes({
             : []),
           // Spread in the precedence header if present
           ...(isBulk ? [{ Name: "Precedence", Value: "bulk" }] : []),
+          {
+            Name: "X-Entity-Ref-ID",
+            Value: nanoid(),
+          },
         ],
       },
     },
