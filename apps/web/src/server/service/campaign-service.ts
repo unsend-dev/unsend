@@ -112,18 +112,22 @@ export async function unsubscribeContactFromLink(id: string, hash: string) {
     throw new Error("Invalid unsubscribe link");
   }
 
-  return await unsubscribeContact(
+  return await unsubscribeContact({
     contactId,
     campaignId,
-    UnsubscribeReason.UNSUBSCRIBED
-  );
+    reason: UnsubscribeReason.UNSUBSCRIBED,
+  });
 }
 
-export async function unsubscribeContact(
-  contactId: string,
-  campaignId: string,
-  reason: UnsubscribeReason
-) {
+export async function unsubscribeContact({
+  contactId,
+  campaignId,
+  reason,
+}: {
+  contactId: string;
+  campaignId?: string;
+  reason: UnsubscribeReason;
+}) {
   // Update the contact's subscription status
   try {
     const contact = await db.contact.findUnique({
@@ -140,14 +144,16 @@ export async function unsubscribeContact(
         data: { subscribed: false, unsubscribeReason: reason },
       });
 
-      await db.campaign.update({
-        where: { id: campaignId },
-        data: {
-          unsubscribed: {
-            increment: 1,
+      if (campaignId) {
+        await db.campaign.update({
+          where: { id: campaignId },
+          data: {
+            unsubscribed: {
+              increment: 1,
+            },
           },
-        },
-      });
+        });
+      }
     }
 
     return contact;

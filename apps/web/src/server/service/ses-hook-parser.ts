@@ -103,7 +103,12 @@ export async function parseSesHook(data: SesEvent) {
       mailStatus !== "CLICKED" ||
       !(mailData as SesClick).link.startsWith(`${env.NEXTAUTH_URL}/unsubscribe`)
     ) {
-      await checkUnsubscribe(email.campaignId, email.contactId!, mailStatus);
+      await checkUnsubscribe({
+        contactId: email.contactId!,
+        campaignId: email.campaignId,
+        teamId: email.teamId,
+        event: mailStatus,
+      });
 
       const mailEvent = await db.emailEvent.findFirst({
         where: {
@@ -129,19 +134,60 @@ export async function parseSesHook(data: SesEvent) {
   return true;
 }
 
-function checkUnsubscribe(
-  campaignId: string,
-  contactId: string,
-  event: EmailStatus
-) {
+async function checkUnsubscribe({
+  contactId,
+  campaignId,
+  teamId,
+  event,
+}: {
+  contactId: string;
+  campaignId: string;
+  teamId: number;
+  event: EmailStatus;
+}) {
   if (event === EmailStatus.BOUNCED || event === EmailStatus.COMPLAINED) {
-    return unsubscribeContact(
-      contactId,
-      campaignId,
-      event === EmailStatus.BOUNCED
-        ? UnsubscribeReason.BOUNCED
-        : UnsubscribeReason.COMPLAINED
-    );
+    const contact = await db.contact.findUnique({
+      where: {
+        id: contactId,
+      },
+    });
+
+    if (!contact) {
+      return;
+    }
+
+    const allContacts = await db.contact.findMany({
+      where: {
+        email: contact.email,
+        contactBook: {
+          teamId,
+        },
+      },
+    });
+
+    const allContactIds = allContacts
+      .map((c) => c.id)
+      .filter((c) => c !== contactId);
+
+    await Promise.all([
+      unsubscribeContact({
+        contactId,
+        campaignId,
+        reason:
+          event === EmailStatus.BOUNCED
+            ? UnsubscribeReason.BOUNCED
+            : UnsubscribeReason.COMPLAINED,
+      }),
+      ...allContactIds.map((c) =>
+        unsubscribeContact({
+          contactId: c,
+          reason:
+            event === EmailStatus.BOUNCED
+              ? UnsubscribeReason.BOUNCED
+              : UnsubscribeReason.COMPLAINED,
+        })
+      ),
+    ]);
   }
 }
 
