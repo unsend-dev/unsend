@@ -28,7 +28,7 @@ jobs:
             dockerfile: ./docker/Dockerfile
             context: .
           - name: smtp-proxy
-            dockerfile: ./Dockerfile
+            dockerfile: ./apps/smtp-server/Dockerfile
             context: ./apps/smtp-server
 
     steps:
