@@ -55,30 +55,37 @@ jobs:
       - name: Build the docker image
         env:
           BUILD_PLATFORM: ${{ matrix.os == 'warp-ubuntu-latest-arm64-2x' && 'arm64' || 'amd64' }}
+          APP: ${{ matrix.app.name }}
+          DOCKER_FILE: ${{ matrix.app.dockerfile }}
+          CONTEXT: ${{ matrix.app.context }}
         run: |
           APP_VERSION="$(git name-rev --tags --name-only $(git rev-parse HEAD) | head -n 1 | sed 's/\^0//')"
           GIT_SHA="$(git rev-parse HEAD)"
 
           docker build \
-            -f ${{ matrix.app.dockerfile }} \
+            -f "$DOCKER_FILE" \
             --progress=plain \
-            -t "unsend/${{ matrix.app.name }}-$BUILD_PLATFORM:latest" \
-            -t "unsend/${{ matrix.app.name }}-$BUILD_PLATFORM:$GIT_SHA" \
-            -t "unsend/${{ matrix.app.name }}-$BUILD_PLATFORM:$APP_VERSION" \
-            -t "ghcr.io/unsend-dev/${{ matrix.app.name }}-$BUILD_PLATFORM:latest" \
-            -t "ghcr.io/unsend-dev/${{ matrix.app.name }}-$BUILD_PLATFORM:$GIT_SHA" \
-            -t "ghcr.io/unsend-dev/${{ matrix.app.name }}-$BUILD_PLATFORM:$APP_VERSION" \
-            ${{ matrix.app.context }}
+            -t "unsend/$APP-$BUILD_PLATFORM:latest" \
+            -t "unsend/$APP-$BUILD_PLATFORM:$GIT_SHA" \
+            -t "unsend/$APP-$BUILD_PLATFORM:$APP_VERSION" \
+            -t "ghcr.io/unsend-dev/$APP-$BUILD_PLATFORM:latest" \
+            -t "ghcr.io/unsend-dev/$APP-$BUILD_PLATFORM:$GIT_SHA" \
+            -t "ghcr.io/unsend-dev/$APP-$BUILD_PLATFORM:$APP_VERSION" \
+            "$CONTEXT"
 
       - name: Push the docker image to DockerHub
-        run: docker push --all-tags "unsend/${{ matrix.app.name }}-$BUILD_PLATFORM"
+        run: docker push --all-tags "unsend/$APP-$BUILD_PLATFORM"
         env:
           BUILD_PLATFORM: ${{ matrix.os == 'warp-ubuntu-latest-arm64-2x' && 'arm64' || 'amd64' }}
+          APP: ${{ matrix.app.name }}
+          DOCKER_FILE: ${{ matrix.app.dockerfile }}
+          CONTEXT: ${{ matrix.app.context }}
 
       - name: Push the docker image to GitHub Container Registry
-        run: docker push --all-tags "ghcr.io/unsend-dev/${{ matrix.app.name }}-$BUILD_PLATFORM"
+        run: docker push --all-tags "ghcr.io/unsend-dev/$APP-$BUILD_PLATFORM"
         env:
           BUILD_PLATFORM: ${{ matrix.os == 'warp-ubuntu-latest-arm64-2x' && 'arm64' || 'amd64' }}
+          APP: ${{ matrix.app.name }}
 
   create_and_publish_manifest:
     name: Create and publish manifest
