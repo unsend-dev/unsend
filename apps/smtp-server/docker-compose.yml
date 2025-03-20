@@ -1,0 +1,29 @@
+name: unsend-smtp-server
+
+services:
+  smtp-server:
+    container_name: unsend-smtp-server
+    image: unsend/smtp-proxy:latest
+    # Pass necessary environment variables
+    environment:
+      SMTP_AUTH_USERNAME: "unsend" # can be anything, just use the same while sending emails
+      UNSEND_BASE_URL: "https://app.unsend.dev" # your self hosted unsend instance url
+
+      # Uncomment this if you have SSL certificates. port 465 and 2465 will be using SSL
+      # UNSEND_API_KEY_PATH: "/certs/server.key"
+      # UNSEND_API_CERT_PATH: "/certs/server.crt"
+    # If you have SSL certificates, mount them here (read-only recommended)
+
+    # volumes:
+    #   - ./certs/server.key:/certs/server.key:ro
+    #   - ./certs/server.crt:/certs/server.crt:ro
+
+    # Expose the SMTP ports
+    ports:
+      - "25:25"
+      - "587:587"
+      - "2587:2587"
+      - "465:465"
+      - "2465:2465"
+    # Restart always or on-failure, depending on preference
+    restart: unless-stopped

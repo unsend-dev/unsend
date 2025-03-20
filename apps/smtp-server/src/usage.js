@@ -1,8 +1,8 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.unsend.dev",
-  port: 2587,
+  host: "localhost",
+  port: 25,
   secure: false,
   auth: {
     user: "unsend",
