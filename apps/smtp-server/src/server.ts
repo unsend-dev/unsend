@@ -81,10 +81,9 @@ const serverOptions: SMTPServerOptions = {
         replyTo: parsed.replyTo?.text,
       };
 
-      console.log("Parsed email data:", emailObject); // Debug statement
-
       sendEmailToUnsend(emailObject, session.user)
         .then(() => callback())
+        .then(() => console.log("Email sent successfully to: ", emailObject.to))
         .catch((error) => {
           console.error("Failed to send email:", error.message);
           callback(error);
@@ -104,18 +103,22 @@ const serverOptions: SMTPServerOptions = {
 };
 
 function startServers() {
-  // Implicit SSL/TLS for ports 465 and 2465
-  [465, 2465].forEach((port) => {
-    const server = new SMTPServer({ ...serverOptions, secure: true });
+  if (SSL_KEY_PATH && SSL_CERT_PATH) {
+    // Implicit SSL/TLS for ports 465 and 2465
+    [465, 2465].forEach((port) => {
+      const server = new SMTPServer({ ...serverOptions, secure: true });
 
-    server.listen(port, () => {
-      console.log(`Implicit SSL/TLS SMTP server is listening on port ${port}`);
-    });
+      server.listen(port, () => {
+        console.log(
+          `Implicit SSL/TLS SMTP server is listening on port ${port}`
+        );
+      });
 
-    server.on("error", (err) => {
-      console.error(`Error occurred on port ${port}:`, err);
+      server.on("error", (err) => {
+        console.error(`Error occurred on port ${port}:`, err);
+      });
     });
-  });
+  }
 
   // STARTTLS for ports 25, 587, and 2587
   [25, 587, 2587].forEach((port) => {
