@@ -101,8 +101,6 @@ export const emailRouter = createTRPCRouter({
         ORDER BY "date" ASC
       `;
 
-      console.log({ result });
-
       // Fill in any missing dates with 0 values
       const filledResult: DailyEmailUsage[] = [];
       const endDateObj = new Date();

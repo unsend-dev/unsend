@@ -90,11 +90,20 @@ model User {
   teamUsers     TeamUser[]
 }
 
+enum Plan {
+  FREE
+  BASIC
+}
+
 model Team {
   id               Int               @id @default(autoincrement())
   name             String
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+  plan             Plan              @default(FREE)
+  stripeCustomerId String?           @unique
+  isActive         Boolean           @default(true)
+  billingEmail     String?
   teamUsers        TeamUser[]
   domains          Domain[]
   apiKeys          ApiKey[]
@@ -103,6 +112,22 @@ model Team {
   campaigns        Campaign[]
   templates        Template[]
   dailyEmailUsages DailyEmailUsage[]
+  Subscription     Subscription[]
+}
+
+model Subscription {
+  id                 String    @id
+  teamId             Int
+  status             String
+  priceId            String
+  currentPeriodEnd   DateTime?
+  currentPeriodStart DateTime?
+  cancelAtPeriodEnd  DateTime?
+  paymentMethod      String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

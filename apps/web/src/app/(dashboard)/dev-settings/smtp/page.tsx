@@ -1,25 +1,15 @@
 "use client";
 import * as React from "react";
-import { Code } from "@unsend/ui/src/code";
-import { Button } from "@unsend/ui/src/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@unsend/ui/src/card";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 
 export default function ExampleCard() {
-  const smtpDetails = {
-    smtp: "smtp.example.com",
-    port: "587",
-    user: "user@example.com",
-    password: "supersecretpassword",
-  };
-
   return (
     <Card className="mt-9 max-w-xl">
       <CardHeader>
