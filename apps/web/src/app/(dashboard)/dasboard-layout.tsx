@@ -8,6 +8,7 @@ import {
   BookUser,
   CircleUser,
   Code,
+  Cog,
   Globe,
   Home,
   LayoutDashboard,
@@ -18,6 +19,7 @@ import {
   Package,
   Package2,
   Server,
+  Settings,
   ShoppingCart,
   Users,
   Volume2,
@@ -34,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@unsend/ui/src/dropdown-menu";
 import { ThemeSwitcher } from "~/components/theme/ThemeSwitcher";
+import { isCloud } from "~/utils/common";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -87,7 +90,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   <Code className="h-4 w-4" />
                   Developer settings
                 </NavButton>
-                {!env.NEXT_PUBLIC_IS_CLOUD || session?.user.isAdmin ? (
+
+                {isCloud() ? (
+                  <NavButton href="/settings">
+                    <Cog className="h-4 w-4" />
+                    Settings
+                  </NavButton>
+                ) : null}
+
+                {isCloud() || session?.user.isAdmin ? (
                   <NavButton href="/admin">
                     <Server className="h-4 w-4" />
                     Admin
