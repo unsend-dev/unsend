@@ -71,7 +71,7 @@ const worker = new Worker(
 await usageQueue.upsertJobScheduler(
   "daily-usage-report",
   {
-    pattern: "0 0 * * *", // Run every day at 12 AM
+    pattern: "0 */12 * * *", // Run every 12 hours (at 00:00, 12:00 UTC)
     tz: "UTC",
   },
   {
