@@ -102,7 +102,7 @@ model Team {
   updatedAt        DateTime          @updatedAt
   plan             Plan              @default(FREE)
   stripeCustomerId String?           @unique
-  isActive         Boolean           @default(false)
+  isActive         Boolean           @default(true)
   billingEmail     String?
   teamUsers        TeamUser[]
   domains          Domain[]

@@ -17,15 +17,17 @@ const FREE_PLAN_LIMIT = 3000;
 
 function FreePlanUsage({
   usage,
+  dayUsage,
 }: {
   usage: { type: EmailUsageType; sent: number }[];
+  dayUsage: { type: EmailUsageType; sent: number }[];
 }) {
   const DAILY_LIMIT = 100;
   const totalSent = usage?.reduce((acc, item) => acc + item.sent, 0) || 0;
   const monthlyPercentageUsed = (totalSent / FREE_PLAN_LIMIT) * 100;
 
   // Calculate daily usage - this is a simplified version, you might want to adjust based on actual daily tracking
-  const dailyUsage = usage?.reduce((acc, item) => acc + item.sent, 0) || 0;
+  const dailyUsage = dayUsage?.reduce((acc, item) => acc + item.sent, 0) || 0;
   const dailyPercentageUsed = (dailyUsage / DAILY_LIMIT) * 100;
 
   return (
@@ -220,17 +222,20 @@ export default function UsagePage() {
           <div className="flex justify-center py-8">
             <Spinner className="w-8 h-8" innerSvgClass="stroke-primary" />
           </div>
-        ) : usage?.length === 0 ? (
+        ) : usage?.month.length === 0 ? (
           <Card className="p-6 text-center text-muted-foreground">
             No usage data available
           </Card>
         ) : currentTeam?.plan === "FREE" ? (
-          <FreePlanUsage usage={usage ?? []} />
+          <FreePlanUsage
+            usage={usage?.month ?? []}
+            dayUsage={usage?.day ?? []}
+          />
         ) : (
-          <PaidPlanUsage usage={usage ?? []} />
+          <PaidPlanUsage usage={usage?.month ?? []} />
         )}
       </div>
-      <Card className=" rounded-xl mt-10 border-green-300 dark:border-green-800 p-4 px-8">
+      <Card className=" rounded-xl mt-10 p-4 px-8">
         <div>
           <div className="capitalize">{currentTeam?.plan.toLowerCase()}</div>
           <div className=" space-y-1 mt-2">

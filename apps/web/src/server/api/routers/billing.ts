@@ -19,33 +19,63 @@ export const billingRouter = createTRPCRouter({
     return (await createCheckoutSessionForTeam(ctx.team.id)).url;
   }),
 
-  // getSubscriptionDetails: teamProcedure.query(async ({ ctx }) => {
-  //   const subscription = await db.subscription.findUnique({
-  //     where: { teamId: ctx.team.id },
-  //   });
-
-  //   return subscription;
-  // }),
-
   getManageSessionUrl: teamProcedure.mutation(async ({ ctx }) => {
     return await getManageSessionUrl(ctx.team.id);
   }),
 
   getThisMonthUsage: teamProcedure.query(async ({ ctx }) => {
-    const isoStartDate = format(new Date(), "yyyy-MM-00");
+    const isoStartDate = format(new Date(), "yyyy-MM-01"); // First day of current month
+    const today = format(new Date(), "yyyy-MM-dd");
 
-    const usage = await db.$queryRaw<
-      Array<{ type: EmailUsageType; sent: number }>
-    >`
-      SELECT 
-        type,
-        SUM(sent)::integer AS sent
-      FROM "DailyEmailUsage"
-      WHERE "teamId" = ${ctx.team.id}
-      AND "date" >= ${isoStartDate}
-      GROUP BY "type"
-    `;
+    const [monthUsage, dayUsage] = await Promise.all([
+      // Get month usage
+      db.$queryRaw<Array<{ type: EmailUsageType; sent: number }>>`
+        SELECT 
+          type,
+          SUM(sent)::integer AS sent
+        FROM "DailyEmailUsage"
+        WHERE "teamId" = ${ctx.team.id}
+        AND "date" >= ${isoStartDate}
+        GROUP BY "type"
+      `,
+      // Get today's usage
+      db.$queryRaw<Array<{ type: EmailUsageType; sent: number }>>`
+        SELECT 
+          type,
+          SUM(sent)::integer AS sent
+        FROM "DailyEmailUsage"
+        WHERE "teamId" = ${ctx.team.id}
+        AND "date" = ${today}
+        GROUP BY "type"
+      `,
+    ]);
 
-    return usage;
+    return {
+      month: monthUsage,
+      day: dayUsage,
+    };
   }),
+
+  getSubscriptionDetails: teamProcedure.query(async ({ ctx }) => {
+    const subscription = await db.subscription.findFirst({
+      where: { teamId: ctx.team.id },
+    });
+
+    return subscription;
+  }),
+
+  updateBillingEmail: teamProcedure
+    .input(
+      z.object({
+        billingEmail: z.string().email(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { billingEmail } = input;
+
+      await db.team.update({
+        where: { id: ctx.team.id },
+        data: { billingEmail },
+      });
+    }),
 });
