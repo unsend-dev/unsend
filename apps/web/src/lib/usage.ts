@@ -1,11 +1,19 @@
 import { EmailUsageType, Plan } from "@prisma/client";
 
+export const USAGE_UNIT_PRICE: Record<EmailUsageType, number> = {
+  [EmailUsageType.MARKETING]: 0.001,
+  [EmailUsageType.TRANSACTIONAL]: 0.0004,
+};
+
 /**
  * Unit price for unsend
  * 1 marketing email = 1 unit
  * 4 transaction emails = 1 unit
  */
 export const UNIT_PRICE = 0.001;
+
+export const TRANSACTIONAL_UNIT_CONVERSION =
+  UNIT_PRICE / USAGE_UNIT_PRICE[EmailUsageType.TRANSACTIONAL];
 
 /**
  * Number of credits per plan
@@ -15,11 +23,6 @@ export const UNIT_PRICE = 0.001;
  */
 export const PLAN_CREDIT_UNITS = {
   [Plan.BASIC]: 10_000,
-};
-
-export const USAGE_UNIT_PRICE: Record<EmailUsageType, number> = {
-  [EmailUsageType.MARKETING]: 0.001,
-  [EmailUsageType.TRANSACTIONAL]: 0.0004,
 };
 
 /**
@@ -55,12 +58,17 @@ export function getUsageUinits(
   marketingUsage: number,
   transactionUsage: number
 ) {
-  return marketingUsage + Math.floor(transactionUsage / 4);
+  return (
+    marketingUsage +
+    Math.floor(transactionUsage / TRANSACTIONAL_UNIT_CONVERSION)
+  );
 }
 
 export function getCost(usage: number, type: EmailUsageType) {
   const calculatedUsage =
-    type === EmailUsageType.MARKETING ? usage : Math.floor(usage / 4);
+    type === EmailUsageType.MARKETING
+      ? usage
+      : Math.floor(usage / TRANSACTIONAL_UNIT_CONVERSION);
 
   return calculatedUsage * UNIT_PRICE;
 }
