@@ -59,6 +59,7 @@ export const billingRouter = createTRPCRouter({
   getSubscriptionDetails: teamProcedure.query(async ({ ctx }) => {
     const subscription = await db.subscription.findFirst({
       where: { teamId: ctx.team.id },
+      orderBy: { status: "asc" },
     });
 
     return subscription;

@@ -13,7 +13,7 @@ import {
 import { useTeam } from "~/providers/team-context";
 import { EmailUsageType } from "@prisma/client";
 import { PlanDetails } from "~/components/payments/PlanDetails";
-
+import { UpgradeButton } from "~/components/payments/UpgradeButton";
 const FREE_PLAN_LIMIT = 3000;
 
 function FreePlanUsage({
@@ -227,6 +227,9 @@ export default function UsagePage() {
       {currentTeam?.plan ? (
         <Card className=" rounded-xl mt-10 p-4 px-8">
           <PlanDetails plan={currentTeam?.plan!} />
+          <div className="mt-4">
+            {currentTeam?.plan === "FREE" ? <UpgradeButton /> : null}
+          </div>
         </Card>
       ) : null}
     </div>

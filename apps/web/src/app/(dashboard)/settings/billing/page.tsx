@@ -8,10 +8,9 @@ import { format } from "date-fns";
 import { useTeam } from "~/providers/team-context";
 import { api } from "~/trpc/react";
 import { PlanDetails } from "~/components/payments/PlanDetails";
-
+import { UpgradeButton } from "~/components/payments/UpgradeButton";
 export default function SettingsPage() {
   const { currentTeam } = useTeam();
-  const checkoutMutation = api.billing.createCheckoutSession.useMutation();
   const manageSessionUrl = api.billing.getManageSessionUrl.useMutation();
   const updateBillingEmailMutation =
     api.billing.updateBillingEmail.useMutation();
@@ -23,13 +22,6 @@ export default function SettingsPage() {
   );
 
   const apiUtils = api.useUtils();
-
-  const onClick = async () => {
-    const url = await checkoutMutation.mutateAsync();
-    if (url) {
-      window.location.href = url;
-    }
-  };
 
   const onManageClick = async () => {
     const url = await manageSessionUrl.mutateAsync();
@@ -58,7 +50,7 @@ export default function SettingsPage() {
   if (!currentTeam?.plan) {
     return (
       <div className="flex justify-center items-center h-full">
-        <Spinner className="w-8 h-8" />
+        <Spinner className="w-4 h-4" />
       </div>
     );
   }
@@ -81,17 +73,7 @@ export default function SettingsPage() {
               )}
             </Button>
           ) : (
-            <Button
-              onClick={onClick}
-              className="mt-4 w-[120px]"
-              disabled={checkoutMutation.isPending}
-            >
-              {checkoutMutation.isPending ? (
-                <Spinner className="w-4 h-4" />
-              ) : (
-                "Upgrade"
-              )}
-            </Button>
+            <UpgradeButton />
           )}
         </div>
       </Card>

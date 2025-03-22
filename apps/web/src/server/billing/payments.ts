@@ -18,6 +18,7 @@ async function createCustomerForTeam(teamId: number) {
     where: { id: teamId },
     data: {
       stripeCustomerId: customer.id,
+      billingEmail: customer.email,
     },
   });
 
@@ -42,8 +43,8 @@ export async function createCheckoutSessionForTeam(teamId: number) {
   let customerId = team.stripeCustomerId;
 
   if (!customerId) {
-    await createCustomerForTeam(teamId);
-    customerId = team.stripeCustomerId;
+    const customer = await createCustomerForTeam(teamId);
+    customerId = customer.id;
   }
 
   if (!env.STRIPE_BASIC_PRICE_ID || !customerId) {
@@ -59,7 +60,7 @@ export async function createCheckoutSessionForTeam(teamId: number) {
       },
     ],
     success_url: `${env.NEXTAUTH_URL}/payments?success=true&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${env.NEXTAUTH_URL}/payments?canceled=true`,
+    cancel_url: `${env.NEXTAUTH_URL}/settings/billing`,
     metadata: {
       teamId,
     },
