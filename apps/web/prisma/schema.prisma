@@ -103,6 +103,18 @@ model Team {
   campaigns        Campaign[]
   templates        Template[]
   dailyEmailUsages DailyEmailUsage[]
+  rateLimitType      RateLimitType     @default(EMAIL)
+  rateLimitAction    RateLimitAction   @default(DELAY)
+}
+
+enum RateLimitType {
+  EMAIL    // Rate limit per email address
+  DOMAIN   // Rate limit per domain
+}
+
+enum RateLimitAction {
+  DELAY    // Queue emails and send them later
+  CANCEL   // Drop emails that exceed the rate limit
 }
 
 enum Role {

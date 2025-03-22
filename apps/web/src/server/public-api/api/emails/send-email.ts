@@ -73,7 +73,7 @@ function send(app: PublicAPIApp) {
       apiKeyId: team.apiKeyId,
     });
 
-    return c.json({ emailId: email?.id });
+    return c.json({ emailId: email.withinLimitEmail?.id });
   });
 }
 

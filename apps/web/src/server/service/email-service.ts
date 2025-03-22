@@ -4,6 +4,10 @@ import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
 import { EmailRenderer } from "@unsend/email-editor/src/renderer";
+import { RedisRateLimiter } from "./rate-limitter";
+import { RateLimitAction, RateLimitType } from "@prisma/client";
+
+const rateLimiter = new RedisRateLimiter(process.env.REDIS_URL, 1, 10);
 
 async function checkIfValidEmail(emailId: string) {
   const email = await db.email.findUnique({
@@ -67,7 +71,18 @@ export async function sendEmail(
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
 
-  const domain = await validateDomainFromEmail(from, teamId);
+  const team = await db.team.findUnique({
+    where: { id: teamId },
+  });
+
+  if (!team) {
+    throw new Error(`Team with ID ${teamId} not found`);
+  }
+
+  const [domain, rateLimitInfo] = await Promise.all([
+    validateDomainFromEmail(from, teamId),
+    emailRateLimiter(to, team.rateLimitType, teamId),
+  ]);
 
   if (templateId) {
     const template = await db.template.findUnique({
@@ -78,7 +93,7 @@ export async function sendEmail(
       const jsonContent = JSON.parse(template.content || "{}");
       const renderer = new EmailRenderer(jsonContent);
 
-      subject = replaceVariables(template.subject || "", variables || {});
+      subject = replaceVariables(template.subject || "", variables || {}) ?? '';
 
       // {{}} for link replacements
       const modifiedVariables = {
@@ -104,55 +119,135 @@ export async function sendEmail(
     ? Math.max(0, scheduledAtDate.getTime() - Date.now())
     : undefined;
 
-  const email = await db.email.create({
-    data: {
-      to: Array.isArray(to) ? to : [to],
-      from,
-      subject: subject as string,
-      replyTo: replyTo
-        ? Array.isArray(replyTo)
-          ? replyTo
-          : [replyTo]
-        : undefined,
-      cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
-      bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
-      text,
-      html,
-      teamId,
-      domainId: domain.id,
-      attachments: attachments ? JSON.stringify(attachments) : undefined,
-      scheduledAt: scheduledAtDate,
-      latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
-      apiId: apiKeyId,
-    },
-  });
+  let withinLimitEmail;
+  let rateLimittedEmail = { id: '' };
 
   try {
+    withinLimitEmail = await db.email.create({
+      data: {
+        to: rateLimitInfo.withinLimits,
+        from,
+        subject: subject ?? '',
+        replyTo: replyTo
+          ? Array.isArray(replyTo)
+            ? replyTo
+            : [replyTo]
+          : undefined,
+        cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+        bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+        text,
+        html,
+        teamId,
+        domainId: domain.id,
+        attachments: attachments ? JSON.stringify(attachments) : undefined,
+        scheduledAt: scheduledAtDate,
+        latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
+      },
+    });
+
+    // Create rate limited email always if there are rate-limited recipients
+    if (rateLimitInfo.rateLimited.length > 0) {
+      rateLimittedEmail = await db.email.create({
+        data: {
+          to: rateLimitInfo.rateLimited,
+          from,
+          subject: subject ?? '',
+          replyTo: replyTo
+            ? Array.isArray(replyTo)
+              ? replyTo
+              : [replyTo]
+            : undefined,
+          cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+          bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+          text,
+          html,
+          teamId,
+          domainId: domain.id,
+          attachments: attachments ? JSON.stringify(attachments) : undefined,
+          scheduledAt: scheduledAtDate,
+          // If SEND_RATE_LIMITTED_WITH_DELAY is false, mark as RATE_LIMITED
+          latestStatus: team?.rateLimitAction === RateLimitAction.DELAY
+            ? (scheduledAtDate ? "SCHEDULED" : "QUEUED")
+            : "FAILED",
+        },
+      });
+
+      if (!teamId) {
+        await db.emailEvent.create({
+          data: {
+            emailId: rateLimittedEmail.id,
+            status: "FAILED",
+            data: {
+              message: "Email rate-limited and not queued for retry",
+            },
+          },
+        });
+      }
+    }
+
     await EmailQueueService.queueEmail(
-      email.id,
+      withinLimitEmail.id,
       domain.region,
       true,
       undefined,
       delay
     );
+
+    if (rateLimittedEmail?.id && team?.rateLimitAction === RateLimitAction.DELAY) {
+      const retryDelay = 1 * 1000;
+      await EmailQueueService.queueEmail(
+        rateLimittedEmail.id,
+        domain.region,
+        true,
+        undefined,
+        delay ? delay + retryDelay : retryDelay
+      );
+    }
+
+    return { 
+      withinLimitEmail, 
+      rateLimittedEmail,
+      rateLimitStatus: rateLimitInfo.rateLimited.length > 0 
+        ? (team?.rateLimitAction === RateLimitAction.DELAY ? true : false)
+        : undefined
+    };
+
   } catch (error: any) {
-    await db.emailEvent.create({
-      data: {
-        emailId: email.id,
-        status: "FAILED",
+    // If any error occurs, mark both emails as failed
+    if (withinLimitEmail?.id) {
+      await db.emailEvent.create({
         data: {
-          error: error.toString(),
+          emailId: withinLimitEmail.id,
+          status: "FAILED",
+          data: {
+            error: error.toString(),
+          },
         },
-      },
-    });
-    await db.email.update({
-      where: { id: email.id },
-      data: { latestStatus: "FAILED" },
-    });
+      });
+      await db.email.update({
+        where: { id: withinLimitEmail.id },
+        data: { latestStatus: "FAILED" },
+      });
+    }
+
+    if (rateLimittedEmail?.id) {
+      await db.emailEvent.create({
+        data: {
+          emailId: rateLimittedEmail.id,
+          status: "FAILED",
+          data: {
+            error: error.toString(),
+          },
+        },
+      });
+      await db.email.update({
+        where: { id: rateLimittedEmail.id },
+        data: { latestStatus: "FAILED" },
+      });
+    }
+
     throw error;
   }
-
-  return email;
 }
 
 export async function updateEmail(
@@ -212,4 +307,74 @@ export async function cancelEmail(emailId: string) {
       status: "CANCELLED",
     },
   });
+}
+
+async function emailRateLimiter(to: string | string[], rateLimitBy: RateLimitType, teamId: number): Promise<{rateLimited: string[], withinLimits: string[]}>  {
+  let identifiers: string | string[];
+
+  switch (rateLimitBy) {
+    case 'DOMAIN':
+      if (typeof to === 'string') {
+        const domain = to.split('@')[1];
+        if (!domain) {
+          throw new UnsendApiError({
+            code: "BAD_REQUEST",
+            message: "Invalid email address format for rate limiting by domain.",
+          });
+        }
+        identifiers = [domain];
+      } else {
+        identifiers = to.map(email => {
+          const domain = email.split('@')[1];
+          if (!domain) {
+            throw new UnsendApiError({
+              code: "BAD_REQUEST",
+              message: "Invalid email address format for rate limiting by domain.",
+            });
+          }
+
+          return domain;
+        });
+      }
+      break;
+
+    case 'EMAIL':
+      identifiers = Array.isArray(to) ? to : [to];
+      break;
+
+    default:
+      throw new UnsendApiError({
+        code: "BAD_REQUEST",
+        message: "Invalid rate limiting strategy",
+      });
+  }
+
+  return await processRateLimits(rateLimitBy, identifiers, teamId);
+}
+
+async function processRateLimits(
+  rateLimitBy: RateLimitType,
+  identifiers: string[],
+  teamId: number
+) {
+  const rateLimited: string[] = [];
+  const withinLimits: string[] = [];
+
+  await Promise.all(
+      identifiers.map(async (identifier) => {
+          try {
+              const key = rateLimiter.getRateLimitKey(`${teamId}:${rateLimitBy}:${identifier}`);
+              await rateLimiter.checkRateLimit(key);
+              withinLimits.push(identifier);
+          } catch (error) {
+              console.error(`Rate limiting failed for ${identifier}`);
+              rateLimited.push(identifier);
+          }
+      })
+  );
+
+  console.log(`Rate-limited: ${rateLimited.join(", ")}`);
+  console.log(`Within limit: ${withinLimits.join(", ")}`);
+
+  return { rateLimited, withinLimits }
 }
