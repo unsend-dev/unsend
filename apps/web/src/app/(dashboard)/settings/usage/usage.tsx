@@ -12,6 +12,7 @@ import {
 } from "~/lib/usage";
 import { useTeam } from "~/providers/team-context";
 import { EmailUsageType } from "@prisma/client";
+import { PlanDetails } from "~/components/payments/PlanDetails";
 
 const FREE_PLAN_LIMIT = 3000;
 
@@ -153,7 +154,7 @@ function PaidPlanUsage({
           ))}
           <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
             <div>
-              <div className="font-medium capitalize">Subscription cost</div>
+              <div className="font-medium capitalize">Minimum spend</div>
               <div className="text-sm text-muted-foreground mt-1">
                 {currentTeam?.plan}
               </div>
@@ -162,27 +163,15 @@ function PaidPlanUsage({
               ${planCreditCost.toFixed(2)}
             </div>
           </div>
-          <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
-            <div>
-              <div className="font-medium capitalize">Plan Credits</div>
-              <div className="text-sm text-muted-foreground mt-1">
-                {currentTeam?.plan}
-              </div>
-            </div>
-            <div className="font-mono font-medium">
-              -${planCreditCost.toFixed(2)}
-            </div>
-          </div>
         </div>
         <div className="w-full flex justify-center items-center">
           <div>
-            <div className="font-medium">Current Usage</div>
+            <div className="font-medium">Amount Due</div>
             <div className="">
-              <div className="text-sm text-muted-foreground">Total Due</div>
-              <div className="text-2xl font-bold font-mono">
+              <div className="text-2xl font-mono">
                 {planCreditCost < totalCost
-                  ? `$${(totalCost - planCreditCost).toFixed(2)}`
-                  : "$0"}
+                  ? `$${totalCost.toFixed(2)}`
+                  : `$${planCreditCost.toFixed(2)}`}
               </div>
             </div>
           </div>
@@ -235,29 +224,11 @@ export default function UsagePage() {
           <PaidPlanUsage usage={usage?.month ?? []} />
         )}
       </div>
-      <Card className=" rounded-xl mt-10 p-4 px-8">
-        <div>
-          <div className="capitalize">{currentTeam?.plan.toLowerCase()}</div>
-          <div className=" space-y-1 mt-2">
-            <div className="text-sm text-muted-foreground">
-              You can send {currentTeam?.plan === "FREE" ? "3000" : "Unlimited"}{" "}
-              emails per month.
-            </div>
-            <div className="text-sm text-muted-foreground">
-              You can send upto{" "}
-              {currentTeam?.plan === "FREE" ? "100" : "Unlimited"} emails per
-              day.
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">
-                You can have {currentTeam?.plan === "FREE" ? "1" : "Unlimited"}{" "}
-                contact book
-                {currentTeam?.plan !== "FREE" && "s"}.
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
+      {currentTeam?.plan ? (
+        <Card className=" rounded-xl mt-10 p-4 px-8">
+          <PlanDetails plan={currentTeam?.plan!} />
+        </Card>
+      ) : null}
     </div>
   );
 }

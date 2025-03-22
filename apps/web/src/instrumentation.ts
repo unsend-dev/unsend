@@ -1,4 +1,5 @@
 import { env } from "./env";
+import { isCloud } from "./utils/common";
 
 let initialized = false;
 
@@ -20,7 +21,7 @@ export async function register() {
     /**
      * Send usage data to Stripe
      */
-    if (env.NEXT_PUBLIC_IS_CLOUD) {
+    if (isCloud()) {
       await import("~/server/jobs/usage-job");
     }
 
