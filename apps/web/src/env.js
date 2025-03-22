@@ -29,14 +29,15 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url()
     ),
-    GITHUB_ID: z.string(),
-    GITHUB_SECRET: z.string(),
+    GITHUB_ID: z.string().optional(),
+    GITHUB_SECRET: z.string().optional(),
     AWS_ACCESS_KEY: z.string(),
     AWS_SECRET_KEY: z.string(),
     UNSEND_API_KEY: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     AWS_SES_ENDPOINT: z.string().optional(),
+    AWS_SNS_ENDPOINT: z.string().optional(),
     AWS_DEFAULT_REGION: z.string().default("us-east-1"),
     API_RATE_LIMIT: z
       .string()
@@ -46,16 +47,10 @@ export const env = createEnv({
     ADMIN_EMAIL: z.string().optional(),
     DISCORD_WEBHOOK_URL: z.string().optional(),
     REDIS_URL: z.string(),
-    ENABLE_PRISMA_CLIENT: z
-      .string()
-      .default("false")
-      .transform((str) => str === "true"), // Converts string "true" to boolean true
     S3_COMPATIBLE_ACCESS_KEY: z.string().optional(),
     S3_COMPATIBLE_SECRET_KEY: z.string().optional(),
     S3_COMPATIBLE_API_URL: z.string().optional(),
     S3_COMPATIBLE_PUBLIC_URL: z.string().optional(),
-    RATE_LIMIT_BY: z.enum(['DOMAIN', "RECIEVER"]).optional(),
-    SEND_RATE_LIMITTED_WITH_DELAY: z.boolean().optional().default(false)
   },
 
   /**
@@ -89,13 +84,13 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
     AWS_SES_ENDPOINT: process.env.AWS_SES_ENDPOINT,
+    AWS_SNS_ENDPOINT: process.env.AWS_SNS_ENDPOINT,
     API_RATE_LIMIT: process.env.API_RATE_LIMIT,
     NEXT_PUBLIC_IS_CLOUD: process.env.NEXT_PUBLIC_IS_CLOUD,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
     REDIS_URL: process.env.REDIS_URL,
     FROM_EMAIL: process.env.FROM_EMAIL,
-    ENABLE_PRISMA_CLIENT: process.env.ENABLE_PRISMA_CLIENT, // Add this line
     S3_COMPATIBLE_ACCESS_KEY: process.env.S3_COMPATIBLE_ACCESS_KEY,
     S3_COMPATIBLE_SECRET_KEY: process.env.S3_COMPATIBLE_SECRET_KEY,
     S3_COMPATIBLE_API_URL: process.env.S3_COMPATIBLE_API_URL,

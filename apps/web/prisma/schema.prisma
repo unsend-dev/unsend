@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["tracing"]
+  previewFeatures = []
 }
 
 datasource db {
@@ -91,16 +91,30 @@ model User {
 }
 
 model Team {
-  id           Int           @id @default(autoincrement())
-  name         String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  teamUsers    TeamUser[]
-  domains      Domain[]
-  apiKeys      ApiKey[]
-  emails       Email[]
-  contactBooks ContactBook[]
-  campaigns    Campaign[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  teamUsers        TeamUser[]
+  domains          Domain[]
+  apiKeys          ApiKey[]
+  emails           Email[]
+  contactBooks     ContactBook[]
+  campaigns        Campaign[]
+  templates        Template[]
+  dailyEmailUsages DailyEmailUsage[]
+  rateLimitType      RateLimitType     @default(EMAIL)
+  rateLimitAction    RateLimitAction   @default(DELAY)
+}
+
+enum RateLimitType {
+  EMAIL    // Rate limit per email address
+  DOMAIN   // Rate limit per domain
+}
+
+enum RateLimitAction {
+  DELAY    // Queue emails and send them later
+  CANCEL   // Drop emails that exceed the rate limit
 }
 
 enum Role {
@@ -195,6 +209,7 @@ model Email {
   latestStatus EmailStatus  @default(QUEUED)
   teamId       Int
   domainId     Int?
+  apiId        Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   scheduledAt  DateTime?
@@ -203,6 +218,8 @@ model Email {
   contactId    String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
+
+  @@index([createdAt(sort: Desc)])
 }
 
 model EmailEvent {
@@ -212,6 +229,8 @@ model EmailEvent {
   data      Json?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
 }
 
 model ContactBook {
@@ -228,16 +247,23 @@ model ContactBook {
   @@index([teamId])
 }
 
+enum UnsubscribeReason {
+  BOUNCED
+  COMPLAINED
+  UNSUBSCRIBED
+}
+
 model Contact {
-  id            String   @id @default(cuid())
-  firstName     String?
-  lastName      String?
-  email         String
-  subscribed    Boolean  @default(true)
-  properties    Json
-  contactBookId String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String             @id @default(cuid())
+  firstName         String?
+  lastName          String?
+  email             String
+  subscribed        Boolean            @default(true)
+  unsubscribeReason UnsubscribeReason?
+  properties        Json
+  contactBookId     String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   contactBook ContactBook @relation(fields: [contactBookId], references: [id], onDelete: Cascade)
 
@@ -277,4 +303,45 @@ model Campaign {
   updatedAt     DateTime       @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+}
+
+model Template {
+  id        String   @id @default(cuid())
+  name      String
+  teamId    Int
+  subject   String
+  html      String?
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+}
+
+enum EmailUsageType {
+  TRANSACTIONAL
+  MARKETING
+}
+
+model DailyEmailUsage {
+  teamId     Int
+  date       String
+  type       EmailUsageType
+  domainId   Int
+  sent       Int            @default(0)
+  delivered  Int            @default(0)
+  opened     Int            @default(0)
+  clicked    Int            @default(0)
+  bounced    Int            @default(0)
+  complained Int            @default(0)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, domainId, date, type])
 }

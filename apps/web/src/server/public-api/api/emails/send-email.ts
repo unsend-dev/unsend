@@ -11,25 +11,42 @@ const route = createRoute({
       required: true,
       content: {
         "application/json": {
-          schema: z.object({
-            to: z.string().or(z.array(z.string())),
-            from: z.string(),
-            subject: z.string(),
-            replyTo: z.string().or(z.array(z.string())).optional(),
-            cc: z.string().or(z.array(z.string())).optional(),
-            bcc: z.string().or(z.array(z.string())).optional(),
-            text: z.string().optional(),
-            html: z.string().optional(),
-            attachments: z
-              .array(
-                z.object({
-                  filename: z.string(),
-                  content: z.string(),
-                })
-              )
-              .optional(),
-            scheduledAt: z.string().datetime().optional(),
-          }),
+          schema: z
+            .object({
+              to: z.string().or(z.array(z.string())),
+              from: z.string(),
+              subject: z
+                .string()
+                .optional()
+                .openapi({
+                  description: "Optional when templateId is provided",
+                }),
+              templateId: z
+                .string()
+                .optional()
+                .openapi({
+                  description: "ID of a template from the dashboard",
+                }),
+              variables: z.record(z.string()).optional(),
+              replyTo: z.string().or(z.array(z.string())).optional(),
+              cc: z.string().or(z.array(z.string())).optional(),
+              bcc: z.string().or(z.array(z.string())).optional(),
+              text: z.string().optional(),
+              html: z.string().optional(),
+              attachments: z
+                .array(
+                  z.object({
+                    filename: z.string(),
+                    content: z.string(),
+                  })
+                )
+                .optional(),
+              scheduledAt: z.string().datetime().optional(),
+            })
+            .refine(
+              (data) => !!data.subject || !!data.templateId,
+              "Either subject or templateId should be passed."
+            ),
         },
       },
     },
@@ -53,6 +70,7 @@ function send(app: PublicAPIApp) {
     const email = await sendEmail({
       ...c.req.valid("json"),
       teamId: team.id,
+      apiKeyId: team.apiKeyId,
     });
 
     return c.json({ emailId: email.withinLimitEmail?.id });

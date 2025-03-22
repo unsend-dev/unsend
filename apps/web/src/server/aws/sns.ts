@@ -2,11 +2,13 @@ import {
   SNSClient,
   CreateTopicCommand,
   SubscribeCommand,
+  DeleteTopicCommand,
 } from "@aws-sdk/client-sns";
 import { env } from "~/env";
 
 function getSnsClient(region: string) {
   return new SNSClient({
+    endpoint: env.AWS_SNS_ENDPOINT,
     region: region,
     credentials: {
       accessKeyId: env.AWS_ACCESS_KEY,
@@ -25,6 +27,11 @@ export async function createTopic(topic: string, region: string) {
   return data.TopicArn;
 }
 
+export async function deleteTopic(topicArn: string, region: string) {
+  const client = getSnsClient(region);
+  await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+}
+
 export async function subscribeEndpoint(
   topicArn: string,
   endpointUrl: string,
@@ -38,6 +45,5 @@ export async function subscribeEndpoint(
   const client = getSnsClient(region);
 
   const data = await client.send(subscribeCommand);
-  console.log(data.SubscriptionArn);
   return data.SubscriptionArn;
 }

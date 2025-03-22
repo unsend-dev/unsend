@@ -1,8 +1,17 @@
-import { EmailStatus, Prisma } from "@prisma/client";
+import { EmailStatus, Prisma, UnsubscribeReason } from "@prisma/client";
 import { SesClick, SesEvent, SesEventDataKey } from "~/types/aws-types";
 import { db } from "../db";
-import { updateCampaignAnalytics } from "./campaign-service";
+import {
+  unsubscribeContact,
+  updateCampaignAnalytics,
+} from "./campaign-service";
 import { env } from "~/env";
+import { getRedis } from "../redis";
+import { Queue, Worker } from "bullmq";
+import {
+  DEFAULT_QUEUE_OPTIONS,
+  SES_WEBHOOK_QUEUE,
+} from "../queue/queue-constants";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -45,11 +54,62 @@ export async function parseSesHook(data: SesEvent) {
       WHERE id = ${email.id}
     `;
 
+  // Update daily email usage statistics
+  const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
+
+  if (
+    [
+      "DELIVERED",
+      "OPENED",
+      "CLICKED",
+      "BOUNCED",
+      "COMPLAINED",
+      "SENT",
+    ].includes(mailStatus)
+  ) {
+    const updateField = mailStatus.toLowerCase();
+
+    await db.dailyEmailUsage.upsert({
+      where: {
+        teamId_domainId_date_type: {
+          teamId: email.teamId,
+          domainId: email.domainId ?? 0,
+          date: today,
+          type: email.campaignId ? "MARKETING" : "TRANSACTIONAL",
+        },
+      },
+      create: {
+        teamId: email.teamId,
+        domainId: email.domainId ?? 0,
+        date: today,
+        type: email.campaignId ? "MARKETING" : "TRANSACTIONAL",
+        delivered: updateField === "delivered" ? 1 : 0,
+        opened: updateField === "opened" ? 1 : 0,
+        clicked: updateField === "clicked" ? 1 : 0,
+        bounced: updateField === "bounced" ? 1 : 0,
+        complained: updateField === "complained" ? 1 : 0,
+        sent: updateField === "sent" ? 1 : 0,
+      },
+      update: {
+        [updateField]: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
   if (email.campaignId) {
     if (
       mailStatus !== "CLICKED" ||
       !(mailData as SesClick).link.startsWith(`${env.NEXTAUTH_URL}/unsubscribe`)
     ) {
+      await checkUnsubscribe({
+        contactId: email.contactId!,
+        campaignId: email.campaignId,
+        teamId: email.teamId,
+        event: mailStatus,
+      });
+
       const mailEvent = await db.emailEvent.findFirst({
         where: {
           emailId: email.id,
@@ -72,6 +132,63 @@ export async function parseSesHook(data: SesEvent) {
   });
 
   return true;
+}
+
+async function checkUnsubscribe({
+  contactId,
+  campaignId,
+  teamId,
+  event,
+}: {
+  contactId: string;
+  campaignId: string;
+  teamId: number;
+  event: EmailStatus;
+}) {
+  if (event === EmailStatus.BOUNCED || event === EmailStatus.COMPLAINED) {
+    const contact = await db.contact.findUnique({
+      where: {
+        id: contactId,
+      },
+    });
+
+    if (!contact) {
+      return;
+    }
+
+    const allContacts = await db.contact.findMany({
+      where: {
+        email: contact.email,
+        contactBook: {
+          teamId,
+        },
+      },
+    });
+
+    const allContactIds = allContacts
+      .map((c) => c.id)
+      .filter((c) => c !== contactId);
+
+    await Promise.all([
+      unsubscribeContact({
+        contactId,
+        campaignId,
+        reason:
+          event === EmailStatus.BOUNCED
+            ? UnsubscribeReason.BOUNCED
+            : UnsubscribeReason.COMPLAINED,
+      }),
+      ...allContactIds.map((c) =>
+        unsubscribeContact({
+          contactId: c,
+          reason:
+            event === EmailStatus.BOUNCED
+              ? UnsubscribeReason.BOUNCED
+              : UnsubscribeReason.COMPLAINED,
+        })
+      ),
+    ]);
+  }
 }
 
 function getEmailStatus(data: SesEvent) {
@@ -107,5 +224,34 @@ function getEmailData(data: SesEvent) {
     return data.deliveryDelay;
   } else {
     return data[eventType.toLowerCase() as SesEventDataKey];
+  }
+}
+
+export class SesHookParser {
+  private static sesHookQueue = new Queue(SES_WEBHOOK_QUEUE, {
+    connection: getRedis(),
+  });
+
+  private static worker = new Worker(
+    SES_WEBHOOK_QUEUE,
+    async (job) => {
+      await this.execute(job.data);
+    },
+    {
+      connection: getRedis(),
+      concurrency: 200,
+    }
+  );
+
+  private static async execute(event: SesEvent) {
+    await parseSesHook(event);
+  }
+
+  static async queue(data: { event: SesEvent; messageId: string }) {
+    return await this.sesHookQueue.add(
+      data.messageId,
+      data.event,
+      DEFAULT_QUEUE_OPTIONS
+    );
   }
 }

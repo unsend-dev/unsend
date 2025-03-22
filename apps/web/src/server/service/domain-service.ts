@@ -50,6 +50,8 @@ export async function createDomain(
 ) {
   const domainStr = tldts.getDomain(name);
 
+  console.log("Creating domain", { domainStr, name, region });
+
   if (!domainStr) {
     throw new Error("Invalid domain");
   }

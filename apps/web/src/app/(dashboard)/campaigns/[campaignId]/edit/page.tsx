@@ -92,7 +92,7 @@ function CampaignEditor({
 }: {
   campaign: Campaign & { imageUploadSupported: boolean };
 }) {
-  const contactBooksQuery = api.contacts.getContactBooks.useQuery();
+  const contactBooksQuery = api.contacts.getContactBooks.useQuery({});
   const utils = api.useUtils();
 
   const [json, setJson] = useState<Record<string, any> | undefined>(

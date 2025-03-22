@@ -10,38 +10,38 @@ Unsend's codebase is fully [open-source on github](https://github.com/unsend-dev
 
 Here is the codebase structure
 
-  ``` 
+```
 apps
-  ├── docs
-  ├── marketing
-  ├── web
+├── docs
+├── marketing
+├── web
 packages
-  ├── eslint-config
-  ├── sdk
-  ├── tailwind-config
-  ├── typescript-config
-  ├── ui 
-  ```
+├── eslint-config
+├── sdk
+├── tailwind-config
+├── typescript-config
+├── ui
+```
 
-The ```apps``` directory contains the code for:
+The `apps` directory contains the code for:
 
-- ```web```: Code for our dashboard and email infra
+- `web`: Code for our dashboard and email infra
 
-- ```marketing```: The code for the landing page of Unsend
+- `marketing`: The code for the landing page of Unsend
 
-- ```docs```: The documentation that you are currently reading.
+- `docs`: The documentation that you are currently reading.
 
-The ```packages``` directory contains the code for:
+The `packages` directory contains the code for:
 
-- ```eslint-config```  package contains shared ESLint configuration settings
+- `eslint-config` package contains shared ESLint configuration settings
 
-- ```sdk``` package contains typescript sdk for unsend rest api
+- `sdk` package contains typescript sdk for unsend rest api
 
-- ```tailwind-config``` This package contains a shared Tailwind CSS configuration.
+- `tailwind-config` This package contains a shared Tailwind CSS configuration.
 
-- ```typescript-config``` This package contains a shared typescript configuration
+- `typescript-config` This package contains a shared typescript configuration
 
-- ```ui``` This package is a collection of reusable UI components like buttons, badges, etc
+- `ui` This package is a collection of reusable UI components like buttons, badges, etc
 
 ## Running Unsend locally
 
@@ -62,9 +62,10 @@ To run Unsend, locally you will need to setup the following:
   <Step title="Clone the repo">
   Once the repo is forked you can clone it on your local machine using:
 
-  ```bash
-  git clone https://github.com/your-username/unsend.git
-  ```
+```bash
+git clone https://github.com/your-username/unsend.git
+```
+
   </Step>
 </Steps>
 
@@ -95,50 +96,57 @@ pnpm install
   <Step title="Nextauth secret">
   Use the following command to generate a key and add it under ```NEXTAUTH_SECRET```
 
-  ```bash
-  openssl rand -base64 32
-  ```
+```bash
+openssl rand -base64 32
+```
+
   </Step>
-  <Step title="Setup Github Oauth">
+  <Step title="Setup Github Oauth (optional)">
+  <Note>
+    You don't need this setup if you have `FROM_EMAIL` set in your environment
+    variables. for development email link will logged in the console.
+  </Note>
 
-  Next, [create a new GitHub App](https://github.com/settings/applications/new). This will allow you to sign in to Unsend with your GitHub account.4
+Next, [create a new GitHub App](https://github.com/settings/applications/new). This will allow you to sign in to Unsend with your GitHub account.4
 
-  Add the homepage as:
-  
-  ```
-  http://localhost:3000/login
-  ```
+Add the homepage as:
 
-  and callback URL as:
-  ```
-  http://localhost:3000/api/auth/callback/github
-  ```
+```
+http://localhost:3000/login
+```
 
-  Once the app is added you can add the Client ID under ``GITHUB_ID``and CLIENT SECRET under ```GITHUB_SECRET```
+and callback URL as:
+
+```
+http://localhost:3000/api/auth/callback/github
+```
+
+Once the app is added you can add the Client ID under `GITHUB_ID`and CLIENT SECRET under `GITHUB_SECRET`
+
   </Step>
-    <Step title="Setup AWS credentials">
+  <Step title="Setup AWS credentials (Optional)">
 
-  Next, we need to add in the [AWS credentials](https://docs.unsend.dev/get-started/create-aws-credentials). Follow the detailed guide to get the AWS credentials with accurate permissions and add them in:
-  
-  ```
- AWS_ACCESS_KEY_ID=<access-key-id>
- AWS_SECRET_ACCESS_KEY=<secret-access-key>
-  ```
+<Note>
+  You don't need this setup if you are using the local-sen-sns image. But email
+  will not be sent out.
+</Note>
 
-  Once the app is added you can add the Client ID under ``GITHUB_ID``and CLIENT SECRET under ```GITHUB_SECRET```
-  </Step>
-    <Step title="Optional: Enable prisma optimize">
-     To enable Prisma Optimize and get insights on queires you can add this in you .env
-    ```bash
-    ENABLE_PRISMA_CLIENT=true
-    ```
+Next, we need to add in the [AWS credentials](https://docs.unsend.dev/get-started/create-aws-credentials). Follow the detailed guide to get the AWS credentials with accurate permissions and add them in:
+
+```
+AWS_ACCESS_KEY=<access-key-id>
+AWS_SECRET_KEY=<secret-access-key>
+```
+
   </Step>
 </Steps>
 
 ## Running Unsend locally
+
 We are using a local Postgresql server and a local Redis server. But if you don't have docker you can also manually set these up.
 
 ### Option 1: Using Docker Recommended
+
 <Steps>
 <Step title="Start the dashboard">
 ```bash
@@ -155,6 +163,7 @@ Landing page will be started on
 ```bash
 http://localhost:3001
 ```
+
 </Step>
 <Step title="Once you login with Github you will be prompted with SES settings. You will need to run cloudflare tunnel to add the callback URL">
 Run the following command to get the URL. Here is the more detailed guide by [cloudflare](https://developers.cloudflare.com/pages/how-to/preview-with-cloudflare-tunnel/)
@@ -168,6 +177,7 @@ You can paste the URL provided by cloudflare in the Callback URL section
 </Steps>
 
 ### Option 2: Using your own database or hosted database
+
 <Steps>
 <Step title="Set up your PostgreSQL and Redis database in Environment Variables">
 ```bash
@@ -195,7 +205,6 @@ You can paste the URL provided by cloudflare in the Callback URL section
 
 </Step>
 </Steps>
-
 
 ## Run documentation
 

@@ -40,6 +40,7 @@ import {
 import { Input } from "@unsend/ui/src/input";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 import { useDebouncedCallback } from "use-debounce";
+import { useState } from "react";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -57,17 +58,34 @@ export default function EmailsList() {
   const [page, setPage] = useUrlState("page", "1");
   const [status, setStatus] = useUrlState("status");
   const [search, setSearch] = useUrlState("search");
+  const [domain, setDomain] = useUrlState("domain");
+  const [apiKey, setApiKey] = useUrlState("apikey");
 
   const pageNumber = Number(page);
+  const domainId = domain ? Number(domain) : undefined;
+  const apiId = apiKey ? Number(apiKey) : undefined;
 
   const emailsQuery = api.email.emails.useQuery({
     page: pageNumber,
     status: status?.toUpperCase() as EmailStatus,
+    domain: domainId,
     search,
+    apiId: apiId,
   });
+
+  const { data: domainsQuery } = api.domain.domains.useQuery();
+  const { data: apiKeysQuery } = api.apiKey.getApiKeys.useQuery();
 
   const handleSelectEmail = (emailId: string) => {
     setSelectedEmail(emailId);
+  };
+
+  const handleDomain = (val: string) => {
+    setDomain(val === "All Domain" ? null : val);
+  };
+
+  const handleApiKey = (val: string) => {
+    setApiKey(val === "All ApiKey" ? null : val);
   };
 
   const handleSheetChange = (isOpen: boolean) => {
@@ -89,39 +107,79 @@ export default function EmailsList() {
           defaultValue={search ?? ""}
           onChange={(e) => debouncedSearch(e.target.value)}
         />
-        <Select
-          value={status ?? "All statuses"}
-          onValueChange={(val) =>
-            setStatus(val === "All statuses" ? null : val)
-          }
-        >
-          <SelectTrigger className="w-[180px] capitalize">
-            {status ? status.toLowerCase().replace("_", " ") : "All statuses"}
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All statuses" className=" capitalize">
-              All statuses
-            </SelectItem>
-            {Object.values([
-              "SENT",
-              "SCHEDULED",
-              "QUEUED",
-              "DELIVERED",
-              "BOUNCED",
-              "CLICKED",
-              "OPENED",
-              "DELIVERY_DELAYED",
-              "COMPLAINED",
-            ]).map((status) => (
-              <SelectItem value={status} className=" capitalize">
-                {status.toLowerCase().replace("_", " ")}
+        <div className="flex justify-center items-center gap-x-3">
+          <Select
+            value={apiKey ?? "All ApiKey"}
+            onValueChange={(val) => handleApiKey(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {apiKey
+                ? apiKeysQuery?.find((apikey) => apikey.id === Number(apiKey))
+                    ?.name
+                : "All ApiKey"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All ApiKey">All ApiKey</SelectItem>
+              {apiKeysQuery &&
+                apiKeysQuery.map((apikey) => (
+                  <SelectItem value={apikey.id.toString()}>
+                    {apikey.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={domain ?? "All Domain"}
+            onValueChange={(val) => handleDomain(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {domain
+                ? domainsQuery?.find((d) => d.id === Number(domain))?.name
+                : "All Domain"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Domain" className=" capitalize">
+                All Domain
               </SelectItem>
-            ))}
-            {/* <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem> */}
-          </SelectContent>
-        </Select>
+              {domainsQuery &&
+                domainsQuery.map((domain) => (
+                  <SelectItem value={domain.id.toString()}>
+                    {domain.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={status ?? "All statuses"}
+            onValueChange={(val) =>
+              setStatus(val === "All statuses" ? null : val)
+            }
+          >
+            <SelectTrigger className="w-[180px] capitalize">
+              {status ? status.toLowerCase().replace("_", " ") : "All statuses"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All statuses" className=" capitalize">
+                All statuses
+              </SelectItem>
+              {Object.values([
+                "SENT",
+                "SCHEDULED",
+                "QUEUED",
+                "DELIVERED",
+                "BOUNCED",
+                "CLICKED",
+                "OPENED",
+                "DELIVERY_DELAYED",
+                "COMPLAINED",
+              ]).map((status) => (
+                <SelectItem value={status} className=" capitalize">
+                  {status.toLowerCase().replace("_", " ")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex flex-col rounded-xl border shadow">
         <Table className="">

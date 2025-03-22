@@ -1,10 +1,6 @@
-import { Button } from "@unsend/ui/src/button";
-import { Suspense } from "react";
-import {
-  unsubscribeContact,
-  subscribeContact,
-} from "~/server/service/campaign-service";
+import { unsubscribeContactFromLink } from "~/server/service/campaign-service";
 import ReSubscribe from "./re-subscribe";
+
 export const dynamic = "force-dynamic";
 
 async function UnsubscribePage({
@@ -30,7 +26,7 @@ async function UnsubscribePage({
     );
   }
 
-  const contact = await unsubscribeContact(id, hash);
+  const contact = await unsubscribeContactFromLink(id, hash);
 
   return (
     <div className="min-h-screen flex items-center justify-center ">

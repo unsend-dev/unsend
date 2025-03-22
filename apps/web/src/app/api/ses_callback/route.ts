@@ -1,5 +1,6 @@
+import { env } from "~/env";
 import { db } from "~/server/db";
-import { parseSesHook } from "~/server/service/ses-hook-parser";
+import { parseSesHook, SesHookParser } from "~/server/service/ses-hook-parser";
 import { SesSettingsService } from "~/server/service/ses-settings-service";
 import { SnsNotificationMessage } from "~/types/aws-types";
 
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
 
   const isEventValid = await checkEventValidity(data);
 
-  console.log("isEventValid: ", isEventValid);
+  console.log("Is event valid: ", isEventValid);
 
   if (!isEventValid) {
     return Response.json({ data: "Event is not valid" });
@@ -30,10 +31,12 @@ export async function POST(req: Request) {
 
   try {
     message = JSON.parse(data.Message || "{}");
-    const status = await parseSesHook(message);
-    console.log("Error is parsing hook", !status);
+    const status = await SesHookParser.queue({
+      event: message,
+      messageId: data.MessageId,
+    });
     if (!status) {
-      return Response.json({ data: "Error is parsing hook" });
+      return Response.json({ data: "Error in parsing hook" });
     }
 
     return Response.json({ data: "Success" });
@@ -43,6 +46,9 @@ export async function POST(req: Request) {
   }
 }
 
+/**
+ * Handles the subscription confirmation event. called only once for a webhook
+ */
 async function handleSubscription(message: any) {
   await fetch(message.SubscribeURL, {
     method: "GET",
@@ -73,8 +79,14 @@ async function handleSubscription(message: any) {
   return Response.json({ data: "Success" });
 }
 
-// A simple check to ensure that the event is from the correct topic
+/**
+ * A simple check to ensure that the event is from the correct topic
+ */
 async function checkEventValidity(message: SnsNotificationMessage) {
+  if (env.NODE_ENV === "development") {
+    return true;
+  }
+
   const { TopicArn } = message;
   const configuredTopicArn = await SesSettingsService.getTopicArns();
 

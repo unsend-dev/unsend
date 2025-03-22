@@ -44,36 +44,48 @@ declare module "next-auth" {
  * Auth providers
  */
 
-const providers: Provider[] = [
-  GitHubProvider({
-    clientId: env.GITHUB_ID,
-    clientSecret: env.GITHUB_SECRET,
-    allowDangerousEmailAccountLinking: true,
-  }),
-];
+function getProviders() {
+  const providers: Provider[] = [];
 
-if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
-  providers.push(
-    GoogleProvider({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    })
-  );
-}
+  if (env.GITHUB_ID && env.GITHUB_SECRET) {
+    providers.push(
+      GitHubProvider({
+        clientId: env.GITHUB_ID,
+        clientSecret: env.GITHUB_SECRET,
+        allowDangerousEmailAccountLinking: true,
+      })
+    );
+  }
 
-if (env.FROM_EMAIL) {
-  providers.push(
-    EmailProvider({
-      from: env.FROM_EMAIL,
-      async sendVerificationRequest({ identifier: email, url, token }) {
-        await sendSignUpEmail(email, token, url);
-      },
-      async generateVerificationToken() {
-        return Math.random().toString(36).substring(2, 7).toLowerCase();
-      },
-    })
-  );
+  if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+    providers.push(
+      GoogleProvider({
+        clientId: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true,
+      })
+    );
+  }
+
+  if (env.FROM_EMAIL) {
+    providers.push(
+      EmailProvider({
+        from: env.FROM_EMAIL,
+        async sendVerificationRequest({ identifier: email, url, token }) {
+          await sendSignUpEmail(email, token, url);
+        },
+        async generateVerificationToken() {
+          return Math.random().toString(36).substring(2, 7).toLowerCase();
+        },
+      })
+    );
+  }
+
+  if (providers.length === 0 && process.env.SKIP_ENV_VALIDATION !== "true") {
+    throw new Error("No auth providers found, need atleast one");
+  }
+
+  return providers;
 }
 
 /**
@@ -100,7 +112,7 @@ export const authOptions: NextAuthOptions = {
   events: {
     createUser: async ({ user }) => {
       // No waitlist for self hosting
-      if (!env.NEXT_PUBLIC_IS_CLOUD) {
+      if (!env.NEXT_PUBLIC_IS_CLOUD || env.NODE_ENV === "development") {
         await db.user.update({
           where: { id: user.id },
           data: { isBetaUser: true },
@@ -108,7 +120,7 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-  providers,
+  providers: getProviders(),
 };
 
 /**

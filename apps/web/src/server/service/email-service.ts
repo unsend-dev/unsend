@@ -3,8 +3,9 @@ import { db } from "../db";
 import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
+import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { RedisRateLimiter } from "./rate-limitter";
-import { env } from "~/env";
+import { RateLimitAction, RateLimitType } from "@prisma/client";
 
 const rateLimiter = new RedisRateLimiter(process.env.REDIS_URL, 1, 10);
 
@@ -34,30 +35,84 @@ async function checkIfValidEmail(emailId: string) {
   return { email, domain };
 }
 
+export const replaceVariables = (
+  text: string,
+  variables: Record<string, string>
+) => {
+  return Object.keys(variables).reduce((accum, key) => {
+    const re = new RegExp(`{{${key}}}`, "g");
+    const returnTxt = accum.replace(re, variables[key] as string);
+    return returnTxt;
+  }, text);
+};
+
 /**
  Send transactional email
  */
 export async function sendEmail(
-  emailContent: EmailContent & { teamId: number }
+  emailContent: EmailContent & { teamId: number; apiKeyId?: number }
 ) {
   const {
     to,
     from,
-    subject,
+    subject: subjectFromApiCall,
+    templateId,
+    variables,
     text,
-    html,
+    html: htmlFromApiCall,
     teamId,
     attachments,
     replyTo,
     cc,
     bcc,
     scheduledAt,
+    apiKeyId,
   } = emailContent;
+  let subject = subjectFromApiCall;
+  let html = htmlFromApiCall;
+
+  const team = await db.team.findUnique({
+    where: { id: teamId },
+  });
+
+  if (!team) {
+    throw new Error(`Team with ID ${teamId} not found`);
+  }
 
   const [domain, rateLimitInfo] = await Promise.all([
-    await validateDomainFromEmail(from, teamId),
-    await emailRateLimiter(to, "DOMAIN", teamId)
-  ])
+    validateDomainFromEmail(from, teamId),
+    emailRateLimiter(to, team.rateLimitType, teamId),
+  ]);
+
+  if (templateId) {
+    const template = await db.template.findUnique({
+      where: { id: templateId },
+    });
+
+    if (template) {
+      const jsonContent = JSON.parse(template.content || "{}");
+      const renderer = new EmailRenderer(jsonContent);
+
+      subject = replaceVariables(template.subject || "", variables || {}) ?? '';
+
+      // {{}} for link replacements
+      const modifiedVariables = {
+        ...variables,
+        ...Object.keys(variables || {}).reduce(
+          (acc, key) => {
+            acc[`{{${key}}}`] = variables?.[key] || "";
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
+      };
+
+      html = await renderer.render({
+        shouldReplaceVariableValues: true,
+        variableValues: modifiedVariables,
+      });
+    }
+  }
 
   const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
   const delay = scheduledAtDate
@@ -72,7 +127,7 @@ export async function sendEmail(
       data: {
         to: rateLimitInfo.withinLimits,
         from,
-        subject,
+        subject: subject ?? '',
         replyTo: replyTo
           ? Array.isArray(replyTo)
             ? replyTo
@@ -96,7 +151,7 @@ export async function sendEmail(
         data: {
           to: rateLimitInfo.rateLimited,
           from,
-          subject,
+          subject: subject ?? '',
           replyTo: replyTo
             ? Array.isArray(replyTo)
               ? replyTo
@@ -111,13 +166,13 @@ export async function sendEmail(
           attachments: attachments ? JSON.stringify(attachments) : undefined,
           scheduledAt: scheduledAtDate,
           // If SEND_RATE_LIMITTED_WITH_DELAY is false, mark as RATE_LIMITED
-          latestStatus: env.SEND_RATE_LIMITTED_WITH_DELAY 
+          latestStatus: team?.rateLimitAction === RateLimitAction.DELAY
             ? (scheduledAtDate ? "SCHEDULED" : "QUEUED")
             : "FAILED",
         },
       });
 
-      if (!env.SEND_RATE_LIMITTED_WITH_DELAY) {
+      if (!teamId) {
         await db.emailEvent.create({
           data: {
             emailId: rateLimittedEmail.id,
@@ -138,7 +193,7 @@ export async function sendEmail(
       delay
     );
 
-    if (rateLimittedEmail?.id && env.SEND_RATE_LIMITTED_WITH_DELAY) {
+    if (rateLimittedEmail?.id && team?.rateLimitAction === RateLimitAction.DELAY) {
       const retryDelay = 1 * 1000;
       await EmailQueueService.queueEmail(
         rateLimittedEmail.id,
@@ -153,7 +208,7 @@ export async function sendEmail(
       withinLimitEmail, 
       rateLimittedEmail,
       rateLimitStatus: rateLimitInfo.rateLimited.length > 0 
-        ? (env.SEND_RATE_LIMITTED_WITH_DELAY ? true : false)
+        ? (team?.rateLimitAction === RateLimitAction.DELAY ? true : false)
         : undefined
     };
 
@@ -254,7 +309,7 @@ export async function cancelEmail(emailId: string) {
   });
 }
 
-async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | 'RECIEVER', teamId: number): Promise<{rateLimited: string[], withinLimits: string[]}>  {
+async function emailRateLimiter(to: string | string[], rateLimitBy: RateLimitType, teamId: number): Promise<{rateLimited: string[], withinLimits: string[]}>  {
   let identifiers: string | string[];
 
   switch (rateLimitBy) {
@@ -283,7 +338,7 @@ async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | '
       }
       break;
 
-    case 'RECIEVER':
+    case 'EMAIL':
       identifiers = Array.isArray(to) ? to : [to];
       break;
 
@@ -298,7 +353,7 @@ async function emailRateLimiter(to: string | string[], rateLimitBy: 'DOMAIN' | '
 }
 
 async function processRateLimits(
-  rateLimitBy: 'DOMAIN' | 'RECIEVER',
+  rateLimitBy: RateLimitType,
   identifiers: string[],
   teamId: number
 ) {

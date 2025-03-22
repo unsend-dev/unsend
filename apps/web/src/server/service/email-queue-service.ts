@@ -6,6 +6,7 @@ import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { getRedis } from "../redis";
+import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
 
 function createQueueAndWorker(region: string, quota: number, suffix: string) {
   const connection = getRedis();
@@ -100,13 +101,14 @@ export class EmailQueueService {
     const queue = transactional
       ? this.transactionalQueue.get(region)
       : this.marketingQueue.get(region);
+    const isBulk = !transactional;
     if (!queue) {
       throw new Error(`Queue for region ${region} not found`);
     }
     queue.add(
       emailId,
-      { emailId, timestamp: Date.now(), unsubUrl },
-      { jobId: emailId, delay }
+      { emailId, timestamp: Date.now(), unsubUrl, isBulk },
+      { jobId: emailId, delay, ...DEFAULT_QUEUE_OPTIONS }
     );
   }
 
@@ -169,7 +171,12 @@ export class EmailQueueService {
 }
 
 async function executeEmail(
-  job: Job<{ emailId: string; timestamp: number; unsubUrl?: string }>
+  job: Job<{
+    emailId: string;
+    timestamp: number;
+    unsubUrl?: string;
+    isBulk?: boolean;
+  }>
 ) {
   console.log(
     `[EmailQueueService]: Executing email job ${job.data.emailId}, time elapsed: ${Date.now() - job.data.timestamp}ms`
@@ -207,6 +214,7 @@ async function executeEmail(
 
   console.log(`[EmailQueueService]: Sending email ${email.id}`);
   const unsubUrl = job.data.unsubUrl;
+  const isBulk = job.data.isBulk;
 
   const text = email.text
     ? email.text
@@ -240,6 +248,7 @@ async function executeEmail(
           configurationSetName,
           attachments,
           unsubUrl,
+          isBulk,
         });
 
     // Delete attachments after sending the email

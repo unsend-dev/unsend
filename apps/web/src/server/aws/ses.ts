@@ -14,6 +14,7 @@ import { generateKeyPairSync } from "crypto";
 import mime from "mime-types";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
+import { nanoid } from "../nanoid";
 
 function getSesClient(region: string) {
   return new SESv2Client({
@@ -28,7 +29,7 @@ function getSesClient(region: string) {
 
 function generateKeyPair() {
   const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-    modulusLength: 2048, // Length of your key in bits
+    modulusLength: 1024, // Length of your key in bits
     publicKeyEncoding: {
       type: "spki", // Recommended to be 'spki' by the Node.js docs
       format: "pem",
@@ -114,6 +115,7 @@ export async function sendEmailThroughSes({
   region,
   configurationSetName,
   unsubUrl,
+  isBulk,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
@@ -121,6 +123,7 @@ export async function sendEmailThroughSes({
   bcc?: string[];
   replyTo?: string[];
   to?: string[];
+  isBulk?: boolean;
 }) {
   const sesClient = getSesClient(region);
   const command = new SendEmailCommand({
@@ -155,14 +158,24 @@ export async function sendEmailThroughSes({
               }
             : undefined,
         },
-        ...(unsubUrl
-          ? {
-              Headers: [
+        Headers: [
+          // Spread in any unsubscribe headers if unsubUrl is defined
+          ...(unsubUrl
+            ? [
                 { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
-                { Name: "List-Unsubscribe-Post", Value: "One-Click" },
-              ],
-            }
-          : {}),
+                {
+                  Name: "List-Unsubscribe-Post",
+                  Value: "List-Unsubscribe=One-Click",
+                },
+              ]
+            : []),
+          // Spread in the precedence header if present
+          ...(isBulk ? [{ Name: "Precedence", Value: "bulk" }] : []),
+          {
+            Name: "X-Entity-Ref-ID",
+            Value: nanoid(),
+          },
+        ],
       },
     },
     ConfigurationSetName: configurationSetName,
@@ -207,7 +220,8 @@ export async function sendEmailWithAttachments({
   rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
   rawEmail += cc && cc.length ? `Cc: ${cc.join(", ")}\n` : "";
   rawEmail += bcc && bcc.length ? `Bcc: ${bcc.join(", ")}\n` : "";
-  rawEmail += replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
+  rawEmail +=
+    replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
   rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
@@ -257,7 +271,7 @@ export async function addWebhookConfiguration(
   configName: string,
   topicArn: string,
   eventTypes: EventType[],
-  region: string,
+  region: string
 ) {
   const sesClient = getSesClient(region);
 
