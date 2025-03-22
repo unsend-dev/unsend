@@ -226,7 +226,7 @@ export default function UsagePage() {
       </div>
       {currentTeam?.plan ? (
         <Card className=" rounded-xl mt-10 p-4 px-8">
-          <PlanDetails plan={currentTeam?.plan!} />
+          <PlanDetails />
           <div className="mt-4">
             {currentTeam?.plan === "FREE" ? <UpgradeButton /> : null}
           </div>

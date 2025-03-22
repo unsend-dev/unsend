@@ -58,7 +58,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8">
       <Card className=" rounded-xl mt-10 p-8 px-8">
-        <PlanDetails plan={currentTeam?.plan!} />
+        <PlanDetails />
         <div className="mt-4">
           {currentTeam?.plan !== "FREE" ? (
             <Button
