@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { env } from "~/env";
 import { db } from "../db";
 
-function getStripe() {
+export function getStripe() {
   if (!env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY is not set");
   }

@@ -2,12 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { env } from "~/env";
-import { syncStripeData } from "~/server/billing/payments";
-import { db } from "~/server/db";
-
-const stripe = new Stripe(env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
-});
+import { getStripe, syncStripeData } from "~/server/billing/payments";
 
 const allowedEvents: Stripe.Event.Type[] = [
   "checkout.session.completed",
@@ -43,6 +38,8 @@ export async function POST(req: Request) {
     console.error("No webhook secret");
     return new NextResponse("No webhook secret", { status: 400 });
   }
+
+  const stripe = getStripe();
 
   try {
     const event = stripe.webhooks.constructEvent(
