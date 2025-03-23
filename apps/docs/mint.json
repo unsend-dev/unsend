@@ -63,7 +63,8 @@
     {
       "group": "Community SDKs",
       "pages": [
-        "community-sdk/python"
+        "community-sdk/python",
+        "community-sdk/go"
       ]
     },
     {

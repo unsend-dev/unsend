@@ -4,23 +4,34 @@ description: "The Unsend Python package lets you interact with the Unsend API to
 icon: python
 ---
 
+<Warning>
+  This is a community-maintained package and not maintained by the Unsend.
+</Warning>
+
+**Shout out to [harshsbhat](https://x.com/HarshBhatX) for maintaining this package.**
+
 ## Installation
+
 To install the Unsend package, you can use pip:
 
-```bash 
+```bash
 pip install unsendcommunity
 ```
 
 ## Related Links
+
 Github Repository: [Github](https://github.com/harshsbhat/unsend_community.git)
 
 PyPI package: [PyPi](https://pypi.org/project/UnsendCommunity/)
 
 ## Usage
+
 Below is an example of how to use the Unsend package to send an email and retrieve email information.
 
 ### Initialize
+
 Change the URL accordingly if you are using self self-hosted version of Unsend. The default URL will be https://app.unsend.dev.
+
 ```python
 
 from unsendcommunity import Unsend
@@ -32,7 +43,8 @@ client = Unsend(key=api_key, url='https://app.unsend.dev')
 ```
 
 ### Sending Emails
-To send an email you will need to define the payload. After definition, you can use the ```.send_emails``` method to send emails with the payload as a parameter.
+
+To send an email you will need to define the payload. After definition, you can use the `.send_emails` method to send emails with the payload as a parameter.
 
 ```python
 payload = {
@@ -47,16 +59,18 @@ payload = {
 response = client.send_email(payload)
 print("Send Email Response:", response)
 ```
-### Retrieve Emails using the id 
-The email will be retrieved using the ID you get after sending the mail. 
+
+### Retrieve Emails using the id
+
+The email will be retrieved using the ID you get after sending the mail.
+
 ```python
 email_id = 'email-id-from-unsend'
 email_response = client.get_email(email_id)
 print("Get Email Response:", email_response)
 ```
 
-The sample response of ``get_email`` is shown below:
-
+The sample response of `get_email` is shown below:
 
 ```bash
 {
@@ -89,15 +103,15 @@ The sample response of ``get_email`` is shown below:
 
 ### Retrieve domain information
 
-Retrieves domain information 
-Domains that are associated with this account will be displayed with their detailed information. 
+Retrieves domain information
+Domains that are associated with this account will be displayed with their detailed information.
 
 ```python
 domain_response = client.get_domain()
 print("Get Domain Response:", domain_response)
 ```
 
-Sample response of the ``get_domain`` method
+Sample response of the `get_domain` method
 
 ```bash
 {
@@ -124,4 +138,3 @@ Sample response of the ``get_domain`` method
   "error": null
 }
 ```
-
