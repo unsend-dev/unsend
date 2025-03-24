@@ -14,7 +14,6 @@ import { formatDate } from "date-fns";
 
 import IntegrationCode from "./IntegrationCode";
 import {
-    DocsButton,
   GithubStarButton,
   HeroImage,
   JoinWaitlist,
@@ -98,7 +97,7 @@ export default function Home() {
               </div>
               <div>
                 <div className="flex gap-5 items-start">
-                  <div className=" -ml-2.5">
+                  <div className="-ml-2.5">
                     <div
                       className={`flex justify-center items-center p-1.5 bg-emerald-500/50 rounded-full`}
                     >
@@ -179,23 +178,10 @@ export default function Home() {
           <p className="text-center font-semibold text-3xl lg:text-6xl  ">
             Integrate in minutes
           </p>
-          {/* <motion.div
-            className="mt-10"
-            initial={{ opacity: 0, scale: 0.7 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{
-              duration: 0.4,
-              type: "spring",
-              damping: 13,
-              stiffness: 100,
-              delay: 0.2,
-            }}
-          > */}
+
           <div className="mt-10">
             <IntegrationCode />
           </div>
-          {/* </motion.div> */}
         </div>
       </div>
     </div>
