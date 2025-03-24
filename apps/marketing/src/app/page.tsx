@@ -11,10 +11,10 @@ import {
   ListOrdered,
 } from "lucide-react";
 import { formatDate } from "date-fns";
-import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
-import Link from "next/link";
+
 import IntegrationCode from "./IntegrationCode";
 import {
+    DocsButton,
   GithubStarButton,
   HeroImage,
   JoinWaitlist,
@@ -22,10 +22,10 @@ import {
 
 export default function Home() {
   return (
-    <div className="bg-neutral-950 pb-20">
+    <div className="pb-20">
       <div className=" mx-auto  w-full lg:max-w-6xl relative flex flex-col ">
         <div className="p-4 mt-20">
-          <h1 className="relative z-10 text-neutral-100 text-2xl lg:max-w-4xl mx-auto md:text-6xl md:leading-[4.5rem]    text-center font-sans font-bold">
+          <h1 className="relative z-10 text-neutral-100 text-2xl lg:max-w-4xl mx-auto md:text-6xl md:leading-[4.5rem] text-center font-sans font-bold">
             Open source sending infrastructure for{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r  from-[#06b6d4] to-[#10b981]">
               developers
@@ -46,11 +46,13 @@ export default function Home() {
 
         {/* <BackgroundBeams /> */}
       </div>
-      <div className=" w-full lg:max-w-6xl mx-auto flex flex-col gap-40 mt-40">
+      <div className="w-full lg:max-w-6xl mx-auto flex flex-col gap-40 mt-40 md:px-6 px-0">
+        <div className="space-y-12">
         <div>
-          <p className="text-center text-3xl lg:text-6xl ">Reach your users</p>
+        <p className="text-center font-semibold text-3xl lg:text-6xl">
+         Reach your users</p>
         </div>
-        <div className="flex gap-10 flex-col lg:flex-row px-8 lg:px-0">
+        <div className="flex gap-10 flex-col lg:flex-row md:p-8 p-3 bg-[#0c0e12] rounded-lg">
           <div className="lg:w-1/2">
             <div className="flex flex-col gap-2">
               <EnvelopeIcon className="h-10 w-10 text-fuchsia-500" />
@@ -62,7 +64,7 @@ export default function Home() {
               <li>Get notified of email bounces and complaints.</li>
             </ul>
           </div>
-          <div className="lg:w-1/2 flex flex-col  border rounded-lg p-8">
+          <div className="lg:w-1/2 flex flex-col bg-[#0e1217] border rounded-lg p-8">
             <div className=" border-l border-dashed flex flex-col gap-8">
               <div className="flex flex-col gap-4">
                 <div className="flex gap-5 items-start">
@@ -73,7 +75,7 @@ export default function Home() {
                       <div className={`h-2 w-2 rounded-full bg-gray-600`}></div>
                     </div>
                   </div>
-                  <div className="-mt-1">
+                  <div className="-mt-1 ">
                     <div className=" capitalize font-medium">
                       <div
                         className={` text-center w-[130px] rounded capitalize py-1 text-xs bg-gray-400/10 text-gray-400 border-gray-400/10`}
@@ -128,7 +130,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="flex gap-10 flex-col lg:flex-row px-8 lg:px-0">
+        <div className="flex gap-10 flex-col lg:flex-row md:p-8 p-3 bg-[#0c0e12] rounded-lg">
           <div className="lg:w-1/2">
             <div className="flex flex-col gap-2">
               <MegaphoneIcon className="h-10 w-10 text-indigo-500" />
@@ -148,7 +150,7 @@ export default function Home() {
             </ul>
           </div>
           <div className="lg:w-1/2">
-            <div className="w-full rounded-lg border">
+            <div className="w-full rounded-lg border bg-[#0e1217]">
               <div className="flex gap-4 justify-between border-b p-4 overflow-auto">
                 <Heading1 />
                 <Heading2 />
@@ -172,9 +174,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <div className=" px-8 lg:px-0 mt-20">
-          <p className="text-center text-3xl lg:text-6xl  ">
+        </div>
+        <div className="mt-20 rounded-lg md:p-8 p-3">
+          <p className="text-center font-semibold text-3xl lg:text-6xl  ">
             Integrate in minutes
           </p>
           {/* <motion.div
