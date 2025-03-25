@@ -5,6 +5,10 @@ import { ThemeProvider } from "@unsend/ui";
 import Script from "next/script";
 import Link from "next/link";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
+import Image from "next/image";
+import { DocumentChartBarIcon } from "@heroicons/react/24/solid";
+import { Book } from "lucide-react";
+import { Separator } from "@unsend/ui/src/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,13 +46,16 @@ export default function RootLayout({
       )}
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark">
-          <div className="bg-neutral-950 pb-20 h-full">
+          <div className="bg-[#0c0e12] pb-20 h-full">
             <div className=" mx-auto  w-full lg:max-w-6xl relative flex flex-col ">
               <nav className="p-4 flex justify-between">
                 <div className="text-2xl font-semibold">
                   <Link href="/">Unsend</Link>
                 </div>
                 <div className="flex gap-8 items-center">
+                <Link href="https://docs.unsend.dev" target="_blank" className="flex items-center gap-1 bg-border/70 text-white px-3 py-1 rounded-full">
+                    <Book className="h-6 w-6 fill-white stroke-border" /> Docs
+                  </Link>
                   <Link
                     href="https://github.com/unsend-dev/unsend"
                     target="_blank"
@@ -89,11 +96,13 @@ export default function RootLayout({
               </nav>
             </div>
             <div className="max-w-6xl mx-auto px-4">{children}</div>
-            <div className="flex justify-between mt-20 max-w-6xl mx-auto px-4 pb-10">
+            <div className="flex justify-between mt-20 max-w-6xl mx-auto px-4 md:px-0 pb-10">
               <div className="flex gap-2 items-center">
                 <TextWithCopyButton value="hello@unsend.dev" />
               </div>
               <div className="flex gap-8 items-center">
+                <Link href="https://docs.unsend.dev">docs</Link>
+                <Separator orientation="vertical" />
                 <Link href="/terms">terms</Link>
                 <Link href="/privacy">privacy</Link>
                 <Link
