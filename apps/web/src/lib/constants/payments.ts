@@ -4,6 +4,7 @@ export const PLAN_PERKS = {
     "Send up to 100 emails per day",
     "Can have 1 contact book",
     "Can have 1 domain",
+    "Can have 1 team member",
   ],
   BASIC: [
     "Includes $10 of usage monthly",
@@ -11,5 +12,6 @@ export const PLAN_PERKS = {
     "Send marketing emails at $0.001 per email",
     "Can have unlimited contact books",
     "Can have unlimited domains",
+    "Can have unlimited team members",
   ],
 };

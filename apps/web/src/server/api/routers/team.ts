@@ -2,7 +2,12 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { env } from "~/env";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  teamProcedure,
+} from "~/server/api/trpc";
+import { sendTeamInviteEmail } from "~/server/mailer";
 
 export const teamRouter = createTRPCRouter({
   createTeam: protectedProcedure
@@ -59,4 +64,189 @@ export const teamRouter = createTRPCRouter({
 
     return teams;
   }),
+
+  getTeamUsers: teamProcedure.query(async ({ ctx }) => {
+    const teamUsers = await ctx.db.teamUser.findMany({
+      where: {
+        teamId: ctx.team.id,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return teamUsers;
+  }),
+
+  getTeamInvites: teamProcedure.query(async ({ ctx }) => {
+    const teamInvites = await ctx.db.teamInvite.findMany({
+      where: {
+        teamId: ctx.team.id,
+      },
+    });
+
+    return teamInvites;
+  }),
+
+  createTeamInvite: teamProcedure
+    .input(z.object({ email: z.string(), role: z.enum(["MEMBER", "ADMIN"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          email: input.email,
+        },
+        include: {
+          teamUsers: true,
+        },
+      });
+
+      if (user && user.teamUsers.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User already part of a team",
+        });
+      }
+
+      const teamInvite = await ctx.db.teamInvite.create({
+        data: {
+          teamId: ctx.team.id,
+          email: input.email,
+          role: input.role,
+        },
+      });
+
+      const teamUrl = `${env.NEXTAUTH_URL}/join-team/${ctx.team.id}`;
+
+      await sendTeamInviteEmail(input.email, teamUrl, ctx.team.name);
+
+      return teamInvite;
+    }),
+
+  updateTeamUserRole: teamProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        role: z.enum(["MEMBER", "ADMIN"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const teamUser = await ctx.db.teamUser.findFirst({
+        where: {
+          teamId: ctx.team.id,
+          userId: Number(input.userId),
+        },
+      });
+
+      if (!teamUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Team member not found",
+        });
+      }
+
+      // Check if this is the last admin
+      const adminCount = await ctx.db.teamUser.count({
+        where: {
+          teamId: ctx.team.id,
+          role: "ADMIN",
+        },
+      });
+
+      if (adminCount === 1 && teamUser.role === "ADMIN") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Need at least one admin",
+        });
+      }
+
+      return ctx.db.teamUser.update({
+        where: {
+          teamId_userId: {
+            teamId: ctx.team.id,
+            userId: Number(input.userId),
+          },
+        },
+        data: {
+          role: input.role,
+        },
+      });
+    }),
+
+  deleteTeamUser: teamProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const teamUser = await ctx.db.teamUser.findFirst({
+        where: {
+          teamId: ctx.team.id,
+          userId: Number(input.userId),
+        },
+      });
+
+      if (!teamUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Team member not found",
+        });
+      }
+
+      // Check if this is the last admin
+      const adminCount = await ctx.db.teamUser.count({
+        where: {
+          teamId: ctx.team.id,
+          role: "ADMIN",
+        },
+      });
+
+      if (adminCount === 1 && teamUser.role === "ADMIN") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Need at least one admin",
+        });
+      }
+
+      return ctx.db.teamUser.delete({
+        where: {
+          teamId_userId: {
+            teamId: ctx.team.id,
+            userId: Number(input.userId),
+          },
+        },
+      });
+    }),
+
+  resendTeamInvite: teamProcedure
+    .input(z.object({ inviteId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // TODO: Implement email sending logic
+      return { success: true };
+    }),
+
+  deleteTeamInvite: teamProcedure
+    .input(z.object({ inviteId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const invite = await ctx.db.teamInvite.findFirst({
+        where: {
+          teamId: ctx.team.id,
+          id: {
+            equals: input.inviteId,
+          },
+        },
+      });
+
+      if (!invite) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invite not found",
+        });
+      }
+
+      return ctx.db.teamInvite.delete({
+        where: {
+          teamId_email: {
+            teamId: ctx.team.id,
+            email: invite.email,
+          },
+        },
+      });
+    }),
 });

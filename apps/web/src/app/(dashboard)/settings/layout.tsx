@@ -15,6 +15,7 @@ export default function ApiKeysPage({
       <div className="flex gap-4 mt-4">
         <SettingsNavButton href="/settings">Usage</SettingsNavButton>
         <SettingsNavButton href="/settings/billing">Billing</SettingsNavButton>
+        <SettingsNavButton href="/settings/team">Team</SettingsNavButton>
       </div>
       <div className="mt-8">{children}</div>
     </div>

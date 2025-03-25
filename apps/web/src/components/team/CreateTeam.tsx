@@ -18,6 +18,7 @@ import { Spinner } from "@unsend/ui/src/spinner";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { toast } from "@unsend/ui/src/toaster";
+import JoinTeam from "./JoinTeam";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -53,8 +54,9 @@ export default function CreateTeam() {
   return (
     <div className="flex items-center justify-center min-h-screen ">
       <div className=" w-[300px] flex flex-col gap-8">
+        <JoinTeam />
         <div>
-          <h1 className="text-2xl font-semibold text-center">Create Team</h1>
+          <h1 className=" font-semibold text-center">Create Team</h1>
         </div>
         <Form {...form}>
           <form
