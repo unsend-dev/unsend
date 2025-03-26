@@ -1,7 +1,9 @@
 "use client";
+import { DocumentIcon } from "@heroicons/react/24/solid";
 import { RocketLaunchIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 import Image from "next/image";
+
 
 export function JoinWaitlist() {
   return (
@@ -51,7 +53,7 @@ export function HeroImage() {
         type: "spring",
       }}
       viewport={{ once: true }}
-      className="p-3 bg-neutral-900 mt-24 rounded-xl mx-2"
+      className="p-3 bg-[#0c0e12] mt-24 rounded-xl mx-2 shadow-[#1e293b]/70 shadow-md border-2 border-border/70"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -59,7 +61,7 @@ export function HeroImage() {
         alt="App"
         width={1200}
         height={800}
-        className="rounded-lg relative border"
+        className="rounded-lg relative"
       />
     </motion.div>
   );
