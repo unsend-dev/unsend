@@ -85,6 +85,7 @@ model User {
   emailVerified DateTime?
   image         String?
   isBetaUser    Boolean    @default(false)
+  createdAt     DateTime   @default(now())
   accounts      Account[]
   sessions      Session[]
   teamUsers     TeamUser[]
@@ -112,7 +113,21 @@ model Team {
   campaigns        Campaign[]
   templates        Template[]
   dailyEmailUsages DailyEmailUsage[]
-  Subscription     Subscription[]
+  subscription     Subscription[]
+  invites          TeamInvite[]
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  teamId    Int
+  email     String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, email])
 }
 
 model Subscription {

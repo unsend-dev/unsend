@@ -114,15 +114,28 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     where: { userId: ctx.session.user.id },
     include: { team: true },
   });
+
   if (!teamUser) {
     throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
   }
   return next({
     ctx: {
       team: teamUser.team,
+      teamUser,
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
+});
+
+export const teamAdminProcedure = teamProcedure.use(async ({ ctx, next }) => {
+  if (ctx.teamUser.role !== "ADMIN") {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not authorized to perform this action",
+    });
+  }
+
+  return next();
 });
 
 export const domainProcedure = teamProcedure
@@ -223,7 +236,6 @@ export const templateProcedure = teamProcedure
 
     return next({ ctx: { ...ctx, template } });
   });
-
 
 /**
  * To manage application settings, for hosted version, authenticated users will be considered as admin
