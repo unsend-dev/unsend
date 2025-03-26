@@ -6,6 +6,7 @@ import { z } from "zod";
 import {
   apiKeyProcedure,
   createTRPCRouter,
+  teamAdminProcedure,
   teamProcedure,
 } from "~/server/api/trpc";
 import {
@@ -15,11 +16,11 @@ import {
 import { db } from "~/server/db";
 
 export const billingRouter = createTRPCRouter({
-  createCheckoutSession: teamProcedure.mutation(async ({ ctx }) => {
+  createCheckoutSession: teamAdminProcedure.mutation(async ({ ctx }) => {
     return (await createCheckoutSessionForTeam(ctx.team.id)).url;
   }),
 
-  getManageSessionUrl: teamProcedure.mutation(async ({ ctx }) => {
+  getManageSessionUrl: teamAdminProcedure.mutation(async ({ ctx }) => {
     return await getManageSessionUrl(ctx.team.id);
   }),
 
@@ -65,7 +66,7 @@ export const billingRouter = createTRPCRouter({
     return subscription;
   }),
 
-  updateBillingEmail: teamProcedure
+  updateBillingEmail: teamAdminProcedure
     .input(
       z.object({
         billingEmail: z.string().email(),
