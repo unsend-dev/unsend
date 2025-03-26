@@ -6,6 +6,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   teamProcedure,
+  teamAdminProcedure,
 } from "~/server/api/trpc";
 import { sendTeamInviteEmail } from "~/server/mailer";
 
@@ -60,6 +61,13 @@ export const teamRouter = createTRPCRouter({
           },
         },
       },
+      include: {
+        teamUsers: {
+          where: {
+            userId: ctx.session.user.id,
+          },
+        },
+      },
     });
 
     return teams;
@@ -88,7 +96,7 @@ export const teamRouter = createTRPCRouter({
     return teamInvites;
   }),
 
-  createTeamInvite: teamProcedure
+  createTeamInvite: teamAdminProcedure
     .input(z.object({ email: z.string(), role: z.enum(["MEMBER", "ADMIN"]) }))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
@@ -122,7 +130,7 @@ export const teamRouter = createTRPCRouter({
       return teamInvite;
     }),
 
-  updateTeamUserRole: teamProcedure
+  updateTeamUserRole: teamAdminProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -189,6 +197,16 @@ export const teamRouter = createTRPCRouter({
         });
       }
 
+      if (
+        ctx.teamUser.role !== "ADMIN" &&
+        ctx.session.user.id !== Number(input.userId)
+      ) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this team member",
+        });
+      }
+
       // Check if this is the last admin
       const adminCount = await ctx.db.teamUser.count({
         where: {
@@ -214,14 +232,14 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 
-  resendTeamInvite: teamProcedure
+  resendTeamInvite: teamAdminProcedure
     .input(z.object({ inviteId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // TODO: Implement email sending logic
       return { success: true };
     }),
 
-  deleteTeamInvite: teamProcedure
+  deleteTeamInvite: teamAdminProcedure
     .input(z.object({ inviteId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const invite = await ctx.db.teamInvite.findFirst({

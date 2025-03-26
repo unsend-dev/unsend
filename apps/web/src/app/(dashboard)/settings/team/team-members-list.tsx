@@ -17,8 +17,12 @@ import { EditTeamMember } from "./edit-team-member";
 import { DeleteTeamMember } from "./delete-team-member";
 import { ResendTeamInvite } from "./resend-team-invite";
 import { DeleteTeamInvite } from "./delete-team-invite";
+import { useTeam } from "~/providers/team-context";
+import { useSession } from "next-auth/react";
 
 export default function TeamMembersList() {
+  const { currentIsAdmin } = useTeam();
+  const { data: session } = useSession();
   const teamUsersQuery = api.team.getTeamUsers.useQuery();
   const teamInvitesQuery = api.team.getTeamInvites.useQuery();
 
@@ -74,16 +78,24 @@ export default function TeamMembersList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <EditTeamMember
-                        teamUser={{ ...member, userId: String(member.userId) }}
-                      />
-                      <DeleteTeamMember
-                        teamUser={{
-                          userId: String(member.userId),
-                          role: member.role,
-                          email: member.user?.email || "Unknown user",
-                        }}
-                      />
+                      {currentIsAdmin ? (
+                        <EditTeamMember
+                          teamUser={{
+                            ...member,
+                            userId: String(member.userId),
+                          }}
+                        />
+                      ) : null}
+                      {currentIsAdmin || session?.user.id == member.userId ? (
+                        <DeleteTeamMember
+                          teamUser={{
+                            userId: String(member.userId),
+                            role: member.role,
+                            email: member.user?.email || "Unknown user",
+                          }}
+                          self={session?.user.id == member.userId}
+                        />
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -121,8 +133,12 @@ export default function TeamMembersList() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <ResendTeamInvite invite={invite} />
-                        <DeleteTeamInvite invite={invite} />
+                        {currentIsAdmin ? (
+                          <ResendTeamInvite invite={invite} />
+                        ) : null}
+                        {currentIsAdmin ? (
+                          <DeleteTeamInvite invite={invite} />
+                        ) : null}
                       </div>
                     </TableCell>
                   </TableRow>

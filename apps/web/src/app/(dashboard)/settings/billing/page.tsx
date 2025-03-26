@@ -9,8 +9,9 @@ import { useTeam } from "~/providers/team-context";
 import { api } from "~/trpc/react";
 import { PlanDetails } from "~/components/payments/PlanDetails";
 import { UpgradeButton } from "~/components/payments/UpgradeButton";
+
 export default function SettingsPage() {
-  const { currentTeam } = useTeam();
+  const { currentTeam, currentIsAdmin } = useTeam();
   const manageSessionUrl = api.billing.getManageSessionUrl.useMutation();
   const updateBillingEmailMutation =
     api.billing.updateBillingEmail.useMutation();
@@ -46,6 +47,10 @@ export default function SettingsPage() {
   };
 
   const paymentMethod = JSON.parse(subscription?.paymentMethod || "{}");
+
+  if (!currentIsAdmin) {
+    return null;
+  }
 
   if (!currentTeam?.plan) {
     return (

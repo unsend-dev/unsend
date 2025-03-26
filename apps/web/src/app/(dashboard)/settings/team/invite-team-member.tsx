@@ -32,6 +32,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@unsend/ui/src/form";
+import { useTeam } from "~/providers/team-context";
 
 const inviteTeamMemberSchema = z.object({
   email: z
@@ -45,6 +46,8 @@ const inviteTeamMemberSchema = z.object({
 type FormData = z.infer<typeof inviteTeamMemberSchema>;
 
 export default function InviteTeamMember() {
+  const { currentIsAdmin } = useTeam();
+
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormData>({
@@ -74,6 +77,10 @@ export default function InviteTeamMember() {
       email: values.email,
       role: values.role,
     });
+  }
+
+  if (!currentIsAdmin) {
+    return null;
   }
 
   return (
@@ -121,12 +128,24 @@ export default function InviteTeamMember() {
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
+                        <div className="capitalize">
+                          {field.value.toLowerCase()}
+                        </div>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ADMIN">Admin</SelectItem>
-                      <SelectItem value="MEMBER">Member</SelectItem>
+                      <SelectItem value="ADMIN">
+                        <div>Admin</div>
+                        <div className="text-xs text-muted-foreground">
+                          Manage users, update payments
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="MEMBER">
+                        <div>Member</div>
+                        <div className="text-xs text-muted-foreground">
+                          Manage emails, domains and contacts
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

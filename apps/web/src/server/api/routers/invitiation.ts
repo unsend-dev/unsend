@@ -2,11 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { env } from "~/env";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  teamProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const invitationRouter = createTRPCRouter({
   createTeam: protectedProcedure
