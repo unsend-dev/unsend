@@ -18,6 +18,8 @@ interface TeamContextType {
   currentTeam: Team | null;
   teams: Team[];
   isLoading: boolean;
+  currentRole: "ADMIN" | "MEMBER";
+  currentIsAdmin: boolean;
 }
 
 const TeamContext = createContext<TeamContextType | undefined>(undefined);
@@ -25,10 +27,14 @@ const TeamContext = createContext<TeamContextType | undefined>(undefined);
 export function TeamProvider({ children }: { children: React.ReactNode }) {
   const { data: teams, status } = api.team.getTeams.useQuery();
 
+  const currentTeam = teams?.[0] ?? null;
+
   const value = {
-    currentTeam: teams?.[0] ?? null,
+    currentTeam,
     teams: teams || [],
     isLoading: status === "pending",
+    currentRole: currentTeam?.teamUsers[0]?.role ?? "MEMBER",
+    currentIsAdmin: currentTeam?.teamUsers[0]?.role === "ADMIN",
   };
 
   return <TeamContext.Provider value={value}>{children}</TeamContext.Provider>;

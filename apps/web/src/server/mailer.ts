@@ -29,6 +29,25 @@ export async function sendSignUpEmail(
   await sendMail(email, subject, text, html);
 }
 
+export async function sendTeamInviteEmail(
+  email: string,
+  url: string,
+  teamName: string
+) {
+  const { host } = new URL(url);
+
+  if (env.NODE_ENV === "development") {
+    console.log("Sending team invite email", { email, url, teamName });
+    return;
+  }
+
+  const subject = "You have been invited to join a team";
+  const text = `Hey,\n\nYou have been invited to join the team ${teamName} on Unsend.\n\nYou can accept the invitation by clicking the below URL:\n${url}\n\nThanks,\nUnsend Team`;
+  const html = `<p>Hey,</p> <p>You have been invited to join the team <b>${teamName}</b> on Unsend.</p><p>You can accept the invitation by clicking the below URL:</p><p><a href="${url}">Accept invitation</a></p><br /><br /><p>Thanks,</p><p>Unsend Team</p>`;
+
+  await sendMail(email, subject, text, html);
+}
+
 async function sendMail(
   email: string,
   subject: string,

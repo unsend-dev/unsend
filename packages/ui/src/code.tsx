@@ -46,7 +46,7 @@ export const Code: React.FC<CodeProps> = ({ codeBlocks, codeClassName }) => {
   };
 
   return (
-    <div className="rounded-xl bg-background border">
+    <div className="rounded-xl bg-background border shadow-[#1e293b] shadow-lg">
       <Tabs
         defaultValue={codeBlocks[0]?.language}
         onValueChange={(val) => setSelectedTab(val as Language)}
