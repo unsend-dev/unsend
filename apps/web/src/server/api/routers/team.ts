@@ -123,7 +123,7 @@ export const teamRouter = createTRPCRouter({
         },
       });
 
-      const teamUrl = `${env.NEXTAUTH_URL}/join-team/${ctx.team.id}`;
+      const teamUrl = `${env.NEXTAUTH_URL}/join-team?inviteId=${teamInvite.id}`;
 
       await sendTeamInviteEmail(input.email, teamUrl, ctx.team.name);
 
@@ -235,7 +235,24 @@ export const teamRouter = createTRPCRouter({
   resendTeamInvite: teamAdminProcedure
     .input(z.object({ inviteId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const invite = await ctx.db.teamInvite.findUnique({
+        where: {
+          id: input.inviteId,
+        },
+      });
+
+      if (!invite) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invite not found",
+        });
+      }
+
+      const teamUrl = `${env.NEXTAUTH_URL}/join-team?inviteId=${invite.id}`;
+
       // TODO: Implement email sending logic
+      await sendTeamInviteEmail(invite.email, teamUrl, ctx.team.name);
+
       return { success: true };
     }),
 

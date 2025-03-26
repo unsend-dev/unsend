@@ -53,8 +53,8 @@ export default function CreateTeam() {
 
   return (
     <div className="flex items-center justify-center min-h-screen ">
-      <div className=" w-[300px] flex flex-col gap-8">
-        <JoinTeam />
+      <div className=" w-[400px] flex flex-col gap-8">
+        <JoinTeam showCreateTeam />
         <div>
           <h1 className=" font-semibold text-center">Create Team</h1>
         </div>

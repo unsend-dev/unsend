@@ -29,7 +29,11 @@ const FormSchema = z.object({
   }),
 });
 
-export default function JoinTeam() {
+export default function JoinTeam({
+  showCreateTeam = false,
+}: {
+  showCreateTeam?: boolean;
+}) {
   const { data: invites, status: invitesStatus } =
     api.invitation.getUserInvites.useQuery();
   const joinTeamMutation = api.invitation.acceptTeamInvite.useMutation();
@@ -69,7 +73,8 @@ export default function JoinTeam() {
     );
   };
 
-  if (!invites?.length) return null;
+  if (!invites?.length)
+    return <div className="text-center text-xl">No invites found</div>;
 
   return (
     <div>
@@ -106,9 +111,11 @@ export default function JoinTeam() {
           </div>
         ))}
       </div>
-      <div className="mt-8 text-muted-foreground text-sm font-mono text-center">
-        OR
-      </div>
+      {showCreateTeam ? (
+        <div className="mt-8 text-muted-foreground text-sm font-mono text-center">
+          OR
+        </div>
+      ) : null}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
