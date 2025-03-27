@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { LogoutButton, NavButton } from "./nav-button";
+import { LogoutButton, NavButton, ChangeTeam } from "./nav-button";
 import {
   BookOpenText,
   BookUser,
@@ -106,6 +106,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 ) : null}
               </div>
               <div className="pl-4 flex flex-col gap-2 w-full">
+                <ChangeTeam />
+
                 <Link
                   href="https://docs.unsend.dev"
                   target="_blank"
