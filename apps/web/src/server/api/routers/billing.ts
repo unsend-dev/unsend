@@ -1,4 +1,4 @@
-import { DailyEmailUsage, EmailUsageType } from "@prisma/client";
+import { DailyEmailUsage, EmailUsageType, Subscription } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { format } from "date-fns";
 import { z } from "zod";
@@ -25,7 +25,18 @@ export const billingRouter = createTRPCRouter({
   }),
 
   getThisMonthUsage: teamProcedure.query(async ({ ctx }) => {
-    const isoStartDate = format(new Date(), "yyyy-MM-01"); // First day of current month
+    const isPaidPlan = ctx.team.plan !== "FREE";
+    let subscription: Subscription | null = null;
+
+    if (!isPaidPlan) {
+      subscription = await db.subscription.findFirst({
+        where: { teamId: ctx.team.id },
+        orderBy: { status: "asc" },
+      });
+    }
+
+    const isoStartDate =
+      subscription?.currentPeriodStart || format(new Date(), "yyyy-MM-01"); // First day of current month
     const today = format(new Date(), "yyyy-MM-dd");
 
     const [monthUsage, dayUsage] = await Promise.all([
