@@ -14,6 +14,8 @@ import { useTeam } from "~/providers/team-context";
 import { EmailUsageType } from "@prisma/client";
 import { PlanDetails } from "~/components/payments/PlanDetails";
 import { UpgradeButton } from "~/components/payments/UpgradeButton";
+import { Progress } from "@unsend/ui/src/progress";
+
 const FREE_PLAN_LIMIT = 3000;
 
 function FreePlanUsage({
@@ -152,16 +154,23 @@ function PaidPlanUsage({
               </div>
             </div>
           ))}
-          <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
-            <div>
-              <div className="font-medium capitalize">Minimum spend</div>
-              <div className="text-sm text-muted-foreground mt-1">
-                {currentTeam?.plan}
+          <div>
+            <div className="flex justify-between items-center border-b pb-3 last:border-0 last:pb-0">
+              <div>
+                <div className="font-medium capitalize">Available credit</div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {currentTeam?.plan}
+                </div>
+              </div>
+              <div className="font-mono font-medium">
+                {totalCost > planCreditCost
+                  ? "0"
+                  : `$${(planCreditCost - totalCost).toFixed(2)}`}
               </div>
             </div>
-            <div className="font-mono font-medium">
-              ${planCreditCost.toFixed(2)}
-            </div>
+            <Progress
+              value={100 - Math.min(100, (totalCost / planCreditCost) * 100)}
+            />
           </div>
         </div>
         <div className="w-full flex justify-center items-center">
@@ -185,15 +194,14 @@ export default function UsagePage() {
   const { data: usage, isLoading } = api.billing.getThisMonthUsage.useQuery();
   const { currentTeam } = useTeam();
 
-  // Calculate the current billing period
+  const { data: subscription } = api.billing.getSubscriptionDetails.useQuery();
+
+  // Calculate the billing period based on subscription if available
   const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const firstDayOfNextMonth = new Date(
-    today.getFullYear(),
-    today.getMonth() + 1,
-    1
-  );
-  const billingPeriod = `${format(firstDayOfMonth, "MMM dd")} - ${format(firstDayOfNextMonth, "MMM dd")}`;
+  const billingPeriod =
+    subscription?.currentPeriodStart && subscription?.currentPeriodEnd
+      ? `${format(new Date(subscription.currentPeriodStart), "MMM dd")} - ${format(new Date(subscription.currentPeriodEnd), "MMM dd")}`
+      : `${format(new Date(today.getFullYear(), today.getMonth(), 1), "MMM dd")} - ${format(new Date(today.getFullYear(), today.getMonth() + 1, 1), "MMM dd")}`;
 
   return (
     <div>
