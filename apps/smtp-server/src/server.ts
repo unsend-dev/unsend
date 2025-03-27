@@ -7,6 +7,8 @@ import { readFileSync } from "fs";
 dotenv.config();
 
 const AUTH_USERNAME = process.env.SMTP_AUTH_USERNAME ?? "unsend";
+
+
 const UNSEND_BASE_URL = process.env.UNSEND_BASE_URL ?? "https://app.unsend.dev";
 const SSL_KEY_PATH = process.env.UNSEND_API_KEY_PATH;
 const SSL_CERT_PATH = process.env.UNSEND_API_CERT_PATH;

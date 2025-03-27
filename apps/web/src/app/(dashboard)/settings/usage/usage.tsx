@@ -183,6 +183,9 @@ function PaidPlanUsage({
 
 export default function UsagePage() {
   const { data: usage, isLoading } = api.billing.getThisMonthUsage.useQuery();
+
+
+
   const { currentTeam } = useTeam();
 
   // Calculate the current billing period
