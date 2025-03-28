@@ -199,14 +199,16 @@ export default function InviteTeamMember() {
               >
                 Cancel
               </Button>
-              <Button
-                disabled={createInvite.isPending}
-                isLoading={createInvite.isPending}
-                className="w-[150px]"
-                onClick={form.handleSubmit(onCopyLink)}
-              >
-                Copy Invitation
-              </Button>
+              {isSelfHosted() ? (
+                <Button
+                  disabled={createInvite.isPending}
+                  isLoading={createInvite.isPending}
+                  className="w-[150px]"
+                  onClick={form.handleSubmit(onCopyLink)}
+                >
+                  Copy Invitation
+                </Button>
+              ) : null}
               {isCloud() || domains?.length ? (
                 <Button
                   type="submit"
