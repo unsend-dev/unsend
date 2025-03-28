@@ -239,7 +239,7 @@ const DashboardItemCard: React.FC<DashboardItemCardProps> = ({
           {count}
         </div>
         {status !== "total" ? (
-          <div className="text-sm pb-1">{(percentage * 100).toFixed(0)}%</div>
+          <div className="text-sm pb-1">{count > 0 ? (percentage * 100).toFixed(0) : 0}%</div>
         ) : null}
       </div>
     </div>
