@@ -3,13 +3,14 @@
 import { Button } from "@unsend/ui/src/button";
 import { api } from "~/trpc/react";
 import { toast } from "@unsend/ui/src/toaster";
-import { RotateCw } from "lucide-react";
+import { Copy, RotateCw } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@unsend/ui/src/tooltip";
+import { isSelfHosted } from "~/utils/common";
 
 export const ResendTeamInvite: React.FC<{
   invite: { id: string; email: string };
@@ -44,6 +45,28 @@ export const ResendTeamInvite: React.FC<{
           <p>Resend invite</p>
         </TooltipContent>
       </Tooltip>
+
+      {isSelfHosted() ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `${location.origin}/join-team?inviteId=${invite.id}`
+                );
+                toast.success(`Invite link copied to clipboard`);
+              }}
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Copy invite link</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : null}
     </TooltipProvider>
   );
 };

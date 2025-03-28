@@ -5,63 +5,30 @@ import { env } from "~/env";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const invitationRouter = createTRPCRouter({
-  createTeam: protectedProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const teams = await ctx.db.team.findMany({
+  getUserInvites: protectedProcedure
+    .input(
+      z.object({
+        inviteId: z.string().optional().nullable(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session.user.email) {
+        return [];
+      }
+
+      const invites = await ctx.db.teamInvite.findMany({
         where: {
-          teamUsers: {
-            some: {
-              userId: ctx.session.user.id,
-            },
-          },
+          ...(input.inviteId
+            ? { id: input.inviteId }
+            : { email: ctx.session.user.email }),
+        },
+        include: {
+          team: true,
         },
       });
 
-      if (teams.length > 0) {
-        console.log("User already has a team");
-        return;
-      }
-
-      if (!env.NEXT_PUBLIC_IS_CLOUD) {
-        const _team = await ctx.db.team.findFirst();
-        if (_team) {
-          throw new TRPCError({
-            message: "Can't have multiple teams in self hosted version",
-            code: "UNAUTHORIZED",
-          });
-        }
-      }
-
-      return ctx.db.team.create({
-        data: {
-          name: input.name,
-          teamUsers: {
-            create: {
-              userId: ctx.session.user.id,
-              role: "ADMIN",
-            },
-          },
-        },
-      });
+      return invites;
     }),
-
-  getUserInvites: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.session.user.email) {
-      return [];
-    }
-
-    const invites = await ctx.db.teamInvite.findMany({
-      where: {
-        email: ctx.session.user.email,
-      },
-      include: {
-        team: true,
-      },
-    });
-
-    return invites;
-  }),
 
   getInvite: protectedProcedure
     .input(z.object({ inviteId: z.string() }))

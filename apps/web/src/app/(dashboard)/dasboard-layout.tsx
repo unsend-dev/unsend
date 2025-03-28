@@ -91,12 +91,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Developer settings
                 </NavButton>
 
-                {isCloud() ? (
-                  <NavButton href="/settings">
-                    <Cog className="h-4 w-4" />
-                    Settings
-                  </NavButton>
-                ) : null}
+                <NavButton href="/settings">
+                  <Cog className="h-4 w-4" />
+                  Settings
+                </NavButton>
 
                 {isSelfHosted() || session?.user.isAdmin ? (
                   <NavButton href="/admin">

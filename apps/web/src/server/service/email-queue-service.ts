@@ -201,6 +201,8 @@ async function executeEmail(
     ? JSON.parse(email.attachments)
     : [];
 
+  console.log(`Domain: ${JSON.stringify(domain)}`);
+
   const configurationSetName = await getConfigurationSetName(
     domain?.clickTracking ?? false,
     domain?.openTracking ?? false,
@@ -208,7 +210,6 @@ async function executeEmail(
   );
 
   if (!configurationSetName) {
-    console.log(`[EmailQueueService]: Configuration set not found, skipping`);
     return;
   }
 
