@@ -210,7 +210,6 @@ async function executeEmail(
   );
 
   if (!configurationSetName) {
-    console.log(`[EmailQueueService]: Configuration set not found, skipping`);
     return;
   }
 
