@@ -93,11 +93,7 @@ export default function DomainItemPage({
             </div>
             <div className="flex gap-4">
               <div>
-                <Button
-                  variant="outline"
-                  onClick={handleVerify}
-                  disabled={domainQuery.data?.isVerifying}
-                >
+                <Button variant="outline" onClick={handleVerify}>
                   {domainQuery.data?.isVerifying
                     ? "Verifying..."
                     : domainQuery.data?.status === DomainStatus.SUCCESS
