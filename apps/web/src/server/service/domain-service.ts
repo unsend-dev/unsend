@@ -165,6 +165,17 @@ export async function deleteDomain(id: number) {
   });
 }
 
+export async function getDomains(teamId: number) {
+  return db.domain.findMany({
+    where: {
+      teamId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 async function getDmarcRecord(domain: string) {
   try {
     const dmarcRecord = await dnsResolveTxt(`_dmarc.${domain}`);

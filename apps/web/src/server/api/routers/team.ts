@@ -9,6 +9,7 @@ import {
   teamAdminProcedure,
 } from "~/server/api/trpc";
 import { sendTeamInviteEmail } from "~/server/mailer";
+import send from "~/server/public-api/api/emails/send-email";
 
 export const teamRouter = createTRPCRouter({
   createTeam: protectedProcedure
@@ -97,8 +98,21 @@ export const teamRouter = createTRPCRouter({
   }),
 
   createTeamInvite: teamAdminProcedure
-    .input(z.object({ email: z.string(), role: z.enum(["MEMBER", "ADMIN"]) }))
+    .input(
+      z.object({
+        email: z.string(),
+        role: z.enum(["MEMBER", "ADMIN"]),
+        sendEmail: z.boolean().default(true),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
+      if (!input.email) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Email is required",
+        });
+      }
+
       const user = await ctx.db.user.findUnique({
         where: {
           email: input.email,
@@ -125,7 +139,9 @@ export const teamRouter = createTRPCRouter({
 
       const teamUrl = `${env.NEXTAUTH_URL}/join-team?inviteId=${teamInvite.id}`;
 
-      await sendTeamInviteEmail(input.email, teamUrl, ctx.team.name);
+      if (input.sendEmail) {
+        await sendTeamInviteEmail(input.email, teamUrl, ctx.team.name);
+      }
 
       return teamInvite;
     }),

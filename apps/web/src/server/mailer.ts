@@ -1,5 +1,9 @@
 import { env } from "~/env";
 import { Unsend } from "unsend";
+import { isSelfHosted } from "~/utils/common";
+import { db } from "./db";
+import { getDomains } from "./service/domain-service";
+import { sendEmail } from "./service/email-service";
 
 let unsend: Unsend | undefined;
 
@@ -54,7 +58,37 @@ async function sendMail(
   text: string,
   html: string
 ) {
-  if (env.UNSEND_API_KEY && env.FROM_EMAIL) {
+  if (isSelfHosted()) {
+    console.log("Sending email using self hosted");
+    /* 
+      Self hosted so checking if we can send using one of the available domain
+      Assuming self hosted will have only one team
+      TODO: fix this
+     */
+    const team = await db.team.findFirst({});
+    if (!team) {
+      console.error("No team found");
+      return;
+    }
+
+    const domains = await getDomains(team.id);
+
+    if (domains.length === 0 || !domains[0]) {
+      console.error("No domains found");
+      return;
+    }
+
+    const domain = domains[0];
+
+    await sendEmail({
+      teamId: team.id,
+      to: email,
+      from: `hello@${domain.name}`,
+      subject,
+      text,
+      html,
+    });
+  } else if (env.UNSEND_API_KEY && env.FROM_EMAIL) {
     const resp = await getClient().emails.send({
       to: email,
       from: env.FROM_EMAIL,
