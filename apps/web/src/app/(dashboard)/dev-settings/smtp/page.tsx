@@ -8,6 +8,12 @@ import {
   CardTitle,
 } from "@unsend/ui/src/card";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
+import {env} from "~/env";
+
+
+const host = env.NEXT_PUBLIC_SMTP_HOST;
+const user = env.NEXT_PUBLIC_SMTP_USER;
+
 
 export default function ExampleCard() {
   return (
@@ -25,7 +31,7 @@ export default function ExampleCard() {
             <strong>Host:</strong>
             <TextWithCopyButton
               className="ml-1 border bg-primary/10  rounded-lg mt-1 p-2 w-full "
-              value={"smtp.unsend.dev"}
+              value={host}
             ></TextWithCopyButton>
           </div>
           <div>
@@ -45,7 +51,7 @@ export default function ExampleCard() {
             <strong>User:</strong>
             <TextWithCopyButton
               className="ml-1 rounded-lg mt-1 p-2 w-full bg-primary/10"
-              value={"unsend"}
+              value={user}
             ></TextWithCopyButton>
           </div>
           <div>
