@@ -16,6 +16,7 @@ node_modules
 # Testing
 coverage
 .idea
+
 # Turbo
 .turbo
 
