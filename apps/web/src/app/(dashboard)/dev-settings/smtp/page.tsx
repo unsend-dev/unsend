@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import {
   Card,
@@ -8,14 +7,12 @@ import {
   CardTitle,
 } from "@unsend/ui/src/card";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
-import {env} from "~/env";
-
-
-const host = env.NEXT_PUBLIC_SMTP_HOST;
-const user = env.NEXT_PUBLIC_SMTP_USER;
-
+import { env } from "~/env";
 
 export default function ExampleCard() {
+  const host = env.SMTP_HOST;
+  const user = env.SMTP_USER;
+
   return (
     <Card className="mt-9 max-w-xl">
       <CardHeader>
