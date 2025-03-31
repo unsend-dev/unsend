@@ -15,24 +15,18 @@ const route = createRoute({
             .object({
               to: z.string().or(z.array(z.string())),
               from: z.string(),
-              subject: z
-                .string()
-                .optional()
-                .openapi({
-                  description: "Optional when templateId is provided",
-                }),
-              templateId: z
-                .string()
-                .optional()
-                .openapi({
-                  description: "ID of a template from the dashboard",
-                }),
+              subject: z.string().optional().openapi({
+                description: "Optional when templateId is provided",
+              }),
+              templateId: z.string().optional().openapi({
+                description: "ID of a template from the dashboard",
+              }),
               variables: z.record(z.string()).optional(),
               replyTo: z.string().or(z.array(z.string())).optional(),
               cc: z.string().or(z.array(z.string())).optional(),
               bcc: z.string().or(z.array(z.string())).optional(),
-              text: z.string().optional(),
-              html: z.string().optional(),
+              text: z.string().optional().nullable(),
+              html: z.string().optional().nullable(),
               attachments: z
                 .array(
                   z.object({
@@ -71,6 +65,8 @@ function send(app: PublicAPIApp) {
       ...c.req.valid("json"),
       teamId: team.id,
       apiKeyId: team.apiKeyId,
+      text: c.req.valid("json").text ?? undefined,
+      html: c.req.valid("json").html ?? undefined,
     });
 
     return c.json({ emailId: email?.id });

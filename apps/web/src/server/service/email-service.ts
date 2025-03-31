@@ -99,6 +99,13 @@ export async function sendEmail(
     }
   }
 
+  if (!text && !html) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "Either text or html is required",
+    });
+  }
+
   const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
   const delay = scheduledAtDate
     ? Math.max(0, scheduledAtDate.getTime() - Date.now())
