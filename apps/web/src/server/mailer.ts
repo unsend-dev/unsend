@@ -78,7 +78,10 @@ async function sendMail(
       return;
     }
 
-    const domain = domains[0];
+    const fromEmailDomain = env.FROM_EMAIL?.split("@")[1];
+
+    const domain =
+      domains.find((d) => d.name === fromEmailDomain) ?? domains[0];
 
     await sendEmail({
       teamId: team.id,
