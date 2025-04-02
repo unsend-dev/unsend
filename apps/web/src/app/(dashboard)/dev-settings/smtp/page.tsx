@@ -9,6 +9,8 @@ import {
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
 import { env } from "~/env";
 
+export const dynamic = "force-dynamic";
+
 export default function ExampleCard() {
   const host = env.SMTP_HOST;
   const user = env.SMTP_USER;
