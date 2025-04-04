@@ -9,14 +9,16 @@ import updateEmailScheduledAt from "./api/emails/update-email";
 import cancelScheduledEmail from "./api/emails/cancel-email";
 import getContacts from "./api/contacts/get-contacts";
 import upsertContact from "./api/contacts/upsert-contact";
-import createDomain from "./api/domains/create-domain"
+import createDomain from "./api/domains/create-domain";
 import deleteContact from "./api/contacts/delete-contact";
+import verifyDomain from "./api/domains/verify-domain";
 
 export const app = getApp();
 
 /**Domain related APIs */
 getDomains(app);
-createDomain(app)
+createDomain(app);
+verifyDomain(app);
 
 /**Email related APIs */
 getEmail(app);

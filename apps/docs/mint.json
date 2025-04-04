@@ -96,7 +96,9 @@
     {
       "group": "Domains",
       "pages": [
-        "api-reference/domains/get-domain"
+        "api-reference/domains/get-domain",
+        "api-reference/domains/create-domain",
+        "api-reference/domains/verify-domain"
       ]
     }
   ],

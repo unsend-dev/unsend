@@ -40,7 +40,85 @@ export interface paths {
                 spfDetails?: string | null;
                 createdAt: string;
                 updatedAt: string;
+                /** @default false */
+                dmarcAdded?: boolean;
+                /** @default false */
+                isVerifying?: boolean;
+                errorMessage?: string | null;
+                subdomain?: string | null;
               })[];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            region: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Create a new domain */
+        200: {
+          content: {
+            "application/json": {
+              /**
+               * @description The ID of the domain
+               * @example 1
+               */
+              id: number;
+              /**
+               * @description The name of the domain
+               * @example example.com
+               */
+              name: string;
+              /**
+               * @description The ID of the team
+               * @example 1
+               */
+              teamId: number;
+              /** @enum {string} */
+              status: "NOT_STARTED" | "PENDING" | "SUCCESS" | "FAILED" | "TEMPORARY_FAILURE";
+              /** @default us-east-1 */
+              region?: string;
+              /** @default false */
+              clickTracking?: boolean;
+              /** @default false */
+              openTracking?: boolean;
+              publicKey: string;
+              dkimStatus?: string | null;
+              spfDetails?: string | null;
+              createdAt: string;
+              updatedAt: string;
+              /** @default false */
+              dmarcAdded?: boolean;
+              /** @default false */
+              isVerifying?: boolean;
+              errorMessage?: string | null;
+              subdomain?: string | null;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/v1/domains/{id}/verify": {
+    put: {
+      parameters: {
+        path: {
+          id: number;
+        };
+      };
+      responses: {
+        /** @description Create a new domain */
+        200: {
+          content: {
+            "application/json": {
+              message: string;
+            };
           };
         };
       };
