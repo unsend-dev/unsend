@@ -18,14 +18,8 @@ export const DomainSchema = z.object({
   spfDetails: z.string().optional().nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
-});
-
-export const CreateDomainSchema = DomainSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  teamId: true,
-  publicKey: true,
-  dkimStatus: true,
-  spfDetails: true,
+  dmarcAdded: z.boolean().default(false),
+  isVerifying: z.boolean().default(false),
+  errorMessage: z.string().optional().nullish(),
+  subdomain: z.string().optional().nullish(),
 });
