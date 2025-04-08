@@ -124,7 +124,7 @@ Let's say you want to fix a bug:
 
 ## Community and Support
 
-- **Discord**: Join our Discord server (see README for the link) to chat with contributors and maintainers.
+- **Discord**: Join our Discord server (see README for the link) to chat with contributors and maintainers.[Discord](https://discord.com/invite/BU8n8pJv8S)
 - **GitHub Discussions**: Use the [Discussions](https://github.com/unsend/unsend/discussions) tab for ideas or questions.
 - **Stuck?**: Open an issue or ask in Discord—we're here to help!
 
