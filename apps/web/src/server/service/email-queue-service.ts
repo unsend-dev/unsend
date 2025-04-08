@@ -7,6 +7,7 @@ import { db } from "../db";
 import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
 import { getRedis } from "../redis";
 import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
+import { Prisma } from "@prisma/client";
 
 function createQueueAndWorker(region: string, quota: number, suffix: string) {
   const connection = getRedis();
@@ -109,6 +110,113 @@ export class EmailQueueService {
       emailId,
       { emailId, timestamp: Date.now(), unsubUrl, isBulk },
       { jobId: emailId, delay, ...DEFAULT_QUEUE_OPTIONS }
+    );
+  }
+
+  /**
+   * Efficiently queues multiple pre-defined email jobs using BullMQ's addBulk.
+   * Jobs are grouped by region and type (transactional/marketing) before queuing.
+   *
+   * @param jobs - Array of job details to queue.
+   * @returns A promise that resolves when all bulk additions are attempted.
+   */
+  public static async queueBulk(
+    jobs: {
+      emailId: string;
+      region: string;
+      transactional: boolean;
+      unsubUrl?: string;
+      delay?: number;
+      timestamp?: number; // Optional: pass timestamp if needed for data
+    }[]
+  ): Promise<void> {
+    if (jobs.length === 0) {
+      console.log("[EmailQueueService]: No jobs provided for bulk queue.");
+      return;
+    }
+
+    if (!this.initialized) {
+      await this.init();
+    }
+
+    console.log(
+      `[EmailQueueService]: Starting bulk queue for ${jobs.length} jobs.`
+    );
+
+    // Group jobs by region and type
+    const groupedJobs = jobs.reduce(
+      (acc, job) => {
+        const key = `${job.region}-${job.transactional ? "transactional" : "marketing"}`;
+        if (!acc[key]) {
+          acc[key] = {
+            queue: job.transactional
+              ? this.transactionalQueue.get(job.region)
+              : this.marketingQueue.get(job.region),
+            region: job.region,
+            transactional: job.transactional,
+            jobDetails: [],
+          };
+        }
+        acc[key]?.jobDetails.push(job);
+        return acc;
+      },
+      {} as Record<
+        string,
+        {
+          queue: Queue | undefined;
+          region: string;
+          transactional: boolean;
+          jobDetails: typeof jobs;
+        }
+      >
+    );
+
+    const bulkAddPromises: Promise<any>[] = [];
+
+    for (const groupKey in groupedJobs) {
+      const group = groupedJobs[groupKey];
+      if (!group || !group.queue) {
+        console.error(
+          `[EmailQueueService]: Queue not found for group ${groupKey} during bulk add. Skipping ${group?.jobDetails?.length ?? 0} jobs.`
+        );
+        // Optionally: handle these skipped jobs (e.g., mark corresponding emails as failed)
+        continue;
+      }
+
+      const queue = group.queue;
+      const isBulk = !group.transactional;
+      const bulkData = group.jobDetails.map((job) => ({
+        name: job.emailId, // Use emailId as job name (matches single queue logic)
+        data: {
+          emailId: job.emailId,
+          timestamp: job.timestamp ?? Date.now(),
+          unsubUrl: job.unsubUrl,
+          isBulk,
+        },
+        opts: {
+          jobId: job.emailId, // Use emailId as jobId
+          delay: job.delay,
+          ...DEFAULT_QUEUE_OPTIONS, // Apply default options (attempts, backoff)
+        },
+      }));
+
+      console.log(
+        `[EmailQueueService]: Adding ${bulkData.length} jobs to queue ${queue.name}`
+      );
+      bulkAddPromises.push(
+        queue.addBulk(bulkData).catch((error) => {
+          console.error(
+            `[EmailQueueService]: Failed to add bulk jobs to queue ${queue.name}:`,
+            error
+          );
+          // Optionally: handle bulk add failure (e.g., mark corresponding emails as failed)
+        })
+      );
+    }
+
+    await Promise.allSettled(bulkAddPromises);
+    console.log(
+      "[EmailQueueService]: Finished processing bulk queue requests."
     );
   }
 
