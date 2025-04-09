@@ -1,147 +1,204 @@
-# Contributing to Unsend
+# 🤝 Contributing to Unsend
 
-Welcome to Unsend! We're an open-source project aiming to create a robust, developer-friendly alternative to email-sending services like Resend, SendGrid, and Postmark. Whether you're a seasoned developer or a newcomer to open source, your contributions are valuable to us. This guide will walk you through how to get started, submit changes, and become part of our community.
+Thanks for your interest in contributing to **Unsend**! We’re an open-source email infrastructure platform, and we’d love your help to make it even better. This guide will walk you through how to get started, set up the project locally, and submit contributions.
 
-## Why Contribute?
+---
 
-By contributing to Unsend, you'll:
-- Help build a tool used by developers worldwide
-- Gain experience with TypeScript, Node.js, AWS SES, and PostgreSQL
-- Be part of an open-source community driving innovation in email infrastructure
+## 🧰 Getting Started
 
-## How to Contribute
+All contributions begin with setting up the project locally. Follow the steps below to get started.
 
-### 1. Setting Up Your Environment
+📖 **Refer to the full setup guide:**  
+[https://docs.unsend.dev/get-started/local](https://docs.unsend.dev/get-started/local)
 
-To contribute, you'll need to set up the project locally:
+### ⚙️ Prerequisites
 
-1. **Fork the Repository**: Click "Fork" on the [Unsend GitHub page](https://github.com/unsend/unsend) to create your own copy.
+You’ll need:
 
-2. **Clone Your Fork**: 
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/unsend.git
-   ```
+- A GitHub account
+- Node.js v18+
+- `pnpm` (use `corepack enable` to activate)
+- Docker (recommended)
+- AWS & Cloudflare accounts (free tiers are fine)
 
-3. **Navigate to the Directory**: 
-   ```bash
-   cd unsend
-   ```
+---
 
-4. **Install Dependencies**: 
-   ```bash
-   npm install
-   ```
-   (or `yarn install` if specified in the README)
+## 🛠 Setting Up the Project
 
-5. **Set Up Environment Variables**: Copy `.env.example` to `.env` and fill in the required values (e.g., AWS SES credentials, database connection details).
+### 1. Fork & Clone
 
-6. **Run Locally**: Follow the README.md instructions to start the app (likely `npm run dev`).
+```bash
+git clone https://github.com/YOUR-USERNAME/unsend.git
+cd unsend
+```
 
-### 2. Finding Something to Work On
+### 2. Install Dependencies
 
-- **Browse Issues**: Check the [Issues](https://github.com/unsend/unsend/issues) tab for bugs, feature requests, or enhancements.
+```bash
+corepack enable
+pnpm install
+```
 
-- **Good First Issues**: Look for issues labeled `good first issue` if you're new to the project.
+### 3. Setup Environment Variables
 
-- **Propose Your Own**: If you have an idea, open a new issue to discuss it with the maintainers before starting work.
+```bash
+cp .env.example .env
+```
 
-- **Claim an Issue**: Comment on an issue (e.g., "I'd like to work on this!") to avoid duplicate efforts.
+Then:
 
-### 3. Making Changes
+- Generate a secret:
 
-1. **Create a Branch**: Use a descriptive name:
-   ```bash
-   git checkout -b feat/add-template-support
-   # or
-   git checkout -b fix/bug-description
-   ```
+```bash
+openssl rand -base64 32
+```
 
-2. **Follow Coding Standards**:
-   - Use TypeScript with consistent typing
-   - Adhere to the existing code style (e.g., Prettier formatting if configured)
-   - Write modular, reusable code
+- Add this to `.env` as `NEXTAUTH_SECRET`.
 
-3. **Test Your Changes**:
-   - Run `npm test` (if tests exist) or manually verify your feature/fix works
-   - Add new tests if applicable (e.g., using Jest)
+### 4. GitHub OAuth (Optional for Dev)
 
-4. **Update Documentation**: Modify the README or other docs if your changes affect setup, usage, or APIs.
+Set up a GitHub OAuth App:  
+- Homepage: `http://localhost:3000/login`  
+- Callback: `http://localhost:3000/api/auth/callback/github`
 
-### 4. Submitting Your Contribution
+Add credentials to `.env`:
 
-1. **Commit Changes**: Write clear, concise commit messages:
-   ```
-   feat: add email template parsing
-   fix: resolve null pointer in SES integration
-   docs: update README with new endpoint
-   ```
+```env
+GITHUB_ID=your_client_id
+GITHUB_SECRET=your_client_secret
+```
 
-2. **Push to Your Fork**: 
-   ```bash
-   git push origin your-branch-name
-   ```
+### 5. AWS Credentials (Optional for local email)
 
-3. **Open a Pull Request (PR)**:
-   - Go to the Unsend repo, click "Pull Requests," then "New Pull Request"
-   - Select your branch and link it to an issue if applicable (e.g., `Fixes #71`)
-   - Provide a detailed PR description:
-     - What you changed
-     - Why you made the change
-     - How to test it
+If you want to send real emails, add:
 
-4. **Respond to Feedback**: Maintainers may request changes. Update your branch and push new commits as needed.
+```env
+AWS_ACCESS_KEY=your_access_key
+AWS_SECRET_KEY=your_secret_key
+```
 
-### 5. Getting Your PR Merged
+> You can skip this by using the `local-sen-sns` image for local-only email development.
 
-- Ensure all checks (e.g., linting, tests) pass
-- Address reviewer comments promptly
-- Once approved, a maintainer will merge your PR. Congrats—you've contributed to Unsend!
+---
 
-## Development Guidelines
+## 🚀 Running the App
 
-- **Tech Stack**: Unsend uses TypeScript, Node.js, AWS SES for email sending, and PostgreSQL for data storage.
+### Option 1: Docker (Recommended)
 
-- **API Design**: Follow RESTful conventions for new endpoints (e.g., `/api/v1/resource`).
+```bash
+pnpm d
+```
 
-- **Error Handling**: Include meaningful error messages and status codes.
+- **Dashboard**: [http://localhost:3000](http://localhost:3000)  
+- **Marketing Site**: [http://localhost:3001](http://localhost:3001)
 
-- **Security**: Avoid hardcoding sensitive data; use environment variables.
+> To test GitHub login, run:
 
-- **Performance**: Optimize database queries and API responses where possible.
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
 
-## Example Contribution Workflow
+Paste the Cloudflare URL in your GitHub App callback settings.
 
-Let's say you want to fix a bug:
+---
 
-1. Find an issue in the [Issues](https://github.com/unsend/unsend/issues) tab.
-2. Fork and clone the repo.
-3. Create a branch: `git checkout -b fix/email-validation`.
-4. Fix the bug in the codebase.
-5. Test locally: Send a test email to ensure it works.
-6. Commit: `git commit -m "fix: improve email address validation"`.
-7. Push: `git push origin fix/email-validation`.
-8. Open a PR with a description linking the issue.
+### Option 2: Manual DB Setup
 
-## Community and Support
+If you're using your own PostgreSQL & Redis:
 
-- **Discord**: Join our Discord server (see README for the link) to chat with contributors and maintainers.[Discord](https://discord.com/invite/BU8n8pJv8S)
-- **GitHub Discussions**: Use the [Discussions](https://github.com/unsend/unsend/discussions) tab for ideas or questions.
-- **Stuck?**: Open an issue or ask in Discord—we're here to help!
+1. Add in `.env`:
 
-## Code of Conduct
+```env
+DATABASE_URL=your_postgres_url
+REDIS_URL=your_redis_url
+```
 
-We're committed to a welcoming and inclusive community:
+2. Migrate database:
 
-- Be respectful and considerate in all interactions
-- Avoid harassment, discrimination, or offensive language
-- Focus on constructive feedback and collaboration
+```bash
+pnpm db:migrate-dev
+```
 
-## Recognition
+3. Start dev server:
 
-Every contributor matters! Your name will appear in the GitHub contributors list, and we'll shout out significant contributions on Discord or other channels.
+```bash
+pnpm dev
+```
 
-## Questions?
+4. Use `cloudflared` as mentioned above if needed.
 
-Unsure where to start? Need clarification? Reach out via [GitHub Issues](https://github.com/unsend/unsend/issues) or Discord. We're excited to see what you bring to Unsend!
+---
 
-Thank you for contributing—let's build something awesome together!
+### 📝 Run Documentation Locally
+
+```bash
+pnpm dev:docs
+```
+
+---
+
+## 📂 Code Structure Overview
+
+```
+apps/
+├── web          # Dashboard & Email Infra
+├── marketing    # Landing page
+├── docs         # This documentation site
+
+packages/
+├── eslint-config     # Shared ESLint rules
+├── sdk               # TypeScript SDK for Unsend REST API
+├── tailwind-config   # Shared Tailwind setup
+├── typescript-config # Shared tsconfig
+├── ui                # Shared UI components (buttons, modals, etc.)
+```
+
+---
+
+## 🧑‍💻 Making Contributions
+
+1. **Create a Feature Branch**
+
+```bash
+git checkout -b feat/your-feature
+```
+
+2. **Make Your Changes**
+   - Follow the existing project structure.
+   - Write clean, modular, and reusable code.
+   - Formatting is enforced with Prettier.
+
+3. **Commit Your Work**
+
+```bash
+git add .
+git commit -m "feat: your message here"
+```
+
+4. **Push and Open a Pull Request**
+
+```bash
+git push origin feat/your-feature
+```
+
+- Open a PR against the `main` branch
+- Fill in the PR template
+
+---
+
+## 💬 Community and Support
+
+- **Discord**: [Join our server](https://discord.gg/BU8n8pJv8S)
+- **GitHub Discussions**: [Start a discussion](https://github.com/unsend-dev/unsend/discussions)
+- **GitHub Issues**: [Report issues or bugs](https://github.com/unsend-dev/unsend/issues)
+
+---
+
+## 🙋 Questions?
+
+Need help or unsure where to begin? Just ask!
+
+- Chat with us on [Discord](https://discord.gg/BU8n8pJv8S)
+- Open an [Issue](https://github.com/unsend-dev/unsend/issues)
+
+We’re excited to see your ideas and contributions! 💌
