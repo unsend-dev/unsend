@@ -11,22 +11,24 @@ import { useDebouncedCallback } from "use-debounce";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-
+import { use } from "react";
 const IMAGE_SIZE_LIMIT = 10 * 1024 * 1024;
 
 export default function EditTemplatePage({
   params,
 }: {
-  params: { templateId: string };
+  params: Promise<{ templateId: string }>;
 }) {
+  const { templateId } = use(params);
+
   const {
     data: template,
     isLoading,
     error,
   } = api.template.getTemplate.useQuery(
-    { templateId: params.templateId },
+    { templateId: templateId },
     {
-      enabled: !!params.templateId,
+      enabled: !!templateId,
     }
   );
 
@@ -74,7 +76,6 @@ function TemplateEditor({
     },
   });
   const getUploadUrl = api.template.generateImagePresignedUrl.useMutation();
-
 
   function updateEditorContent() {
     updateTemplateMutation.mutate({
@@ -194,7 +195,6 @@ function TemplateEditor({
             />
           </div>
         </div>
-
 
         <div className=" rounded-lg bg-gray-50 w-[700px] mx-auto p-10">
           <div className="w-[600px] mx-auto">

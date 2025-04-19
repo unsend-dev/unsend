@@ -40,19 +40,19 @@
     "date-fns": "^3.6.0",
     "emoji-picker-react": "^4.12.0",
     "framer-motion": "^11.0.24",
-    "hono": "^4.2.2",
+    "hono": "^4.7.7",
     "html-to-text": "^9.0.5",
     "ioredis": "^5.4.1",
     "lucide-react": "^0.359.0",
     "mime-types": "^2.1.35",
     "nanoid": "^5.0.7",
-    "next": "^14.2.25",
-    "next-auth": "^4.24.6",
+    "next": "^15.3.1",
+    "next-auth": "^4.24.11",
     "pnpm": "^8.15.5",
     "prisma": "^6.3.1",
     "query-string": "^9.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-hook-form": "^7.51.3",
     "recharts": "^2.12.5",
     "server-only": "^0.0.1",
@@ -85,6 +85,9 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2"
+  },
+  "overrides": {
+    "react-is": "^19.0.0-rc-69d4b800-20241021"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.0"

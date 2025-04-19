@@ -22,16 +22,18 @@ import {
 } from "@unsend/ui/src/popover";
 import { Button } from "@unsend/ui/src/button";
 import { useTheme } from "@unsend/ui";
+import { use } from "react";
 
 export default function ContactsPage({
   params,
 }: {
-  params: { contactBookId: string };
+  params: Promise<{ contactBookId: string }>;
 }) {
+  const { contactBookId } = use(params);
   const { theme } = useTheme();
 
   const contactBookDetailQuery = api.contacts.getContactBookDetails.useQuery({
-    contactBookId: params.contactBookId,
+    contactBookId: contactBookId,
   });
 
   const utils = api.useUtils();
@@ -41,7 +43,7 @@ export default function ContactsPage({
       await utils.contacts.getContactBookDetails.cancel();
       utils.contacts.getContactBookDetails.setData(
         {
-          contactBookId: params.contactBookId,
+          contactBookId: contactBookId,
         },
         (old) => {
           if (!old) return old;
@@ -54,7 +56,7 @@ export default function ContactsPage({
     },
     onSettled: () => {
       utils.contacts.getContactBookDetails.invalidate({
-        contactBookId: params.contactBookId,
+        contactBookId: contactBookId,
       });
     },
   });
@@ -93,7 +95,7 @@ export default function ContactsPage({
                               // Handle emoji selection here
                               // You might want to update the contactBook's emoji
                               updateContactBookMutation.mutate({
-                                contactBookId: params.contactBookId,
+                                contactBookId: contactBookId,
                                 emoji: emojiObject.emoji,
                               });
                             }}
@@ -118,7 +120,7 @@ export default function ContactsPage({
           </Breadcrumb>
         </div>
         <div className="flex gap-4">
-          <AddContact contactBookId={params.contactBookId} />
+          <AddContact contactBookId={contactBookId} />
         </div>
       </div>
       <div className="mt-16">
@@ -153,7 +155,7 @@ export default function ContactsPage({
                 Contact book ID
               </div>
               <TextWithCopyButton
-                value={params.contactBookId}
+                value={contactBookId}
                 alwaysShowCopy
                 className="text-sm w-[130px] overflow-hidden text-ellipsis font-mono"
               />
@@ -194,7 +196,7 @@ export default function ContactsPage({
           </div>
         </div>
         <div className="mt-16">
-          <ContactList contactBookId={params.contactBookId} />
+          <ContactList contactBookId={contactBookId} />
         </div>
       </div>
     </div>

@@ -6,10 +6,12 @@ export const dynamic = "force-dynamic";
 async function UnsubscribePage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const id = searchParams.id as string;
-  const hash = searchParams.hash as string;
+  const params = await searchParams;
+
+  const id = params.id as string;
+  const hash = params.hash as string;
 
   if (!id || !hash) {
     return (
