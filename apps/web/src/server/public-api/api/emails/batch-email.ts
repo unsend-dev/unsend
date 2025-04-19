@@ -11,7 +11,7 @@ import { emailSchema } from "../../schemas/email-schema"; // Corrected import pa
 
 const route = createRoute({
   method: "post",
-  path: "/v1/emails/bulk",
+  path: "/v1/emails/batch",
   request: {
     body: {
       required: true,
@@ -42,7 +42,7 @@ const route = createRoute({
   },
 });
 
-function sendBulk(app: PublicAPIApp) {
+function sendBatch(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
     const team = await getTeamFromToken(c);
     const emailPayloads = c.req.valid("json");
@@ -70,4 +70,4 @@ function sendBulk(app: PublicAPIApp) {
   });
 }
 
-export default sendBulk;
+export default sendBatch;

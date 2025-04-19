@@ -46,6 +46,27 @@ type CancelEmailResponse = {
 type CancelEmailResponseSuccess =
   paths["/v1/emails/{emailId}/cancel"]["post"]["responses"]["200"]["content"]["application/json"];
 
+// Batch emails types
+/**
+ * Payload for sending multiple emails in a single batch request.
+ */
+type BatchEmailPayload =
+  paths["/v1/emails/batch"]["post"]["requestBody"]["content"]["application/json"];
+
+/**
+ * Successful response schema for batch email send.
+ */
+type BatchEmailResponseSuccess =
+  paths["/v1/emails/batch"]["post"]["responses"]["200"]["content"]["application/json"];
+
+/**
+ * Response structure for the batch method.
+ */
+type BatchEmailResponse = {
+  data: BatchEmailResponseSuccess["data"] | null;
+  error: ErrorResponse | null;
+};
+
 export class Emails {
   constructor(private readonly unsend: Unsend) {
     this.unsend = unsend;
@@ -67,6 +88,24 @@ export class Emails {
     );
 
     return data;
+  }
+
+  /**
+   * Send up to 100 emails in a single request.
+   *
+   * @param payload An array of email payloads. Max 100 emails.
+   * @returns A promise that resolves to the list of created email IDs or an error.
+   */
+  async batch(payload: BatchEmailPayload): Promise<BatchEmailResponse> {
+    // Note: React element rendering is not supported in batch mode.
+    const response = await this.unsend.post<BatchEmailResponseSuccess>(
+      "/emails/batch",
+      payload
+    );
+    return {
+      data: response.data ? response.data.data : null,
+      error: response.error,
+    };
   }
 
   async get(id: string): Promise<GetEmailResponse> {
