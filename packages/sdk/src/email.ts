@@ -1,4 +1,4 @@
-import { renderAsync } from "@react-email/render";
+import { render } from "@react-email/render";
 import * as React from "react";
 import { Unsend } from "./unsend";
 import { paths } from "../types/schema";
@@ -57,7 +57,7 @@ export class Emails {
 
   async create(payload: SendEmailPayload): Promise<CreateEmailResponse> {
     if (payload.react) {
-      payload.html = await renderAsync(payload.react as React.ReactElement);
+      payload.html = await render(payload.react as React.ReactElement);
       delete payload.react;
     }
 

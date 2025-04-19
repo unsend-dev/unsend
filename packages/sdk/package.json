@@ -1,6 +1,6 @@
 {
   "name": "unsend",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.2",
@@ -25,7 +25,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@react-email/render": "^0.0.14",
+    "@react-email/render": "^1.0.6",
     "react": "^18.3.1"
   }
 }
