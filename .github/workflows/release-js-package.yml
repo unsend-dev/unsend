@@ -33,6 +33,8 @@ jobs:
 
       - name: Create .npmrc file
         run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish
         run: pnpm publish-sdk
