@@ -12,6 +12,7 @@ import upsertContact from "./api/contacts/upsert-contact";
 import createDomain from "./api/domains/create-domain";
 import deleteContact from "./api/contacts/delete-contact";
 import verifyDomain from "./api/domains/verify-domain";
+import sendBulk from "./api/emails/bulk-email";
 
 export const app = getApp();
 
@@ -23,6 +24,7 @@ verifyDomain(app);
 /**Email related APIs */
 getEmail(app);
 sendEmail(app);
+sendBulk(app);
 updateEmailScheduledAt(app);
 cancelScheduledEmail(app);
 
