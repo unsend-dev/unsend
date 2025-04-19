@@ -78,6 +78,7 @@
       "pages": [
         "api-reference/emails/get-email",
         "api-reference/emails/send-email",
+        "api-reference/emails/batch-email",
         "api-reference/emails/update-schedule",
         "api-reference/emails/cancel-schedule"
       ]
