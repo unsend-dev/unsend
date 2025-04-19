@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "packages/sdk/**" # Trigger only changes in packages
+      - "workflows/release-js-package.yml"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
