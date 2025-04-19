@@ -109,7 +109,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: number;
+          id: number | null;
         };
       };
       responses: {
@@ -192,6 +192,7 @@ export interface paths {
         content: {
           "application/json": {
             to: string | string[];
+            /** Format: email */
             from: string;
             /** @description Optional when templateId is provided */
             subject?: string;
@@ -203,8 +204,8 @@ export interface paths {
             replyTo?: string | string[];
             cc?: string | string[];
             bcc?: string | string[];
-            text?: string;
-            html?: string;
+            text?: string | null;
+            html?: string | null;
             attachments?: {
                 filename: string;
                 content: string;
@@ -220,6 +221,49 @@ export interface paths {
           content: {
             "application/json": {
               emailId?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/v1/emails/batch": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": ({
+              to: string | string[];
+              /** Format: email */
+              from: string;
+              /** @description Optional when templateId is provided */
+              subject?: string;
+              /** @description ID of a template from the dashboard */
+              templateId?: string;
+              variables?: {
+                [key: string]: string;
+              };
+              replyTo?: string | string[];
+              cc?: string | string[];
+              bcc?: string | string[];
+              text?: string | null;
+              html?: string | null;
+              attachments?: {
+                  filename: string;
+                  content: string;
+                }[];
+              /** Format: date-time */
+              scheduledAt?: string;
+            })[];
+        };
+      };
+      responses: {
+        /** @description List of successfully created email IDs */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                  emailId: string;
+                }[];
             };
           };
         };

@@ -243,9 +243,10 @@
           {
             "schema": {
               "type": "number",
+              "nullable": true,
               "example": 1
             },
-            "required": true,
+            "required": false,
             "name": "id",
             "in": "path"
           }
@@ -494,21 +495,25 @@
                   "to": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
                   },
                   "from": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "email"
                   },
                   "subject": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "Optional when templateId is provided"
                   },
                   "templateId": {
@@ -524,12 +529,14 @@
                   "replyTo": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
@@ -537,12 +544,14 @@
                   "cc": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
@@ -550,21 +559,27 @@
                   "bcc": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
                   },
                   "text": {
-                    "type": "string"
+                    "type": "string",
+                    "nullable": true,
+                    "minLength": 1
                   },
                   "html": {
-                    "type": "string"
+                    "type": "string",
+                    "nullable": true,
+                    "minLength": 1
                   },
                   "attachments": {
                     "type": "array",
@@ -572,17 +587,20 @@
                       "type": "object",
                       "properties": {
                         "filename": {
-                          "type": "string"
+                          "type": "string",
+                          "minLength": 1
                         },
                         "content": {
-                          "type": "string"
+                          "type": "string",
+                          "minLength": 1
                         }
                       },
                       "required": [
                         "filename",
                         "content"
                       ]
-                    }
+                    },
+                    "maxItems": 10
                   },
                   "scheduledAt": {
                     "type": "string",
@@ -609,6 +627,175 @@
                       "type": "string"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/batch": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "to": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "from": {
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "subject": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Optional when templateId is provided"
+                    },
+                    "templateId": {
+                      "type": "string",
+                      "description": "ID of a template from the dashboard"
+                    },
+                    "variables": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "replyTo": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "cc": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "bcc": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "text": {
+                      "type": "string",
+                      "nullable": true,
+                      "minLength": 1
+                    },
+                    "html": {
+                      "type": "string",
+                      "nullable": true,
+                      "minLength": 1
+                    },
+                    "attachments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "filename": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "content": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "filename",
+                          "content"
+                        ]
+                      },
+                      "maxItems": 10
+                    },
+                    "scheduledAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "to",
+                    "from"
+                  ]
+                },
+                "maxItems": 100
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of successfully created email IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "emailId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "emailId"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 }
               }
             }
