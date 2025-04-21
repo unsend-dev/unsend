@@ -6,7 +6,7 @@ import { z } from "@hono/zod-openapi";
 export const emailSchema = z
   .object({
     to: z.string().or(z.array(z.string())),
-    from: z.string().email(),
+    from: z.string(),
     subject: z.string().min(1).optional().openapi({
       description: "Optional when templateId is provided",
     }),
