@@ -356,18 +356,19 @@ enum EmailUsageType {
 }
 
 model DailyEmailUsage {
-  teamId     Int
-  date       String
-  type       EmailUsageType
-  domainId   Int
-  sent       Int            @default(0)
-  delivered  Int            @default(0)
-  opened     Int            @default(0)
-  clicked    Int            @default(0)
-  bounced    Int            @default(0)
-  complained Int            @default(0)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  teamId      Int
+  date        String
+  type        EmailUsageType
+  domainId    Int
+  sent        Int            @default(0)
+  delivered   Int            @default(0)
+  opened      Int            @default(0)
+  clicked     Int            @default(0)
+  bounced     Int            @default(0)
+  complained  Int            @default(0)
+  hardBounced Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 

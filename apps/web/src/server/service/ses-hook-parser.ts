@@ -74,6 +74,10 @@ export async function parseSesHook(data: SesEvent) {
   ) {
     const updateField = mailStatus.toLowerCase();
 
+    const isHardBounced =
+      mailStatus === EmailStatus.BOUNCED &&
+      (mailData as SesBounce).bounceType === "Permanent";
+
     await db.dailyEmailUsage.upsert({
       where: {
         teamId_domainId_date_type: {
@@ -94,6 +98,7 @@ export async function parseSesHook(data: SesEvent) {
         bounced: updateField === "bounced" ? 1 : 0,
         complained: updateField === "complained" ? 1 : 0,
         sent: updateField === "sent" ? 1 : 0,
+        hardBounced: isHardBounced ? 1 : 0,
       },
       update: {
         [updateField]: {
