@@ -66,6 +66,8 @@ export async function parseSesHook(data: SesEvent) {
     mailStatus === EmailStatus.BOUNCED &&
     (mailData as SesBounce).bounceType === "Permanent";
 
+  console.log("mailStatus", mailStatus, "isHardBounced", isHardBounced);
+
   if (
     [
       "DELIVERED",
@@ -104,6 +106,7 @@ export async function parseSesHook(data: SesEvent) {
         [updateField]: {
           increment: 1,
         },
+        ...(isHardBounced ? { hardBounced: { increment: 1 } } : {}),
       },
     });
   }
