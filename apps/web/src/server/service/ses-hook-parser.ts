@@ -62,6 +62,10 @@ export async function parseSesHook(data: SesEvent) {
   // Update daily email usage statistics
   const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
 
+  const isHardBounced =
+    mailStatus === EmailStatus.BOUNCED &&
+    (mailData as SesBounce).bounceType === "Permanent";
+
   if (
     [
       "DELIVERED",
@@ -73,10 +77,6 @@ export async function parseSesHook(data: SesEvent) {
     ].includes(mailStatus)
   ) {
     const updateField = mailStatus.toLowerCase();
-
-    const isHardBounced =
-      mailStatus === EmailStatus.BOUNCED &&
-      (mailData as SesBounce).bounceType === "Permanent";
 
     await db.dailyEmailUsage.upsert({
       where: {
@@ -129,7 +129,11 @@ export async function parseSesHook(data: SesEvent) {
       });
 
       if (!mailEvent) {
-        await updateCampaignAnalytics(email.campaignId, mailStatus);
+        await updateCampaignAnalytics(
+          email.campaignId,
+          mailStatus,
+          isHardBounced
+        );
       }
     }
   }

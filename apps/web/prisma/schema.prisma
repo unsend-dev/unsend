@@ -325,6 +325,7 @@ model Campaign {
   clicked       Int            @default(0)
   unsubscribed  Int            @default(0)
   bounced       Int            @default(0)
+  hardBounced   Int            @default(0)
   complained    Int            @default(0)
   status        CampaignStatus @default(DRAFT)
   createdAt     DateTime       @default(now())
