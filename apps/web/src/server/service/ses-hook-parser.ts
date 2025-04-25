@@ -1,5 +1,10 @@
 import { EmailStatus, Prisma, UnsubscribeReason } from "@prisma/client";
-import { SesClick, SesEvent, SesEventDataKey } from "~/types/aws-types";
+import {
+  SesBounce,
+  SesClick,
+  SesEvent,
+  SesEventDataKey,
+} from "~/types/aws-types";
 import { db } from "../db";
 import {
   unsubscribeContact,
@@ -108,6 +113,7 @@ export async function parseSesHook(data: SesEvent) {
         campaignId: email.campaignId,
         teamId: email.teamId,
         event: mailStatus,
+        mailData: data,
       });
 
       const mailEvent = await db.emailEvent.findFirst({
@@ -139,13 +145,23 @@ async function checkUnsubscribe({
   campaignId,
   teamId,
   event,
+  mailData,
 }: {
   contactId: string;
   campaignId: string;
   teamId: number;
   event: EmailStatus;
+  mailData: SesEvent;
 }) {
-  if (event === EmailStatus.BOUNCED || event === EmailStatus.COMPLAINED) {
+  /**
+   * If the email is bounced and the bounce type is permanent, we need to unsubscribe the contact
+   * If the email is complained, we need to unsubscribe the contact
+   */
+  if (
+    (event === EmailStatus.BOUNCED &&
+      mailData.bounce?.bounceType === "Permanent") ||
+    event === EmailStatus.COMPLAINED
+  ) {
     const contact = await db.contact.findUnique({
       where: {
         id: contactId,
