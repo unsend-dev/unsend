@@ -12,18 +12,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/dotenv": "^8.2.0",
-    "@types/mailparser": "^3.4.4",
+    "@types/dotenv": "^8.2.3",
+    "@types/mailparser": "^3.4.5",
     "@types/smtp-server": "^3.5.10",
-    "dotenv": "^16.4.5",
-    "mailparser": "^3.7.1",
-    "nodemailer": "^6.9.14",
-    "smtp-server": "^3.13.4"
+    "dotenv": "^16.5.0",
+    "mailparser": "^3.7.2",
+    "nodemailer": "^6.10.1",
+    "smtp-server": "^3.13.6"
   },
   "devDependencies": {
-    "@types/node": "^22.1.0",
-    "@types/nodemailer": "^6.4.15",
-    "tsup": "^8.0.2",
-    "typescript": "^5.5.4"
+    "@types/node": "^22.15.2",
+    "@types/nodemailer": "^6.4.17",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
   }
 }

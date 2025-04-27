@@ -16,16 +16,16 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.12.12",
-    "@types/react": "^18.3.2",
+    "@types/node": "^22.15.2",
+    "@types/react": "^19.1.2",
     "@unsend/eslint-config": "workspace:*",
     "@unsend/typescript-config": "workspace:*",
-    "openapi-typescript": "^6.7.6",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.5"
+    "openapi-typescript": "^7.6.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@react-email/render": "^1.0.6",
-    "react": "^18.3.1"
+    "react": "^19.1.0"
   }
 }

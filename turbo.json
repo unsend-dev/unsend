@@ -3,10 +3,7 @@
   "globalDependencies": [
     "**/.env.*local"
   ],
-  "globalDotEnv": [
-    ".env"
-  ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build",
@@ -48,9 +45,6 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dotEnv": [
-        ".env"
-      ],
       "dependsOn": [
         "db:generate"
       ]
