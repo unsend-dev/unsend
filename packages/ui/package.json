@@ -12,7 +12,6 @@
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.4",
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
@@ -26,7 +25,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "react": "19.1.0",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {

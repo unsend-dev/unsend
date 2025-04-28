@@ -41,6 +41,7 @@ import { Input } from "@unsend/ui/src/input";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 import { useDebouncedCallback } from "use-debounce";
 import { useState } from "react";
+import { SheetTitle, SheetDescription } from "@unsend/ui/src/sheet";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -122,7 +123,7 @@ export default function EmailsList() {
               <SelectItem value="All ApiKey">All ApiKey</SelectItem>
               {apiKeysQuery &&
                 apiKeysQuery.map((apikey) => (
-                  <SelectItem value={apikey.id.toString()}>
+                  <SelectItem key={apikey.id} value={apikey.id.toString()}>
                     {apikey.name}
                   </SelectItem>
                 ))}
@@ -266,6 +267,10 @@ export default function EmailsList() {
           onOpenChange={handleSheetChange}
         >
           <DynamicSheetContentWithNoSSR className=" sm:max-w-3xl">
+            <SheetTitle className="sr-only">Email Details</SheetTitle>
+            <SheetDescription className="sr-only">
+              Detailed view of the selected email.
+            </SheetDescription>
             {selectedEmail ? <EmailDetails emailId={selectedEmail} /> : null}
           </DynamicSheetContentWithNoSSR>
         </DynamicSheetWithNoSSR>

@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/dotenv": "^8.2.3",
     "@types/mailparser": "^3.4.5",
     "@types/smtp-server": "^3.5.10",
     "dotenv": "^16.5.0",

@@ -34,6 +34,7 @@ export default function ContactBooksList() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {contactBooksQuery.data?.map((contactBook) => (
           <motion.div
+            key={contactBook.id}
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 200, damping: 10 }}
             whileTap={{ scale: 0.99 }}

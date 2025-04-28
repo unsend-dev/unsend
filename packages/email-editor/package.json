@@ -26,7 +26,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "react": "^19.1.0",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "^3.4.1",
     "tsup": "^8.4.0"
   },
   "peerDependencies": {
@@ -54,6 +54,7 @@
     "jsx-email": "^2.7.1",
     "lucide-react": "^0.503.0",
     "react-colorful": "^5.6.1",
+    "shiki": "^3.3.0",
     "tippy.js": "^6.3.7",
     "tiptap-extension-global-drag-handle": "^0.1.18"
   },
