@@ -9,7 +9,6 @@ const config = {
   output: process.env.DOCKER_OUTPUT ? "standalone" : undefined,
   experimental: {
     instrumentationHook: true,
-    esmExternals: "loose",
     serverComponentsExternalPackages: ["bullmq"],
   },
   images: {

@@ -12,16 +12,17 @@ import Link from "next/link";
 
 import Spinner from "@unsend/ui/src/spinner";
 import { api } from "~/trpc/react";
-import { Separator } from "@unsend/ui/src/separator";
-import { ExternalLinkIcon } from "lucide-react";
+import { use } from "react";
 
 export default function CampaignDetailsPage({
   params,
 }: {
-  params: { campaignId: string };
+  params: Promise<{ campaignId: string }>;
 }) {
+  const { campaignId } = use(params);
+
   const { data: campaign, isLoading } = api.campaign.getCampaign.useQuery({
-    campaignId: params.campaignId,
+    campaignId: campaignId,
   });
 
   if (isLoading) {

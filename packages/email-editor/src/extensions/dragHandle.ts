@@ -7,8 +7,7 @@ import {
 } from "@tiptap/pm/state";
 import { Fragment, Slice, Node } from "@tiptap/pm/model";
 
-// @ts-ignore
-import { __serializeForClipboard, EditorView } from "@tiptap/pm/view";
+import { EditorView } from "@tiptap/pm/view";
 
 export interface GlobalDragHandleOptions {
   /**
@@ -167,7 +166,8 @@ export function DragHandlePlugin(
     }
 
     const slice = view.state.selection.content();
-    const { dom, text } = __serializeForClipboard(view, slice);
+    console.log(slice, view);
+    const { dom, text } = view.serializeForClipboard(slice);
 
     event.dataTransfer.clearData();
     event.dataTransfer.setData("text/html", dom.innerHTML);

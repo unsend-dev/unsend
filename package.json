@@ -30,15 +30,15 @@
   "devDependencies": {
     "@unsend/eslint-config": "workspace:*",
     "@unsend/typescript-config": "workspace:*",
-    "dotenv-cli": "^7.4.1",
-    "mintlify": "4.0.494",
-    "prettier": "^3.2.5"
+    "dotenv-cli": "^8.0.0",
+    "mintlify": "4.0.510",
+    "prettier": "^3.5.3"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "turbo": "^1.12.5"
+    "turbo": "^2.5.2"
   }
 }

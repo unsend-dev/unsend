@@ -5,7 +5,7 @@ import { Spinner } from "@unsend/ui/src/spinner";
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
 import { Editor } from "@unsend/email-editor";
-import { useState } from "react";
+import { use, useState } from "react";
 import { Campaign } from "@prisma/client";
 import {
   Select,
@@ -51,16 +51,18 @@ const IMAGE_SIZE_LIMIT = 10 * 1024 * 1024;
 export default function EditCampaignPage({
   params,
 }: {
-  params: { campaignId: string };
+  params: Promise<{ campaignId: string }>;
 }) {
+  const { campaignId } = use(params);
+
   const {
     data: campaign,
     isLoading,
     error,
   } = api.campaign.getCampaign.useQuery(
-    { campaignId: params.campaignId },
+    { campaignId },
     {
-      enabled: !!params.campaignId,
+      enabled: !!campaignId,
     }
   );
 
