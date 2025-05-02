@@ -31,11 +31,8 @@ import { SesSetting } from "@prisma/client";
 
 const FormSchema = z.object({
   settingsId: z.string(),
-  sendRate: z.preprocess((val) => Number(val), z.number()),
-  transactionalQuota: z.preprocess(
-    (val) => Number(val),
-    z.number().min(0).max(100)
-  ),
+  sendRate: z.coerce.number(),
+  transactionalQuota: z.coerce.number().min(0).max(100),
 });
 
 export default function EditSesConfiguration({
