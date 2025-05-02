@@ -144,7 +144,7 @@ export default function EmailsList() {
               </SelectItem>
               {domainsQuery &&
                 domainsQuery.map((domain) => (
-                  <SelectItem value={domain.id.toString()}>
+                  <SelectItem key={domain.id} value={domain.id.toString()}>
                     {domain.name}
                   </SelectItem>
                 ))}
@@ -174,7 +174,7 @@ export default function EmailsList() {
                 "DELIVERY_DELAYED",
                 "COMPLAINED",
               ]).map((status) => (
-                <SelectItem value={status} className=" capitalize">
+                <SelectItem key={status} value={status} className=" capitalize">
                   {status.toLowerCase().replace("_", " ")}
                 </SelectItem>
               ))}

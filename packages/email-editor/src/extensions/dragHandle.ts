@@ -7,27 +7,7 @@ import {
 } from "@tiptap/pm/state";
 import { Fragment, Slice, Node } from "@tiptap/pm/model";
 
-// @ts-ignore
 import { EditorView } from "@tiptap/pm/view";
-import * as pmView from "@tiptap/pm/view";
-
-export function serializeForClipboard(view: pmView.EditorView, slice: Slice) {
-  // Newer Tiptap/ProseMirror
-  // @ts-ignore
-  if (typeof view.serializeForClipboard === "function") {
-    // @ts-ignore
-    return view.serializeForClipboard(slice);
-  }
-
-  // Older version fallback
-  // @ts-ignore
-  if (typeof pmView.__serializeForClipboard === "function") {
-    // @ts-ignore
-    return pmView.__serializeForClipboard(view, slice);
-  }
-
-  throw new Error("No supported clipboard serialization method found.");
-}
 
 export interface GlobalDragHandleOptions {
   /**
@@ -186,7 +166,8 @@ export function DragHandlePlugin(
     }
 
     const slice = view.state.selection.content();
-    const { dom, text } = serializeForClipboard(view, slice);
+    console.log(slice, view);
+    const { dom, text } = view.serializeForClipboard(slice);
 
     event.dataTransfer.clearData();
     event.dataTransfer.setData("text/html", dom.innerHTML);
