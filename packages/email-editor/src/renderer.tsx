@@ -10,7 +10,7 @@ import {
   Link,
   Heading,
   Hr,
-  Button,
+  Butan as Button,
   Img,
   Preview,
   Row,
@@ -271,17 +271,17 @@ export class EmailRenderer {
   }
 
   // `renderMark` will call the method of the corresponding mark type
-  private renderMark(node: JSONContent): JSX.Element {
+  private renderMark(node: JSONContent): React.ReactNode {
     // It will wrap the text with the corresponding mark type
     const text = node.text || <>&nbsp;</>;
     const marks = node.marks || [];
 
-    return marks.reduce(
+    return marks.reduce<React.ReactNode>(
       (acc, mark) => {
         const type = mark.type;
         if (type in this) {
           // @ts-expect-error - `this` is not assignable to type 'never'
-          return this[type]?.(mark, acc) as JSX.Element;
+          return this[type]?.(mark, acc) as React.ReactNode;
         }
 
         throw new Error(`Mark type "${type}" is not supported.`);
@@ -293,7 +293,7 @@ export class EmailRenderer {
   private getMappedContent(
     node: JSONContent,
     options?: NodeOptions
-  ): JSX.Element[] {
+  ): React.ReactNode[] {
     return node.content
       ?.map((childNode) => {
         const component = this.renderNode(childNode, options);
@@ -303,18 +303,18 @@ export class EmailRenderer {
 
         return <Fragment key={generateKey()}>{component}</Fragment>;
       })
-      .filter((n) => n !== null) as JSX.Element[];
+      .filter((n) => n !== null) as React.ReactNode[];
   }
 
   private renderNode(
     node: JSONContent,
     options: NodeOptions = {}
-  ): JSX.Element | null {
+  ): React.ReactNode | null {
     const type = node.type || "";
 
     if (type in this) {
       // @ts-expect-error - `this` is not assignable to type 'never'
-      return this[type]?.(node, options) as JSX.Element;
+      return this[type]?.(node, options) as React.ReactNode;
     }
 
     throw new Error(`Node type "${type}" is not supported.`);
@@ -323,7 +323,7 @@ export class EmailRenderer {
   private unsubscribeFooter(
     node: JSONContent,
     options?: NodeOptions
-  ): JSX.Element {
+  ): React.ReactNode {
     return (
       <Container
         style={{
@@ -338,7 +338,7 @@ export class EmailRenderer {
     );
   }
 
-  private paragraph(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private paragraph(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const alignment = attrs?.textAlign || "left";
 
@@ -362,7 +362,7 @@ export class EmailRenderer {
     );
   }
 
-  private text(node: JSONContent, _?: NodeOptions): JSX.Element {
+  private text(node: JSONContent, _?: NodeOptions): React.ReactNode {
     const text = node.text || "&nbsp";
     if (node.marks) {
       return this.renderMark(node);
@@ -371,30 +371,30 @@ export class EmailRenderer {
     return <>{text}</>;
   }
 
-  private bold(_: MarkType, text: JSX.Element): JSX.Element {
+  private bold(_: MarkType, text: React.ReactNode): React.ReactNode {
     return <strong>{text}</strong>;
   }
 
-  private italic(_: MarkType, text: JSX.Element): JSX.Element {
+  private italic(_: MarkType, text: React.ReactNode): React.ReactNode {
     return <em>{text}</em>;
   }
 
-  private underline(_: MarkType, text: JSX.Element): JSX.Element {
+  private underline(_: MarkType, text: React.ReactNode): React.ReactNode {
     return <u>{text}</u>;
   }
 
-  private strike(_: MarkType, text: JSX.Element): JSX.Element {
+  private strike(_: MarkType, text: React.ReactNode): React.ReactNode {
     return <s style={{ textDecoration: "line-through" }}>{text}</s>;
   }
 
-  private textStyle(mark: MarkType, text: JSX.Element): JSX.Element {
+  private textStyle(mark: MarkType, text: React.ReactNode): React.ReactNode {
     const { attrs } = mark;
     const { fontSize, fontWeight, color } = attrs || {};
 
     return <span style={{ fontSize, fontWeight, color }}>{text}</span>;
   }
 
-  private link(mark: MarkType, text: JSX.Element): JSX.Element {
+  private link(mark: MarkType, text: React.ReactNode): React.ReactNode {
     const { attrs } = mark;
     let href = attrs?.href || "#";
     const target = attrs?.target || "_blank";
@@ -425,7 +425,7 @@ export class EmailRenderer {
     );
   }
 
-  private heading(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private heading(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const { next, prev } = options || {};
 
@@ -456,7 +456,7 @@ export class EmailRenderer {
     );
   }
 
-  private variable(node: JSONContent, _?: NodeOptions): JSX.Element {
+  private variable(node: JSONContent, _?: NodeOptions): React.ReactNode {
     const { id: variable, fallback } = node.attrs || {};
 
     let formattedVariable = this.variableFormatter({
@@ -474,7 +474,7 @@ export class EmailRenderer {
     return <>{formattedVariable}</>;
   }
 
-  private horizontalRule(_: JSONContent, __?: NodeOptions): JSX.Element {
+  private horizontalRule(_: JSONContent, __?: NodeOptions): React.ReactNode {
     return (
       <Hr
         style={{
@@ -486,7 +486,7 @@ export class EmailRenderer {
     );
   }
 
-  private orderedList(node: JSONContent, _?: NodeOptions): JSX.Element {
+  private orderedList(node: JSONContent, _?: NodeOptions): React.ReactNode {
     return (
       <Container style={{ maxWidth: "100%" }}>
         <ol
@@ -503,7 +503,7 @@ export class EmailRenderer {
     );
   }
 
-  private bulletList(node: JSONContent, _?: NodeOptions): JSX.Element {
+  private bulletList(node: JSONContent, _?: NodeOptions): React.ReactNode {
     return (
       <Container
         style={{
@@ -524,7 +524,7 @@ export class EmailRenderer {
     );
   }
 
-  private listItem(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private listItem(node: JSONContent, options?: NodeOptions): React.ReactNode {
     return (
       <Container
         style={{
@@ -544,7 +544,7 @@ export class EmailRenderer {
     );
   }
 
-  private button(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private button(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const {
       text,
@@ -592,7 +592,7 @@ export class EmailRenderer {
     );
   }
 
-  private spacer(node: JSONContent, _?: NodeOptions): JSX.Element {
+  private spacer(node: JSONContent, _?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const { height = "auto" } = attrs || {};
 
@@ -605,11 +605,11 @@ export class EmailRenderer {
     );
   }
 
-  private hardBreak(_: JSONContent, __?: NodeOptions): JSX.Element {
+  private hardBreak(_: JSONContent, __?: NodeOptions): React.ReactNode {
     return <br />;
   }
 
-  private logo(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private logo(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const {
       src,
@@ -645,7 +645,7 @@ export class EmailRenderer {
     );
   }
 
-  private image(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private image(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const {
       src,
@@ -711,7 +711,10 @@ export class EmailRenderer {
     );
   }
 
-  private blockquote(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private blockquote(
+    node: JSONContent,
+    options?: NodeOptions
+  ): React.ReactNode {
     const { next, prev } = options || {};
     const isNextSpacer = next?.type === "spacer";
     const isPrevSpacer = prev?.type === "spacer";
@@ -734,7 +737,7 @@ export class EmailRenderer {
     );
   }
 
-  private code(_: MarkType, text: JSX.Element): JSX.Element {
+  private code(_: MarkType, text: React.ReactNode): React.ReactNode {
     return (
       <code
         style={{
@@ -752,7 +755,7 @@ export class EmailRenderer {
     );
   }
 
-  private codeBlock(node: JSONContent, options?: NodeOptions): JSX.Element {
+  private codeBlock(node: JSONContent, options?: NodeOptions): React.ReactNode {
     const { attrs } = node;
     const language = attrs?.language;
 

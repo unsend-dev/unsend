@@ -44,7 +44,7 @@ export type SlashCommandItem = {
   title: string;
   description: string;
   searchTerms: string[];
-  icon: JSX.Element;
+  icon: ReactNode;
   command: (options: CommandProps) => void;
 };
 

@@ -22,11 +22,8 @@ import { isLocalhost } from "~/utils/client";
 const FormSchema = z.object({
   region: z.string(),
   unsendUrl: z.string().url(),
-  sendRate: z.preprocess((val) => Number(val), z.number()),
-  transactionalQuota: z.preprocess(
-    (val) => Number(val),
-    z.number().min(0).max(100)
-  ),
+  sendRate: z.coerce.number(),
+  transactionalQuota: z.coerce.number().min(0).max(100),
 });
 
 type SesSettingsProps = {
