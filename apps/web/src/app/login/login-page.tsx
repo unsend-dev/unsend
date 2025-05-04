@@ -130,7 +130,7 @@ export default function LoginPage({
             {isSignup ? "Already have an account?" : "New to Unsend?"}
             <Link
               href={isSignup ? "/login" : "/signup"}
-              className=" text-primary hover:underline ml-1"
+              className=" text-foreground hover:underline ml-1"
             >
               {isSignup ? "Sign in" : "Create new account"}
             </Link>

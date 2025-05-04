@@ -28,7 +28,7 @@ export default function CampaignDetailsPage({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Spinner className="w-5 h-5 text-primary" />
+        <Spinner className="w-5 h-5 text-foreground" />
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function CampaignDetailsPage({
                 <div className="capitalize">{card.status.toLowerCase()}</div>
               </div>
               <div className="flex justify-between items-end">
-                <div className="text-primary font-light text-2xl font-mono">
+                <div className="text-foreground font-light text-2xl font-mono">
                   {card.count}
                 </div>
                 {card.status !== "total" ? (

@@ -206,7 +206,7 @@ export function ResizableImageTemplate(props: NodeViewProps) {
                 className="flex items-center justify-center opacity-70"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Spinner className="w-8 h-8 text-primary" />
+                <Spinner className="w-8 h-8 text-foreground" />
               </div>
             </div>
           ) : (

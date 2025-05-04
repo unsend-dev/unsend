@@ -54,7 +54,10 @@ export const DuplicateTemplate: React.FC<{
           <DialogTitle>Duplicate Template</DialogTitle>
           <DialogDescription>
             Are you sure you want to duplicate{" "}
-            <span className="font-semibold text-primary">{template.name}</span>?
+            <span className="font-semibold text-foreground">
+              {template.name}
+            </span>
+            ?
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">

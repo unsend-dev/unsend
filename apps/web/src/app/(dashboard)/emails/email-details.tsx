@@ -115,7 +115,7 @@ export default function EmailDetails({ emailId }: { emailId: string }) {
                         <div className="text-xs text-muted-foreground mt-2">
                           {formatDate(evt.createdAt, "MMM dd, hh:mm a")}
                         </div>
-                        <div className="mt-1 text-primary/80">
+                        <div className="mt-1 text-foreground/80">
                           <EmailStatusText
                             status={evt.status}
                             data={evt.data}

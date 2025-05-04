@@ -5,9 +5,10 @@ import { Input } from "@unsend/ui/src/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription, DialogHeader,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@unsend/ui/src/dialog";
 
 import {
@@ -84,8 +85,8 @@ export const DeleteDomain: React.FC<{ domain: Domain }> = ({ domain }) => {
           <DialogTitle>Delete domain</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">{domain.name}</span>?
-            You can't reverse this.
+            <span className="font-semibold text-foreground">{domain.name}</span>
+            ? You can't reverse this.
           </DialogDescription>
         </DialogHeader>
         <Form {...domainForm}>

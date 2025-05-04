@@ -180,7 +180,7 @@ export function VariableComponent(props: NodeViewProps) {
           <button
             className={cn(
               "inline-flex items-center justify-center rounded-md text-sm gap-1 ring-offset-white transition-colors",
-              "px-2 border border-gray-300 shadow-sm  cursor-pointer text-primary/80"
+              "px-2 border border-gray-300 shadow-sm  cursor-pointer text-foreground/80"
             )}
             onClick={(e) => {
               e.preventDefault();

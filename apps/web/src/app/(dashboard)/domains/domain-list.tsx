@@ -104,7 +104,7 @@ const DomainItem: React.FC<{ domain: Domain }> = ({ domain }) => {
               <Switch
                 checked={clickTracking}
                 onCheckedChange={handleClickTrackingChange}
-                className="data-[state=checked]:bg-emerald-500"
+                className="data-[state=checked]:bg-success"
               />
             </div>
             <div className="flex gap-2 items-center">
@@ -112,7 +112,7 @@ const DomainItem: React.FC<{ domain: Domain }> = ({ domain }) => {
               <Switch
                 checked={openTracking}
                 onCheckedChange={handleOpenTrackingChange}
-                className="data-[state=checked]:bg-emerald-500"
+                className="data-[state=checked]:bg-success"
               />
             </div>
           </div>

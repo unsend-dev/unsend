@@ -123,11 +123,11 @@ export default function JoinTeam({
             <DialogTitle>Accept Team Invitation</DialogTitle>
             <DialogDescription>
               Are you sure you want to join{" "}
-              <span className="font-semibold text-primary">
+              <span className="font-semibold text-foreground">
                 {selectedInvite?.team.name}
               </span>
               ? You will be added as a{" "}
-              <span className="font-semibold text-primary lowercase">
+              <span className="font-semibold text-foreground lowercase">
                 {selectedInvite?.role.toLowerCase()}
               </span>
               .
