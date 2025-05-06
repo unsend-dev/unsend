@@ -83,8 +83,10 @@ export const DeleteCampaign: React.FC<{
           <DialogTitle>Delete Campaign</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">{campaign.name}</span>?
-            You can't reverse this.
+            <span className="font-semibold text-foreground">
+              {campaign.name}
+            </span>
+            ? You can't reverse this.
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">

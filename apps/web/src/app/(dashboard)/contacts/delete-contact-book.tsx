@@ -86,7 +86,7 @@ export const DeleteContactBook: React.FC<{
           <DialogTitle>Delete Contact Book</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">
+            <span className="font-semibold text-foreground">
               {contactBook.name}
             </span>
             ? You can't reverse this.

@@ -235,11 +235,13 @@ const DashboardItemCard: React.FC<DashboardItemCardProps> = ({
         <div className=" capitalize">{status.toLowerCase()}</div>
       </div>
       <div className="flex justify-between items-end">
-        <div className="text-primary font-light text-2xl  font-mono">
+        <div className="text-foreground font-light text-2xl  font-mono">
           {count}
         </div>
         {status !== "total" ? (
-            <div className="text-sm pb-1">{count > 0 ? (percentage * 100).toFixed(0) : 0}%</div>
+          <div className="text-sm pb-1">
+            {count > 0 ? (percentage * 100).toFixed(0) : 0}%
+          </div>
         ) : null}
       </div>
     </div>

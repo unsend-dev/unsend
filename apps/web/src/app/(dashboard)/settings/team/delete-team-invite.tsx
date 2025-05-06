@@ -55,7 +55,10 @@ export const DeleteTeamInvite: React.FC<{
           <DialogTitle>Cancel Invite</DialogTitle>
           <DialogDescription>
             Are you sure you want to cancel the invite for{" "}
-            <span className="font-semibold text-primary">{invite.email}</span>?
+            <span className="font-semibold text-foreground">
+              {invite.email}
+            </span>
+            ?
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-4 mt-6">

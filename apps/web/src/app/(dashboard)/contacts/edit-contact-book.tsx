@@ -78,7 +78,7 @@ export const EditContactBook: React.FC<{
           className="p-0 hover:bg-transparent"
           onClick={(e) => e.stopPropagation()}
         >
-          <Edit className="h-4 w-4 text-primary/80 hover:text-primary/70" />
+          <Edit className="h-4 w-4 text-foreground/80 hover:text-foreground/70" />
         </Button>
       </DialogTrigger>
       <DialogContent>

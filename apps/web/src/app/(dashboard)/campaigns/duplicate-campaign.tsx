@@ -54,7 +54,10 @@ export const DuplicateCampaign: React.FC<{
           <DialogTitle>Duplicate Campaign</DialogTitle>
           <DialogDescription>
             Are you sure you want to duplicate{" "}
-            <span className="font-semibold text-primary">{campaign.name}</span>?
+            <span className="font-semibold text-foreground">
+              {campaign.name}
+            </span>
+            ?
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">
