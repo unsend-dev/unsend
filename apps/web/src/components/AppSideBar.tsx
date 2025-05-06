@@ -40,6 +40,7 @@ import { MiniThemeSwitcher, ThemeSwitcher } from "./theme/ThemeSwitcher";
 import { useSession } from "next-auth/react";
 import { isSelfHosted } from "~/utils/common";
 import { usePathname } from "next/navigation";
+import { Badge } from "@unsend/ui/src/badge";
 
 // General items
 const generalItems = [
@@ -111,7 +112,12 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <SidebarGroupLabel>
-          <span className="text-lg font-semibold text-foreground">Unsend</span>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-foreground">
+              Unsend
+            </span>
+            <Badge variant="outline">Beta</Badge>
+          </div>
         </SidebarGroupLabel>
       </SidebarHeader>
       <SidebarContent>
