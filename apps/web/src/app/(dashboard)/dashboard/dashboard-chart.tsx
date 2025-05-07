@@ -16,10 +16,30 @@ import { api } from "~/trpc/react";
 import Spinner from "@unsend/ui/src/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@unsend/ui/src/tabs";
 import { useUrlState } from "~/hooks/useUrlState";
+import { useTheme } from "@unsend/ui";
 
 export default function DashboardChart() {
   const [days, setDays] = useUrlState("days", "7");
   const statusQuery = api.email.dashboard.useQuery({ days: Number(days) });
+  const { resolvedTheme } = useTheme();
+
+  const lightColors = {
+    delivered: "#40a02bcc",
+    bounced: "#d20f39cc",
+    complained: "#df8e1dcc",
+    opened: "#8839efcc",
+    clicked: "#04a5e5cc",
+  };
+
+  const darkColors = {
+    delivered: "#a6e3a1",
+    bounced: "#f38ba8",
+    complained: "#F9E2AF",
+    opened: "#cba6f7",
+    clicked: "#93c5fd",
+  };
+
+  const currentColors = resolvedTheme === "dark" ? darkColors : lightColors;
 
   return (
     <div>
@@ -145,7 +165,7 @@ export default function DashboardChart() {
                         </p>
                         {data.delivered ? (
                           <div className="flex gap-2 items-center">
-                            <div className="w-2.5 h-2.5 bg-[#10b981] rounded-[2px]"></div>
+                            <div className="w-2.5 h-2.5 bg-[#40a02bcc] dark:bg-[#a6e3a1] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Delivered
                             </p>
@@ -156,7 +176,7 @@ export default function DashboardChart() {
                         ) : null}
                         {data.bounced ? (
                           <div className="flex gap-2 items-center">
-                            <div className="w-2.5 h-2.5 bg-[#ef4444] rounded-[2px]"></div>
+                            <div className="w-2.5 h-2.5 bg-[#d20f39cc] dark:bg-[#f38ba8] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Bounced
                             </p>
@@ -165,7 +185,7 @@ export default function DashboardChart() {
                         ) : null}
                         {data.complained ? (
                           <div className="flex gap-2 items-center">
-                            <div className="w-2.5 h-2.5 bg-[#eab308] rounded-[2px]"></div>
+                            <div className="w-2.5 h-2.5 bg-[#df8e1dcc] dark:bg-[#F9E2AF] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Complained
                             </p>
@@ -176,7 +196,7 @@ export default function DashboardChart() {
                         ) : null}
                         {data.opened ? (
                           <div className="flex gap-2 items-center">
-                            <div className="w-2.5 h-2.5 bg-[#6366f1] rounded-[2px]"></div>
+                            <div className="w-2.5 h-2.5 bg-[#8839efcc] dark:bg-[#cba6f7] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Opened
                             </p>
@@ -185,7 +205,7 @@ export default function DashboardChart() {
                         ) : null}
                         {data.clicked ? (
                           <div className="flex gap-2 items-center">
-                            <div className="w-2.5 h-2.5 bg-[#06b6d4] rounded-[2px]"></div>
+                            <div className="w-2.5 h-2.5 bg-[#04a5e5cc] dark:bg-[#93c5fd] rounded-[2px]"></div>
                             <p className="text-xs text-muted-foreground w-[60px]">
                               Clicked
                             </p>
@@ -202,12 +222,24 @@ export default function DashboardChart() {
                   barSize={8}
                   dataKey="delivered"
                   stackId="a"
-                  fill="#10b981"
+                  fill={currentColors.delivered}
                 />
-                <Bar dataKey="bounced" stackId="a" fill="#ef4444" />
-                <Bar dataKey="complained" stackId="a" fill="#eab308" />
-                <Bar dataKey="opened" stackId="a" fill="#6366f1" />
-                <Bar dataKey="clicked" stackId="a" fill="#06b6d4" />
+                <Bar
+                  dataKey="bounced"
+                  stackId="a"
+                  fill={currentColors.bounced}
+                />
+                <Bar
+                  dataKey="complained"
+                  stackId="a"
+                  fill={currentColors.complained}
+                />
+                <Bar dataKey="opened" stackId="a" fill={currentColors.opened} />
+                <Bar
+                  dataKey="clicked"
+                  stackId="a"
+                  fill={currentColors.clicked}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
