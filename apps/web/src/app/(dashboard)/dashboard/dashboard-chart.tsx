@@ -7,8 +7,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  AreaChart,
-  Area,
 } from "recharts";
 import { EmailStatusIcon } from "../emails/email-status-badge";
 import { EmailStatus } from "@prisma/client";
@@ -17,11 +15,28 @@ import Spinner from "@unsend/ui/src/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@unsend/ui/src/tabs";
 import { useUrlState } from "~/hooks/useUrlState";
 import { useTheme } from "@unsend/ui";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@unsend/ui/src/select";
 
 export default function DashboardChart() {
   const [days, setDays] = useUrlState("days", "7");
-  const statusQuery = api.email.dashboard.useQuery({ days: Number(days) });
+  const [domain, setDomain] = useUrlState("domain");
   const { resolvedTheme } = useTheme();
+
+  const domainId = domain ? Number(domain) : undefined;
+  const statusQuery = api.email.dashboard.useQuery({
+    days: Number(days),
+    domain: domainId,
+  });
+  const { data: domainsQuery } = api.domain.domains.useQuery();
+
+  const handleDomain = (val: string) => {
+    setDomain(val === "All Domain" ? null : val);
+  };
 
   const lightColors = {
     delivered: "#40a02bcc",
@@ -45,16 +60,35 @@ export default function DashboardChart() {
     <div>
       <div className="flex justify-between items-center">
         <h1 className="font-semibold text-xl">Dashboard</h1>
-        <Tabs
-          value={days || "7"}
-          onValueChange={(value) => setDays(value)}
-          className=""
-        >
-          <TabsList>
-            <TabsTrigger value="7">7 Days</TabsTrigger>
-            <TabsTrigger value="30">30 Days</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex gap-3">
+          <Select
+            value={domain ?? "All Domain"}
+            onValueChange={(val) => handleDomain(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {domain
+                ? domainsQuery?.find((d) => d.id === Number(domain))?.name
+                : "All Domain"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Domain" className="capitalize">
+                All Domain
+              </SelectItem>
+              {domainsQuery &&
+                domainsQuery.map((domain) => (
+                  <SelectItem key={domain.id} value={domain.id.toString()}>
+                    {domain.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Tabs value={days || "7"} onValueChange={(value) => setDays(value)}>
+            <TabsList>
+              <TabsTrigger value="7">7 Days</TabsTrigger>
+              <TabsTrigger value="30">30 Days</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
       <div className="flex flex-col gap-16 mt-10">
@@ -159,14 +193,14 @@ export default function DashboardChart() {
                     if (!data || data.sent === 0) return null;
 
                     return (
-                      <div className=" bg-background border shadow-lg p-2 rounded flex flex-col gap-2 px-4">
+                      <div className=" bg-background border shadow-lg p-2 rounded-xl flex flex-col gap-2 px-4">
                         <p className="text-sm text-muted-foreground">
                           {data.date}
                         </p>
                         {data.delivered ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#40a02bcc] dark:bg-[#a6e3a1] rounded-[2px]"></div>
-                            <p className="text-xs text-muted-foreground w-[60px]">
+                            <p className="text-xs text-muted-foreground w-[70px]">
                               Delivered
                             </p>
                             <p className="text-xs font-mono">
@@ -177,7 +211,7 @@ export default function DashboardChart() {
                         {data.bounced ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#d20f39cc] dark:bg-[#f38ba8] rounded-[2px]"></div>
-                            <p className="text-xs text-muted-foreground w-[60px]">
+                            <p className="text-xs text-muted-foreground w-[70px]">
                               Bounced
                             </p>
                             <p className="text-xs font-mono">{data.bounced}</p>
@@ -186,7 +220,7 @@ export default function DashboardChart() {
                         {data.complained ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#df8e1dcc] dark:bg-[#F9E2AF] rounded-[2px]"></div>
-                            <p className="text-xs text-muted-foreground w-[60px]">
+                            <p className="text-xs text-muted-foreground w-[70px]">
                               Complained
                             </p>
                             <p className="text-xs font-mono">
@@ -197,7 +231,7 @@ export default function DashboardChart() {
                         {data.opened ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#8839efcc] dark:bg-[#cba6f7] rounded-[2px]"></div>
-                            <p className="text-xs text-muted-foreground w-[60px]">
+                            <p className="text-xs text-muted-foreground w-[70px]">
                               Opened
                             </p>
                             <p className="text-xs font-mono">{data.opened}</p>
@@ -206,7 +240,7 @@ export default function DashboardChart() {
                         {data.clicked ? (
                           <div className="flex gap-2 items-center">
                             <div className="w-2.5 h-2.5 bg-[#04a5e5cc] dark:bg-[#93c5fd] rounded-[2px]"></div>
-                            <p className="text-xs text-muted-foreground w-[60px]">
+                            <p className="text-xs text-muted-foreground w-[70px]">
                               Clicked
                             </p>
                             <p className="text-xs font-mono">{data.clicked}</p>
