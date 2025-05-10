@@ -7,8 +7,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  AreaChart,
-  Area,
 } from "recharts";
 import { EmailStatusIcon } from "../emails/email-status-badge";
 import { EmailStatus } from "@prisma/client";
@@ -17,11 +15,28 @@ import Spinner from "@unsend/ui/src/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@unsend/ui/src/tabs";
 import { useUrlState } from "~/hooks/useUrlState";
 import { useTheme } from "@unsend/ui";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@unsend/ui/src/select";
 
 export default function DashboardChart() {
   const [days, setDays] = useUrlState("days", "7");
-  const statusQuery = api.email.dashboard.useQuery({ days: Number(days) });
+  const [domain, setDomain] = useUrlState("domain");
   const { resolvedTheme } = useTheme();
+
+  const domainId = domain ? Number(domain) : undefined;
+  const statusQuery = api.email.dashboard.useQuery({
+    days: Number(days),
+    domain: domainId,
+  });
+  const { data: domainsQuery } = api.domain.domains.useQuery();
+
+  const handleDomain = (val: string) => {
+    setDomain(val === "All Domain" ? null : val);
+  };
 
   const lightColors = {
     delivered: "#40a02bcc",
@@ -45,16 +60,35 @@ export default function DashboardChart() {
     <div>
       <div className="flex justify-between items-center">
         <h1 className="font-semibold text-xl">Dashboard</h1>
-        <Tabs
-          value={days || "7"}
-          onValueChange={(value) => setDays(value)}
-          className=""
-        >
-          <TabsList>
-            <TabsTrigger value="7">7 Days</TabsTrigger>
-            <TabsTrigger value="30">30 Days</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex gap-3">
+          <Select
+            value={domain ?? "All Domain"}
+            onValueChange={(val) => handleDomain(val)}
+          >
+            <SelectTrigger className="w-[180px]">
+              {domain
+                ? domainsQuery?.find((d) => d.id === Number(domain))?.name
+                : "All Domain"}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All Domain" className="capitalize">
+                All Domain
+              </SelectItem>
+              {domainsQuery &&
+                domainsQuery.map((domain) => (
+                  <SelectItem key={domain.id} value={domain.id.toString()}>
+                    {domain.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Tabs value={days || "7"} onValueChange={(value) => setDays(value)}>
+            <TabsList>
+              <TabsTrigger value="7">7 Days</TabsTrigger>
+              <TabsTrigger value="30">30 Days</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
       <div className="flex flex-col gap-16 mt-10">
