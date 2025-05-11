@@ -197,7 +197,9 @@ export function ReputationMetrics({ days, domain }: ReputationMetricsProps) {
                         <p className="text-xs text-muted-foreground w-[70px]">
                           Current
                         </p>
-                        <p className="text-xs font-mono">{data.value}%</p>
+                        <p className="text-xs font-mono">
+                          {data.value.toFixed(2)}%
+                        </p>
                       </div>
                       <div className="flex gap-2 items-center">
                         <div
@@ -332,7 +334,9 @@ export function ReputationMetrics({ days, domain }: ReputationMetricsProps) {
                         <p className="text-xs text-muted-foreground w-[70px]">
                           Current
                         </p>
-                        <p className="text-xs font-mono">{data.value}%</p>
+                        <p className="text-xs font-mono">
+                          {data.value.toFixed(2)}%
+                        </p>
                       </div>
                       <div className="flex gap-2 items-center">
                         <div
