@@ -66,8 +66,6 @@ export async function parseSesHook(data: SesEvent) {
     mailStatus === EmailStatus.BOUNCED &&
     (mailData as SesBounce).bounceType === "Permanent";
 
-  console.log("mailStatus", mailStatus, "isHardBounced", isHardBounced);
-
   if (
     [
       "DELIVERED",
@@ -109,6 +107,31 @@ export async function parseSesHook(data: SesEvent) {
         ...(isHardBounced ? { hardBounced: { increment: 1 } } : {}),
       },
     });
+
+    if (
+      isHardBounced ||
+      updateField === "complained" ||
+      updateField === "delivered"
+    ) {
+      await db.cumulatedMetrics.upsert({
+        where: {
+          teamId_domainId: {
+            teamId: email.teamId,
+            domainId: email.domainId ?? 0,
+          },
+        },
+        update: {
+          [updateField]: {
+            increment: BigInt(1),
+          },
+        },
+        create: {
+          teamId: email.teamId,
+          domainId: email.domainId ?? 0,
+          [updateField]: BigInt(1),
+        },
+      });
+    }
   }
 
   if (email.campaignId) {

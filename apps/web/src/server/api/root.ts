@@ -9,6 +9,7 @@ import { campaignRouter } from "./routers/campaign";
 import { templateRouter } from "./routers/template";
 import { billingRouter } from "./routers/billing";
 import { invitationRouter } from "./routers/invitiation";
+import { dashboardRouter } from "./routers/dashboard";
 
 /**
  * This is the primary router for your server.
@@ -26,6 +27,7 @@ export const appRouter = createTRPCRouter({
   template: templateRouter,
   billing: billingRouter,
   invitation: invitationRouter,
+  dashboard: dashboardRouter,
 });
 
 // export type definition of API
