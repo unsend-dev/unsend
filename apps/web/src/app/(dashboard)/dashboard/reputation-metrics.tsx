@@ -108,7 +108,9 @@ export function ReputationMetrics({ days, domain }: ReputationMetricsProps) {
             <div></div>
           </div>
           <div className="flex items-baseline gap-4">
-            <div className="text-2xl mt-2">{metrics?.bounceRate}%</div>
+            <div className="text-2xl mt-2">
+              {metrics?.bounceRate.toFixed(2)}%
+            </div>
             <StatusBadge status={bounceStatus} />
           </div>
           {/* <div className="flex">
@@ -250,7 +252,9 @@ export function ReputationMetrics({ days, domain }: ReputationMetricsProps) {
             </Tooltip>
           </div>
           <div className="flex items-baseline gap-4">
-            <div className="text-2xl mt-2">{metrics?.complaintRate}%</div>
+            <div className="text-2xl mt-2">
+              {metrics?.complaintRate.toFixed(2)}%
+            </div>
             <StatusBadge status={complaintStatus} />
           </div>
           <ResponsiveContainer width="100%" height={200}>
