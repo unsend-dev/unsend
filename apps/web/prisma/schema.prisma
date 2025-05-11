@@ -375,3 +375,13 @@ model DailyEmailUsage {
 
   @@id([teamId, domainId, date, type])
 }
+
+model CumulatedMetrics {
+  teamId      Int
+  domainId    Int
+  delivered   BigInt @default(0)
+  hardBounced BigInt @default(0)
+  complained  BigInt @default(0)
+
+  @@id([teamId, domainId])
+}

@@ -29,6 +29,9 @@
     --destructive: 347 62% 55%;
     --destructive-foreground: 210 40% 98%;
 
+    --warning: 35 77% 49%;
+    --warning-foreground: 210 40% 98%;
+
     --success: 142 49% 44%;
     --success-foreground: 210 40% 98%;
 
@@ -55,7 +58,7 @@
   }
 
   .dark {
-    --background: 240 21% 15%;
+    --background: 240 21% 12%;
     --foreground: 226 64% 88%;
 
     --card: 222.2 84% 4.9%;
@@ -82,6 +85,9 @@
     --success: 115 54% 76%;
     --success-foreground: 210 40% 98%;
 
+    --warning: 41 86% 83%;
+    --warning-foreground: 210 40% 98%;
+
     --border: 237 16% 23%;
     --input: 217.2 32.6% 17.5%;
     --ring: 217.2 32.6% 17.5%;
@@ -92,7 +98,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 240 21% 12%;
+    --sidebar-background: 240 23% 9%;
     --sidebar-foreground: 226 64% 88%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
