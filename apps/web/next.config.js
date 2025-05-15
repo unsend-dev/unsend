@@ -10,6 +10,7 @@ const config = {
   experimental: {
     instrumentationHook: true,
     serverComponentsExternalPackages: ["bullmq"],
+    esmExternals: "loose",
   },
   images: {
     remotePatterns: [
