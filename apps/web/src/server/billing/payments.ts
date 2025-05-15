@@ -47,7 +47,11 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     customerId = customer.id;
   }
 
-  if (!env.STRIPE_BASIC_PRICE_ID || !customerId) {
+  if (
+    !env.STRIPE_BASIC_PRICE_ID ||
+    !customerId ||
+    !env.STRIPE_BASIC_USAGE_PRICE_ID
+  ) {
     throw new Error("Stripe prices are not set");
   }
 
@@ -57,6 +61,10 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     line_items: [
       {
         price: env.STRIPE_BASIC_PRICE_ID,
+        quantity: 1,
+      },
+      {
+        price: env.STRIPE_BASIC_USAGE_PRICE_ID,
       },
     ],
     success_url: `${env.NEXTAUTH_URL}/payments?success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -70,8 +78,12 @@ export async function createCheckoutSessionForTeam(teamId: number) {
   return session;
 }
 
-function getPlanFromPriceId(priceId: string) {
-  if (priceId === env.STRIPE_BASIC_PRICE_ID) {
+function getPlanFromPriceIds(priceIds: Array<string>) {
+  if (!env.STRIPE_BASIC_PRICE_ID) {
+    return "FREE";
+  }
+
+  if (priceIds.includes(env.STRIPE_BASIC_PRICE_ID)) {
     return "BASIC";
   }
 
@@ -167,7 +179,7 @@ export async function syncStripeData(customerId: string) {
   await db.team.update({
     where: { id: team.id },
     data: {
-      plan: getPlanFromPriceId(subscription.items.data[0]?.price?.id || ""),
+      plan: getPlanFromPriceIds(subscription.items.data.map((d) => d.price.id)),
       isActive: subscription.status === "active",
     },
   });
