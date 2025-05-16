@@ -53,7 +53,10 @@ function sendBatch(app: PublicAPIApp) {
     > = emailPayloads.map((payload) => ({
       ...payload,
       text: payload.text ?? undefined,
-      html: payload.html ?? undefined,
+      html:
+        payload.html && payload.html !== "true" && payload.html !== "false"
+          ? payload.html
+          : undefined,
       teamId: team.id,
       apiKeyId: team.apiKeyId,
     }));
