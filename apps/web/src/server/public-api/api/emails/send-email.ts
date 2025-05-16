@@ -38,7 +38,12 @@ function send(app: PublicAPIApp) {
       teamId: team.id,
       apiKeyId: team.apiKeyId,
       text: c.req.valid("json").text ?? undefined,
-      html: c.req.valid("json").html ?? undefined,
+      html:
+        !c.req.valid("json")?.html ||
+        c.req.valid("json")?.html === "false" ||
+        c.req.valid("json")?.html === "true"
+          ? undefined
+          : c.req.valid("json").html?.toString(),
     });
 
     return c.json({ emailId: email?.id });
