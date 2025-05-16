@@ -18,7 +18,7 @@ export const emailSchema = z
     cc: z.string().email().or(z.array(z.string().email())).optional(),
     bcc: z.string().email().or(z.array(z.string().email())).optional(),
     text: z.string().min(1).optional().nullable(),
-    html: z.string().min(1).optional().nullable(),
+    html: z.coerce.string().min(1).optional().nullable(),
     attachments: z
       .array(
         z.object({
