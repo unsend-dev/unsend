@@ -19,7 +19,9 @@ export const getSendTestEmailCode = ({
       title: "Node.js",
       code: `import { Unsend } from "unsend";
 
-const unsend = new Unsend({ apiKey: "us_12345" });
+const unsend = new Unsend("us_12345");
+
+// const unsend = new Unsend("us_12345", "https://my-unsend-instance.com");
 
 unsend.emails.send({
   to: "${to}",
