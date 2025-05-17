@@ -104,6 +104,7 @@ model Team {
   plan             Plan              @default(FREE)
   stripeCustomerId String?           @unique
   isActive         Boolean           @default(true)
+  apiRateLimit     Int               @default(2)
   billingEmail     String?
   teamUsers        TeamUser[]
   domains          Domain[]

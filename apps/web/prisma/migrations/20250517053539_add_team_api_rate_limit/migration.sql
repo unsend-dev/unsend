@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Team" ADD COLUMN "apiRateLimit" INTEGER NOT NULL DEFAULT 2;
