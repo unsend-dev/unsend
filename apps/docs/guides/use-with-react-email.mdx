@@ -53,7 +53,7 @@ import { Unsend } from "unsend";
 import { render } from "@react-email/render";
 import { Email } from "./email";
 
-const unsend = new Unsend({ apiKey: "us_your_unsend_api_key" });
+const unsend = new Unsend("us_your_unsend_api_key");
 
   const html = await render(<Email url="https://unsend.dev" />);
 

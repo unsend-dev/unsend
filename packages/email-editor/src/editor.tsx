@@ -49,7 +49,9 @@ You can create unordered list
 <p>Add code by typing \`\`\` and enter</p>
 <pre>
 <code>
-const unsend = new Unsend({ apiKey: "us_12345" });
+const unsend = new Unsend("us_12345");
+
+// const unsend = new Unsend("us_12345", "https://my-unsend-instance.com");
 
 unsend.emails.send({
   to: "john@doe.com",
