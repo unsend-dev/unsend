@@ -33,8 +33,6 @@ const route = createRoute({
 
 function verifyDomain(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
-
     await db.domain.update({
       where: { id: c.req.valid("param").id },
       data: { isVerifying: true },

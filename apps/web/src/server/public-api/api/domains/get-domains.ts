@@ -21,7 +21,7 @@ const route = createRoute({
 
 function getDomains(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
 
     const domains = await db.domain.findMany({ where: { teamId: team.id } });
 

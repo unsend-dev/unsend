@@ -12,7 +12,7 @@ import { Team } from "@prisma/client";
 // Define AppEnv for Hono context
 export type AppEnv = {
   Variables: {
-    team: Team;
+    team: Team & { apiKeyId: number };
   };
 };
 

@@ -35,7 +35,7 @@ const route = createRoute({
 
 function cancelScheduledEmail(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
     const emailId = c.req.param("emailId");
     await checkIsValidEmailId(emailId, team.id);
 
