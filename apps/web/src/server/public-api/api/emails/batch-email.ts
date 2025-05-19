@@ -44,7 +44,7 @@ const route = createRoute({
 
 function sendBatch(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
     const emailPayloads = c.req.valid("json");
 
     // Add teamId and apiKeyId to each email payload

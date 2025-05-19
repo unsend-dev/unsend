@@ -52,7 +52,7 @@ const route = createRoute({
 
 function updateContactInfo(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
 
     await getContactBook(c, team.id);
     const contactId = c.req.param("contactId");

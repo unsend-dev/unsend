@@ -49,7 +49,7 @@ const route = createRoute({
 
 function upsertContact(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
 
     const contactBook = await getContactBook(c, team.id);
 
