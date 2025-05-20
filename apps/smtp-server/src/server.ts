@@ -17,18 +17,24 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
     const url = new URL(apiEndpoint, UNSEND_BASE_URL); // Combine base URL with endpoint
     console.log("Sending email to Unsend API at:", url.href); // Debug statement
 
+    const emailDataText = JSON.stringify(emailData);
+
     const response = await fetch(url.href, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(emailData),
+      body: emailDataText,
     });
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error("Unsend API error response:", errorData);
+      console.error(
+        "Unsend API error response: error:",
+        errorData,
+        `\nemail data: ${emailDataText}`
+      );
       throw new Error(
         `Failed to send email: ${errorData || "Unknown error from server"}`
       );
