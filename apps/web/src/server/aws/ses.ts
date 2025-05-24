@@ -103,96 +103,7 @@ export async function getDomainIdentity(domain: string, region: string) {
   return response;
 }
 
-export async function sendEmailThroughSes({
-  to,
-  from,
-  subject,
-  cc,
-  bcc,
-  text,
-  html,
-  replyTo,
-  region,
-  configurationSetName,
-  unsubUrl,
-  isBulk,
-}: Partial<EmailContent> & {
-  region: string;
-  configurationSetName: string;
-  cc?: string[];
-  bcc?: string[];
-  replyTo?: string[];
-  to?: string[];
-  isBulk?: boolean;
-}) {
-  const sesClient = getSesClient(region);
-  const command = new SendEmailCommand({
-    FromEmailAddress: from,
-    ReplyToAddresses: replyTo ? replyTo : undefined,
-    Destination: {
-      ToAddresses: to,
-      CcAddresses: cc,
-      BccAddresses: bcc,
-    },
-    Content: {
-      // EmailContent
-      Simple: {
-        // Message
-        Subject: {
-          // Content
-          Data: subject, // required
-          Charset: "UTF-8",
-        },
-        Body: {
-          // Body
-          Text: text
-            ? {
-                Data: text, // required
-                Charset: "UTF-8",
-              }
-            : undefined,
-          Html: html
-            ? {
-                Data: html, // required
-                Charset: "UTF-8",
-              }
-            : undefined,
-        },
-        Headers: [
-          // Spread in any unsubscribe headers if unsubUrl is defined
-          ...(unsubUrl
-            ? [
-                { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
-                {
-                  Name: "List-Unsubscribe-Post",
-                  Value: "List-Unsubscribe=One-Click",
-                },
-              ]
-            : []),
-          // Spread in the precedence header if present
-          ...(isBulk ? [{ Name: "Precedence", Value: "bulk" }] : []),
-          {
-            Name: "X-Entity-Ref-ID",
-            Value: nanoid(),
-          },
-        ],
-      },
-    },
-    ConfigurationSetName: configurationSetName,
-  });
-
-  try {
-    const response = await sesClient.send(command);
-    console.log("Email sent! Message ID:", response.MessageId);
-    return response.MessageId;
-  } catch (error) {
-    console.error("Failed to send email", error);
-    throw error;
-  }
-}
-
-// Need to improve this. Use some kinda library to do this
-export async function sendEmailWithAttachments({
+export async function sendRawEmail({
   to,
   from,
   subject,
@@ -200,22 +111,28 @@ export async function sendEmailWithAttachments({
   cc,
   bcc,
   // eslint-disable-next-line no-unused-vars
-  text,
+  text, // text is not used directly in raw email but kept for interface consistency
   html,
   attachments,
   region,
   configurationSetName,
+  unsubUrl,
+  isBulk,
+  inReplyToMessageId,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
-  attachments: { filename: string; content: string }[];
+  attachments?: { filename: string; content: string }[]; // Made attachments optional
   cc?: string[];
   bcc?: string[];
   replyTo?: string[];
   to?: string[];
+  unsubUrl?: string;
+  isBulk?: boolean;
+  inReplyToMessageId?: string;
 }) {
   const sesClient = getSesClient(region);
-  const boundary = "NextPart";
+  const boundary = `NextPart`;
   let rawEmail = `From: ${from}\n`;
   rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
   rawEmail += cc && cc.length ? `Cc: ${cc.join(", ")}\n` : "";
@@ -224,19 +141,37 @@ export async function sendEmailWithAttachments({
     replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
   rawEmail += `Subject: ${subject}\n`;
   rawEmail += `MIME-Version: 1.0\n`;
+
+  // Add headers
+  if (unsubUrl) {
+    rawEmail += `List-Unsubscribe: <${unsubUrl}>\n`;
+    rawEmail += `List-Unsubscribe-Post: List-Unsubscribe=One-Click\n`;
+  }
+  if (isBulk) {
+    rawEmail += `Precedence: bulk\n`;
+  }
+  if (inReplyToMessageId) {
+    rawEmail += `In-Reply-To: <${inReplyToMessageId}>@email.amazonses.com>\n`;
+    rawEmail += `References: <${inReplyToMessageId}>@email.amazonses.com>\n`;
+  }
+  rawEmail += `X-Entity-Ref-ID: ${nanoid()}\n`;
+
   rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
   rawEmail += `--${boundary}\n`;
   rawEmail += `Content-Type: text/html; charset="UTF-8"\n\n`;
   rawEmail += `${html}\n\n`;
-  for (const attachment of attachments) {
-    const content = attachment.content; // Convert buffer to base64
-    const mimeType =
-      mime.lookup(attachment.filename) || "application/octet-stream";
-    rawEmail += `--${boundary}\n`;
-    rawEmail += `Content-Type: ${mimeType}; name="${attachment.filename}"\n`;
-    rawEmail += `Content-Disposition: attachment; filename="${attachment.filename}"\n`;
-    rawEmail += `Content-Transfer-Encoding: base64\n\n`;
-    rawEmail += `${content}\n\n`;
+
+  if (attachments && attachments.length > 0) {
+    for (const attachment of attachments) {
+      const content = attachment.content; // Assumes content is base64
+      const mimeType =
+        mime.lookup(attachment.filename) || "application/octet-stream";
+      rawEmail += `--${boundary}\n`;
+      rawEmail += `Content-Type: ${mimeType}; name="${attachment.filename}"\n`;
+      rawEmail += `Content-Disposition: attachment; filename="${attachment.filename}"\n`;
+      rawEmail += `Content-Transfer-Encoding: base64\n\n`;
+      rawEmail += `${content}\n\n`;
+    }
   }
 
   rawEmail += `--${boundary}--`;
@@ -252,11 +187,13 @@ export async function sendEmailWithAttachments({
 
   try {
     const response = await sesClient.send(command);
-    console.log("Email with attachments sent! Message ID:", response.MessageId);
+    console.log("Email sent! Message ID:", response.MessageId);
     return response.MessageId;
   } catch (error) {
-    console.error("Failed to send email with attachments", error);
-    throw new Error("Failed to send email with attachments");
+    console.error("Failed to send email", error);
+    // It's better to throw the original error or a new error with more context
+    // throw new Error("Failed to send email");
+    throw error;
   }
 }
 

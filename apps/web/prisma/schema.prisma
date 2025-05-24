@@ -245,6 +245,7 @@ model Email {
   attachments  String?
   campaignId   String?
   contactId    String?
+  inReplyToId  String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
 

@@ -23,7 +23,7 @@
     "@aws-sdk/client-sns": "^3.797.0",
     "@aws-sdk/s3-request-presigner": "^3.797.0",
     "@hono/swagger-ui": "^0.5.1",
-    "@hono/zod-openapi": "^0.19.5",
+    "@hono/zod-openapi": "^0.10.0",
     "@hookform/resolvers": "^5.0.1",
     "@isaacs/ttlcache": "^1.4.1",
     "@prisma/client": "^6.6.0",

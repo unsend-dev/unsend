@@ -147,8 +147,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(hono@4.7.7)
       '@hono/zod-openapi':
-        specifier: ^0.19.5
-        version: 0.19.5(hono@4.7.7)(zod@3.24.3)
+        specifier: ^0.10.0
+        version: 0.10.1(hono@4.7.7)(zod@3.24.3)
       '@hookform/resolvers':
         specifier: ^5.0.1
         version: 5.0.1(react-hook-form@7.56.1)
@@ -2435,21 +2435,21 @@ packages:
       hono: 4.7.7
     dev: false
 
-  /@hono/zod-openapi@0.19.5(hono@4.7.7)(zod@3.24.3):
-    resolution: {integrity: sha512-n2RqdZL7XIaWPwBNygctG/1eySyRtSBnS7l+pIsP3f2JW5P2l7Smm6SLluscrGwB5l2C2fxbfvhWoC6Ig+SxXw==}
+  /@hono/zod-openapi@0.10.1(hono@4.7.7)(zod@3.24.3):
+    resolution: {integrity: sha512-IIenwxruTH7wJ2cLPVfSg8j7bMv7F3+W69+mOOs8KsqSiBgNxwqUhkjm5ilQ1xL/Y/GHT2mB5AEBfvWb31Biiw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
-      hono: '>=4.3.6'
+      hono: '>=3.11.3'
       zod: 3.*
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.24.3)
-      '@hono/zod-validator': 0.4.3(hono@4.7.7)(zod@3.24.3)
+      '@hono/zod-validator': 0.2.1(hono@4.7.7)(zod@3.24.3)
       hono: 4.7.7
       zod: 3.24.3
     dev: false
 
-  /@hono/zod-validator@0.4.3(hono@4.7.7)(zod@3.24.3):
-    resolution: {integrity: sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ==}
+  /@hono/zod-validator@0.2.1(hono@4.7.7)(zod@3.24.3):
+    resolution: {integrity: sha512-HFoxln7Q6JsE64qz2WBS28SD33UB2alp3aRKmcWnNLDzEL1BLsWfbdX6e1HIiUprHYTIXf5y7ax8eYidKUwyaA==}
     peerDependencies:
       hono: '>=3.9.0'
       zod: ^3.19.1

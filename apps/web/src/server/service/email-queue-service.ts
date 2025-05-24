@@ -4,7 +4,7 @@ import { EmailAttachment } from "~/types";
 import { convert as htmlToText } from "html-to-text";
 import { getConfigurationSetName } from "~/utils/ses-utils";
 import { db } from "../db";
-import { sendEmailThroughSes, sendEmailWithAttachments } from "../aws/ses";
+import { sendRawEmail } from "../aws/ses";
 import { getRedis } from "../redis";
 import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
 import { Prisma } from "@prisma/client";
@@ -332,33 +332,21 @@ async function executeEmail(
       : undefined;
 
   try {
-    const messageId = attachments.length
-      ? await sendEmailWithAttachments({
-          to: email.to,
-          from: email.from,
-          subject: email.subject,
-          replyTo: email.replyTo ?? undefined,
-          bcc: email.bcc,
-          cc: email.cc,
-          text,
-          html: email.html ?? undefined,
-          region: domain?.region ?? env.AWS_DEFAULT_REGION,
-          configurationSetName,
-          attachments,
-        })
-      : await sendEmailThroughSes({
-          to: email.to,
-          from: email.from,
-          subject: email.subject,
-          replyTo: email.replyTo ?? undefined,
-          text,
-          html: email.html ?? undefined,
-          region: domain?.region ?? env.AWS_DEFAULT_REGION,
-          configurationSetName,
-          attachments,
-          unsubUrl,
-          isBulk,
-        });
+    const messageId = await sendRawEmail({
+      to: email.to,
+      from: email.from,
+      subject: email.subject,
+      replyTo: email.replyTo ?? undefined,
+      bcc: email.bcc,
+      cc: email.cc,
+      text,
+      html: email.html ?? undefined,
+      region: domain?.region ?? env.AWS_DEFAULT_REGION,
+      configurationSetName,
+      attachments: attachments.length > 0 ? attachments : undefined,
+      unsubUrl,
+      isBulk,
+    });
 
     // Delete attachments after sending the email
     await db.email.update({

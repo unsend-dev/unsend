@@ -1,6 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { PublicAPIApp } from "~/server/public-api/hono";
-import { getTeamFromToken } from "~/server/public-api/auth";
 import { sendEmail } from "~/server/service/email-service";
 import { emailSchema } from "../../schemas/email-schema";
 

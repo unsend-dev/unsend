@@ -29,6 +29,7 @@ export const emailSchema = z
       .max(10) // Limit attachments array size if desired
       .optional(),
     scheduledAt: z.string().datetime({ offset: true }).optional(), // Ensure ISO 8601 format with offset
+    inReplyToId: z.string().optional().nullable(),
   })
   .refine(
     (data) => !!data.subject || !!data.templateId,
