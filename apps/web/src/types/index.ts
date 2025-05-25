@@ -12,7 +12,7 @@ export type EmailContent = {
   attachments?: Array<EmailAttachment>;
   unsubUrl?: string;
   scheduledAt?: string;
-  inReplyTo?: string;
+  inReplyToId?: string | null;
 };
 
 export type EmailAttachment = {

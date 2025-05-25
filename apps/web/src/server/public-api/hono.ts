@@ -70,7 +70,6 @@ export function getApp() {
 
     let currentRequests: number;
     let ttl: number;
-    let isNewKey = false;
 
     try {
       // Increment the key. If the key does not exist, it is created and set to 1.

@@ -63,7 +63,7 @@ export async function sendEmail(
     bcc,
     scheduledAt,
     apiKeyId,
-    inReplyTo,
+    inReplyToId,
   } = emailContent;
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
@@ -100,10 +100,10 @@ export async function sendEmail(
     }
   }
 
-  if (inReplyTo) {
+  if (inReplyToId) {
     const email = await db.email.findUnique({
       where: {
-        id: inReplyTo,
+        id: inReplyToId,
         teamId,
       },
     });
@@ -148,6 +148,7 @@ export async function sendEmail(
       scheduledAt: scheduledAtDate,
       latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
       apiId: apiKeyId,
+      inReplyToId,
     },
   });
 

@@ -151,8 +151,8 @@ export async function sendRawEmail({
     rawEmail += `Precedence: bulk\n`;
   }
   if (inReplyToMessageId) {
-    rawEmail += `In-Reply-To: <${inReplyToMessageId}>@email.amazonses.com>\n`;
-    rawEmail += `References: <${inReplyToMessageId}>@email.amazonses.com>\n`;
+    rawEmail += `In-Reply-To: <${inReplyToMessageId}@email.amazonses.com>\n`;
+    rawEmail += `References: <${inReplyToMessageId}@email.amazonses.com>\n`;
   }
   rawEmail += `X-Entity-Ref-ID: ${nanoid()}\n`;
 

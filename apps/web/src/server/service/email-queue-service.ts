@@ -331,6 +331,20 @@ async function executeEmail(
       ? htmlToText(email.html)
       : undefined;
 
+  let inReplyToMessageId: string | undefined = undefined;
+
+  if (email.inReplyToId) {
+    const replyEmail = await db.email.findUnique({
+      where: {
+        id: email.inReplyToId,
+      },
+    });
+
+    if (replyEmail && replyEmail.sesEmailId) {
+      inReplyToMessageId = replyEmail.sesEmailId;
+    }
+  }
+
   try {
     const messageId = await sendRawEmail({
       to: email.to,
@@ -346,6 +360,7 @@ async function executeEmail(
       attachments: attachments.length > 0 ? attachments : undefined,
       unsubUrl,
       isBulk,
+      inReplyToMessageId,
     });
 
     // Delete attachments after sending the email
