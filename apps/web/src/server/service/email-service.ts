@@ -63,6 +63,7 @@ export async function sendEmail(
     bcc,
     scheduledAt,
     apiKeyId,
+    inReplyToId,
   } = emailContent;
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
@@ -99,6 +100,22 @@ export async function sendEmail(
     }
   }
 
+  if (inReplyToId) {
+    const email = await db.email.findUnique({
+      where: {
+        id: inReplyToId,
+        teamId,
+      },
+    });
+
+    if (!email) {
+      throw new UnsendApiError({
+        code: "BAD_REQUEST",
+        message: '"inReplyTo" is invalid',
+      });
+    }
+  }
+
   if (!text && !html) {
     throw new UnsendApiError({
       code: "BAD_REQUEST",
@@ -131,6 +148,7 @@ export async function sendEmail(
       scheduledAt: scheduledAtDate,
       latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
       apiId: apiKeyId,
+      inReplyToId,
     },
   });
 

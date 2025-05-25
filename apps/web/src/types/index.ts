@@ -3,7 +3,7 @@ export type EmailContent = {
   from: string;
   subject?: string;
   templateId?: string;
-  variables?: Record<string, string>,
+  variables?: Record<string, string>;
   text?: string;
   html?: string;
   replyTo?: string | string[];
@@ -12,6 +12,7 @@ export type EmailContent = {
   attachments?: Array<EmailAttachment>;
   unsubUrl?: string;
   scheduledAt?: string;
+  inReplyToId?: string | null;
 };
 
 export type EmailAttachment = {

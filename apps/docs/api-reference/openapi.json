@@ -605,6 +605,10 @@
                   "scheduledAt": {
                     "type": "string",
                     "format": "date-time"
+                  },
+                  "inReplyToId": {
+                    "type": "string",
+                    "nullable": true
                   }
                 },
                 "required": [
@@ -758,6 +762,10 @@
                     "scheduledAt": {
                       "type": "string",
                       "format": "date-time"
+                    },
+                    "inReplyToId": {
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "required": [
