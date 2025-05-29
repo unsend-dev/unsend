@@ -130,7 +130,7 @@ importers:
     dependencies:
       '@auth/prisma-adapter':
         specifier: ^2.9.0
-        version: 2.9.0(@prisma/client@6.6.0)
+        version: 2.9.0(@prisma/client@6.6.0)(nodemailer@7.0.3)
       '@aws-sdk/client-s3':
         specifier: ^3.797.0
         version: 3.797.0
@@ -220,7 +220,10 @@ importers:
         version: 15.3.1(react-dom@19.1.0)(react@19.1.0)
       next-auth:
         specifier: ^4.24.11
-        version: 4.24.11(next@15.3.1)(react-dom@19.1.0)(react@19.1.0)
+        version: 4.24.11(next@15.3.1)(nodemailer@7.0.3)(react-dom@19.1.0)(react@19.1.0)
+      nodemailer:
+        specifier: ^7.0.3
+        version: 7.0.3
       pnpm:
         specifier: ^10.9.0
         version: 10.9.0
@@ -282,6 +285,9 @@ importers:
       '@types/node':
         specifier: ^22.15.2
         version: 22.15.2
+      '@types/nodemailer':
+        specifier: ^6.4.17
+        version: 6.4.17
       '@types/react':
         specifier: ^19.1.2
         version: 19.1.2
@@ -729,7 +735,7 @@ packages:
       '@types/json-schema': 7.0.15
     dev: true
 
-  /@auth/core@0.39.0:
+  /@auth/core@0.39.0(nodemailer@7.0.3):
     resolution: {integrity: sha512-jusviw/sUSfAh6S/wjY5tRmJOq0Itd3ImF+c/b4HB9DfmfChtcfVJTNJeqCeExeCG8oh4PBKRsMQJsn2W6NhFQ==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -745,17 +751,18 @@ packages:
     dependencies:
       '@panva/hkdf': 1.2.1
       jose: 6.0.10
+      nodemailer: 7.0.3
       oauth4webapi: 3.5.0
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
     dev: false
 
-  /@auth/prisma-adapter@2.9.0(@prisma/client@6.6.0):
+  /@auth/prisma-adapter@2.9.0(@prisma/client@6.6.0)(nodemailer@7.0.3):
     resolution: {integrity: sha512-Vo/o3YJOa6x2gklQ+XE/JfUf8+CVSDci/nvlOc6psiIiUGigqnQpap2DAxD8brNNYGYKOJ4OAiSt6kQyk3WP3g==}
     peerDependencies:
       '@prisma/client': '>=2.26.0 || >=3 || >=4 || >=5 || >=6'
     dependencies:
-      '@auth/core': 0.39.0
+      '@auth/core': 0.39.0(nodemailer@7.0.3)
       '@prisma/client': 6.6.0(prisma@6.6.0)(typescript@5.8.3)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
@@ -13215,7 +13222,7 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: true
 
-  /next-auth@4.24.11(next@15.3.1)(react-dom@19.1.0)(react@19.1.0):
+  /next-auth@4.24.11(next@15.3.1)(nodemailer@7.0.3)(react-dom@19.1.0)(react@19.1.0):
     resolution: {integrity: sha512-pCFXzIDQX7xmHFs4KVH4luCjaCbuPRtZ9oBUjUhOk84mZ9WVPf94n87TxYI4rSRf9HmfHEF8Yep3JrYDVOo3Cw==}
     peerDependencies:
       '@auth/core': 0.34.2
@@ -13234,6 +13241,7 @@ packages:
       cookie: 0.7.2
       jose: 4.15.9
       next: 15.3.1(react-dom@19.1.0)(react@19.1.0)
+      nodemailer: 7.0.3
       oauth: 0.9.15
       openid-client: 5.7.1
       preact: 10.26.5
@@ -13394,6 +13402,11 @@ packages:
 
   /nodemailer@6.9.16:
     resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
+    engines: {node: '>=6.0.0'}
+    dev: false
+
+  /nodemailer@7.0.3:
+    resolution: {integrity: sha512-Ajq6Sz1x7cIK3pN6KesGTah+1gnwMnx5gKl3piQlQQE/PwyJ4Mbc8is2psWYxK3RJTVeqsDaCv8ZzXLCDHMTZw==}
     engines: {node: '>=6.0.0'}
     dev: false
 
