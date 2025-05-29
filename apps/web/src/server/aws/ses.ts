@@ -141,7 +141,11 @@ export async function sendRawEmail({
       to,
       subject,
       html,
-      attachments,
+      attachments: attachments?.map((attachment) => ({
+        filename: attachment.filename,
+        content: attachment.content,
+        encoding: "base64",
+      })),
       text,
       replyTo,
       cc,
