@@ -12,6 +12,8 @@ import {
 } from "@aws-sdk/client-sesv2";
 import { generateKeyPairSync } from "crypto";
 import mime from "mime-types";
+import nodemailer from "nodemailer";
+import { Readable } from "stream";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
 import { nanoid } from "../nanoid";
@@ -110,8 +112,7 @@ export async function sendRawEmail({
   replyTo,
   cc,
   bcc,
-  // eslint-disable-next-line no-unused-vars
-  text, // text is not used directly in raw email but kept for interface consistency
+  text,
   html,
   attachments,
   region,
@@ -132,54 +133,51 @@ export async function sendRawEmail({
   inReplyToMessageId?: string;
 }) {
   const sesClient = getSesClient(region);
-  const boundary = `NextPart`;
-  let rawEmail = `From: ${from}\n`;
-  rawEmail += `To: ${Array.isArray(to) ? to.join(", ") : to}\n`;
-  rawEmail += cc && cc.length ? `Cc: ${cc.join(", ")}\n` : "";
-  rawEmail += bcc && bcc.length ? `Bcc: ${bcc.join(", ")}\n` : "";
-  rawEmail +=
-    replyTo && replyTo.length ? `Reply-To: ${replyTo.join(", ")}\n` : "";
-  rawEmail += `Subject: ${subject}\n`;
-  rawEmail += `MIME-Version: 1.0\n`;
 
-  // Add headers
-  if (unsubUrl) {
-    rawEmail += `List-Unsubscribe: <${unsubUrl}>\n`;
-    rawEmail += `List-Unsubscribe-Post: List-Unsubscribe=One-Click\n`;
-  }
-  if (isBulk) {
-    rawEmail += `Precedence: bulk\n`;
-  }
-  if (inReplyToMessageId) {
-    rawEmail += `In-Reply-To: <${inReplyToMessageId}@email.amazonses.com>\n`;
-    rawEmail += `References: <${inReplyToMessageId}@email.amazonses.com>\n`;
-  }
-  rawEmail += `X-Entity-Ref-ID: ${nanoid()}\n`;
+  const { message: messageStream } = await nodemailer
+    .createTransport({ streamTransport: true })
+    .sendMail({
+      from,
+      to,
+      subject,
+      html,
+      attachments: attachments?.map((attachment) => ({
+        filename: attachment.filename,
+        content: attachment.content,
+        encoding: "base64",
+      })),
+      text,
+      replyTo,
+      cc,
+      bcc,
+      headers: {
+        "X-Entity-Ref-ID": nanoid(),
+        ...(unsubUrl
+          ? {
+              "List-Unsubscribe": `<${unsubUrl}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            }
+          : {}),
+        ...(isBulk ? { Precedence: "bulk" } : {}),
+        ...(inReplyToMessageId
+          ? {
+              "In-Reply-To": `<${inReplyToMessageId}@email.amazonses.com>`,
+              References: `<${inReplyToMessageId}@email.amazonses.com>`,
+            }
+          : {}),
+      },
+    });
 
-  rawEmail += `Content-Type: multipart/mixed; boundary="${boundary}"\n\n`;
-  rawEmail += `--${boundary}\n`;
-  rawEmail += `Content-Type: text/html; charset="UTF-8"\n\n`;
-  rawEmail += `${html}\n\n`;
-
-  if (attachments && attachments.length > 0) {
-    for (const attachment of attachments) {
-      const content = attachment.content; // Assumes content is base64
-      const mimeType =
-        mime.lookup(attachment.filename) || "application/octet-stream";
-      rawEmail += `--${boundary}\n`;
-      rawEmail += `Content-Type: ${mimeType}; name="${attachment.filename}"\n`;
-      rawEmail += `Content-Disposition: attachment; filename="${attachment.filename}"\n`;
-      rawEmail += `Content-Transfer-Encoding: base64\n\n`;
-      rawEmail += `${content}\n\n`;
-    }
+  const chunks = [];
+  for await (const chunk of messageStream) {
+    chunks.push(chunk);
   }
-
-  rawEmail += `--${boundary}--`;
+  const finalMessageData = Buffer.concat(chunks);
 
   const command = new SendEmailCommand({
     Content: {
       Raw: {
-        Data: Buffer.from(rawEmail),
+        Data: finalMessageData,
       },
     },
     ConfigurationSetName: configurationSetName,
