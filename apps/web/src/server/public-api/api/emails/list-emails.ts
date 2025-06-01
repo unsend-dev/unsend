@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { PublicAPIApp } from "~/server/public-api/hono";
 import { db } from "~/server/db";
-import { EmailStatus } from "@prisma/client";
+import { EmailStatus, Prisma } from "@prisma/client";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 
 const EmailSchema = z.object({
@@ -108,19 +108,17 @@ function listEmails(app: PublicAPIApp) {
     const team = c.var.team;
     const { page, limit, startDate, endDate, domainId } = c.req.valid("query");
 
-    const whereClause: any = {
+    const whereClause: Prisma.EmailWhereInput = {
       teamId: team.id,
     };
 
     if (startDate) {
       whereClause.createdAt = {
-        ...whereClause.createdAt,
         gte: new Date(startDate),
       };
     }
     if (endDate) {
       whereClause.createdAt = {
-        ...whereClause.createdAt,
         lte: new Date(endDate),
       };
     }
