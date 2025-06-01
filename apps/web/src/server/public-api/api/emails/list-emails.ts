@@ -6,7 +6,6 @@ import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 
 const EmailSchema = z.object({
   id: z.string(),
-  teamId: z.number(),
   to: z.string().or(z.array(z.string())),
   replyTo: z.string().or(z.array(z.string())).optional().nullable(),
   cc: z.string().or(z.array(z.string())).optional().nullable(),
@@ -19,6 +18,7 @@ const EmailSchema = z.object({
   updatedAt: z.string(),
   latestStatus: z.nativeEnum(EmailStatus).nullable(),
   scheduledAt: z.string().datetime().nullable(),
+  domainId: z.number().nullable(),
 });
 
 const route = createRoute({
@@ -42,7 +42,7 @@ const route = createRoute({
         .string()
         .optional()
         .default(String(DEFAULT_QUERY_LIMIT))
-        .transform(Number)
+        .pipe(z.coerce.number().min(1).max(DEFAULT_QUERY_LIMIT))
         .openapi({
           param: {
             name: "limit",
@@ -134,7 +134,6 @@ function listEmails(app: PublicAPIApp) {
         where: whereClause,
         select: {
           id: true,
-          teamId: true,
           to: true,
           replyTo: true,
           cc: true,
@@ -147,6 +146,7 @@ function listEmails(app: PublicAPIApp) {
           updatedAt: true,
           latestStatus: true,
           scheduledAt: true,
+          domainId: true,
         },
         orderBy: {
           createdAt: "desc",
