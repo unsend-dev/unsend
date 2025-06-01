@@ -2,6 +2,7 @@ import { getApp } from "./hono";
 import getDomains from "./api/domains/get-domains";
 import sendEmail from "./api/emails/send-email";
 import getEmail from "./api/emails/get-email";
+import listEmails from "./api/emails/list-emails";
 import addContact from "./api/contacts/add-contact";
 import updateContactInfo from "./api/contacts/update-contact";
 import getContact from "./api/contacts/get-contact";
@@ -23,6 +24,7 @@ verifyDomain(app);
 
 /**Email related APIs */
 getEmail(app);
+listEmails(app);
 sendEmail(app);
 sendBatch(app);
 updateEmailScheduledAt(app);
