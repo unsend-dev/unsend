@@ -118,6 +118,78 @@ Once you logged in to unsend, it will prompt you add ses configuration.
 
 ![github app](/images/ses-settings/sandbox.png)
 
+## Step 5: SMTP Proxy Server (Optional)
+
+The SMTP proxy server is an optional component that allows applications to send emails through Unsend using standard SMTP protocol instead of the REST API. This is useful for legacy applications, email clients, or any software that needs to send emails via SMTP.
+
+<Tip>
+The complete source code for the SMTP proxy server is available at: [unsend-dev/unsend/tree/main/apps/smtp-server](https://github.com/unsend-dev/unsend/tree/main/apps/smtp-server)
+</Tip>
+
+### When to use the SMTP proxy:
+- **Legacy applications** that only support SMTP
+- **Email clients** like Thunderbird, Outlook, Apple Mail
+- **Applications** that can't easily integrate with REST APIs
+- **Third-party software** that requires SMTP configuration
+
+### Docker Compose Setup
+
+Create a `docker-compose.yml` file for the SMTP server:
+
+```yaml
+name: unsend-smtp-server
+
+services:
+  smtp-server:
+    container_name: unsend-smtp-server
+    image: unsend/smtp-proxy:latest
+    environment:
+      SMTP_AUTH_USERNAME: "unsend" # Username for SMTP authentication
+      UNSEND_BASE_URL: "https://your-unsend-instance.com" # Your Unsend instance URL
+      
+      # Optional: SSL certificate paths for secure connections
+      # UNSEND_API_KEY_PATH: "/certs/server.key"
+      # UNSEND_API_CERT_PATH: "/certs/server.crt"
+    
+    # Optional: Mount SSL certificates
+    # volumes:
+    #   - ./certs/server.key:/certs/server.key:ro
+    #   - ./certs/server.crt:/certs/server.crt:ro
+    
+    ports:
+      - "25:25"     # Standard SMTP
+      - "587:587"   # SMTP with STARTTLS
+      - "2587:2587" # Alternative SMTP port
+      - "465:465"   # SMTP over SSL/TLS
+      - "2465:2465" # Alternative SMTPS port
+    
+    restart: unless-stopped
+```
+
+Run the SMTP server:
+
+```bash
+docker-compose up -d
+```
+
+### SMTP Configuration
+
+To send emails through the proxy, configure your application with these SMTP settings:
+
+- **Host**: Your server's IP address or domain
+- **Ports**: 25, 587 (STARTTLS), 465 (SSL/TLS), 2587, or 2465
+- **Username**: `unsend` (or your custom `SMTP_AUTH_USERNAME`)
+- **Password**: Your Unsend API key
+- **Encryption**: STARTTLS (ports 25, 587, 2587) or SSL/TLS (ports 465, 2465)
+
+<Tip>
+The SMTP proxy forwards all emails to your Unsend instance, so make sure your main Unsend application is running and accessible.
+</Tip>
+
+<Warning>
+Ensure your firewall allows traffic on the SMTP ports you're using. For production deployments, consider using non-standard ports (2587, 2465) to avoid conflicts.
+</Warning>
+
 ## Next steps
 
 You're all set up now.
