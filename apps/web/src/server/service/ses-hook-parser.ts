@@ -41,6 +41,13 @@ export async function parseSesHook(data: SesEvent) {
     return false;
   }
 
+  const existingEvent = await db.emailEvent.findFirst({
+    where: {
+      emailId: email.id,
+      status: mailStatus,
+    },
+  });
+
   if (
     email.latestStatus === mailStatus &&
     mailStatus === EmailStatus.DELIVERY_DELAYED
@@ -67,6 +74,7 @@ export async function parseSesHook(data: SesEvent) {
     (mailData as SesBounce).bounceType === "Permanent";
 
   if (
+    !existingEvent &&
     [
       "DELIVERED",
       "OPENED",
@@ -147,14 +155,7 @@ export async function parseSesHook(data: SesEvent) {
         mailData: data,
       });
 
-      const mailEvent = await db.emailEvent.findFirst({
-        where: {
-          emailId: email.id,
-          status: mailStatus,
-        },
-      });
-
-      if (!mailEvent) {
+      if (!existingEvent) {
         await updateCampaignAnalytics(
           email.campaignId,
           mailStatus,
