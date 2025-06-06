@@ -20,7 +20,7 @@ export function JoinWaitlist() {
   );
 }
 
-export function GithubStarButton() {
+export function GitHubStarButton() {
   return (
     <motion.a
       className="border-white border py-2 px-6 rounded-full justify-center cursor-pointer flex gap-2 w-[220px]"
