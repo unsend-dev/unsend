@@ -13,7 +13,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <main className="flex-1 overflow-auto h-full p-4 px-40">
+          <main className="flex-1 overflow-auto h-full p-4 xl:px-40">
             {isMobile ? (
               <SidebarTrigger className="h-5 w-5 text-muted-foreground" />
             ) : null}
