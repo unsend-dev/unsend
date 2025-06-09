@@ -14,9 +14,9 @@ export const emailSchema = z
       description: "ID of a template from the dashboard",
     }),
     variables: z.record(z.string()).optional(),
-    replyTo: z.string().email().or(z.array(z.string().email())).optional(),
-    cc: z.string().email().or(z.array(z.string().email())).optional(),
-    bcc: z.string().email().or(z.array(z.string().email())).optional(),
+    replyTo: z.string().or(z.array(z.string())).optional(),
+    cc: z.string().or(z.array(z.string())).optional(),
+    bcc: z.string().or(z.array(z.string())).optional(),
     text: z.string().min(1).optional().nullable(),
     html: z.coerce.string().min(1).optional().nullable(),
     attachments: z
