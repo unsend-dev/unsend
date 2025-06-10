@@ -32,7 +32,7 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
       const errorData = await response.text();
       console.error(
         "Unsend API error response: error:",
-        errorData,
+        JSON.stringify(errorData, null, 4),
         `\nemail data: ${emailDataText}`
       );
       throw new Error(
