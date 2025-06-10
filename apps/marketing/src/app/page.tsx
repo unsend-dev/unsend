@@ -14,7 +14,7 @@ import { formatDate } from "date-fns";
 
 import IntegrationCode from "./IntegrationCode";
 import {
-  GithubStarButton,
+  GitHubStarButton,
   HeroImage,
   JoinWaitlist,
 } from "~/components/landind-page";
@@ -37,7 +37,7 @@ export default function Home() {
           </p>
           <div className="flex  flex-col items-center lg:flex-row justify-center mt-16 gap-8">
             <JoinWaitlist />
-            <GithubStarButton />
+            <GitHubStarButton />
           </div>
 
           <HeroImage />
