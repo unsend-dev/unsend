@@ -9,7 +9,7 @@ import { UnsendApiError } from "../public-api/api-error";
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
 export async function validateDomainFromEmail(email: string, teamId: number) {
-// Extract email from format like 'Name <email@domain>' this will allow entries suhc as "Someone @ something <some@domain.com>" to parse correctly as well.
+// Extract email from format like 'Name <email@domain>' this will allow entries such as "Someone @ something <some@domain.com>" to parse correctly as well.
 const match = email.match(/<([^>]+)>/);
 let fromDomain = match ? match[1].split("@")[1] : email.split("@")[1];
 
