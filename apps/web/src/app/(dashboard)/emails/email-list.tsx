@@ -82,11 +82,11 @@ export default function EmailsList() {
   };
 
   const handleDomain = (val: string) => {
-    setDomain(val === "All Domain" ? null : val);
+    setDomain(val === "All Domains" ? null : val);
   };
 
   const handleApiKey = (val: string) => {
-    setApiKey(val === "All ApiKey" ? null : val);
+    setApiKey(val === "All API Keys" ? null : val);
   };
 
   const handleSheetChange = (isOpen: boolean) => {
@@ -110,17 +110,17 @@ export default function EmailsList() {
         />
         <div className="flex justify-center items-center gap-x-3">
           <Select
-            value={apiKey ?? "All ApiKey"}
+            value={apiKey ?? "All API Keys"}
             onValueChange={(val) => handleApiKey(val)}
           >
             <SelectTrigger className="w-[180px]">
               {apiKey
                 ? apiKeysQuery?.find((apikey) => apikey.id === Number(apiKey))
                     ?.name
-                : "All ApiKey"}
+                : "All API Keys"}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All ApiKey">All ApiKey</SelectItem>
+              <SelectItem value="All API Keys">All API Keys</SelectItem>
               {apiKeysQuery &&
                 apiKeysQuery.map((apikey) => (
                   <SelectItem key={apikey.id} value={apikey.id.toString()}>
@@ -130,17 +130,17 @@ export default function EmailsList() {
             </SelectContent>
           </Select>
           <Select
-            value={domain ?? "All Domain"}
+            value={domain ?? "All Domains"}
             onValueChange={(val) => handleDomain(val)}
           >
             <SelectTrigger className="w-[180px]">
               {domain
                 ? domainsQuery?.find((d) => d.id === Number(domain))?.name
-                : "All Domain"}
+                : "All Domains"}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All Domain" className=" capitalize">
-                All Domain
+              <SelectItem value="All Domains" className=" capitalize">
+                All Domains
               </SelectItem>
               {domainsQuery &&
                 domainsQuery.map((domain) => (

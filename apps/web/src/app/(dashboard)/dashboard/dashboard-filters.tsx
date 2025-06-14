@@ -25,23 +25,23 @@ export default function DashboardFilters({
   const { data: domainsQuery } = api.domain.domains.useQuery();
 
   const handleDomain = (val: string) => {
-    setDomain(val === "All Domain" ? null : val);
+    setDomain(val === "All Domains" ? null : val);
   };
 
   return (
     <div className="flex gap-3">
       <Select
-        value={domain ?? "All Domain"}
+        value={domain ?? "All Domains"}
         onValueChange={(val) => handleDomain(val)}
       >
         <SelectTrigger className="w-[180px]">
           {domain
             ? domainsQuery?.find((d) => d.id === Number(domain))?.name
-            : "All Domain"}
+            : "All Domains"}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="All Domain" className="capitalize">
-            All Domain
+          <SelectItem value="All Domains" className="capitalize">
+            All Domains
           </SelectItem>
           {domainsQuery &&
             domainsQuery.map((domain) => (
