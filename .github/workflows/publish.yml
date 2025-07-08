@@ -138,7 +138,7 @@ jobs:
             docker manifest push unsend/$APP_NAME:$APP_VERSION
           done
 
-      - name: Create and push Github Container Registry manifest
+      - name: Create and push GitHub Container Registry manifest
         run: |
           APP_VERSION="$(git name-rev --tags --name-only $(git rev-parse HEAD) | head -n 1 | sed 's/\^0//')"
           GIT_SHA="$(git rev-parse HEAD)"

@@ -1,5 +1,10 @@
 import { EmailStatus, Prisma, UnsubscribeReason } from "@prisma/client";
-import { SesClick, SesEvent, SesEventDataKey } from "~/types/aws-types";
+import {
+  SesBounce,
+  SesClick,
+  SesEvent,
+  SesEventDataKey,
+} from "~/types/aws-types";
 import { db } from "../db";
 import {
   unsubscribeContact,
@@ -57,6 +62,10 @@ export async function parseSesHook(data: SesEvent) {
   // Update daily email usage statistics
   const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
 
+  const isHardBounced =
+    mailStatus === EmailStatus.BOUNCED &&
+    (mailData as SesBounce).bounceType === "Permanent";
+
   if (
     [
       "DELIVERED",
@@ -89,13 +98,40 @@ export async function parseSesHook(data: SesEvent) {
         bounced: updateField === "bounced" ? 1 : 0,
         complained: updateField === "complained" ? 1 : 0,
         sent: updateField === "sent" ? 1 : 0,
+        hardBounced: isHardBounced ? 1 : 0,
       },
       update: {
         [updateField]: {
           increment: 1,
         },
+        ...(isHardBounced ? { hardBounced: { increment: 1 } } : {}),
       },
     });
+
+    if (
+      isHardBounced ||
+      updateField === "complained" ||
+      updateField === "delivered"
+    ) {
+      await db.cumulatedMetrics.upsert({
+        where: {
+          teamId_domainId: {
+            teamId: email.teamId,
+            domainId: email.domainId ?? 0,
+          },
+        },
+        update: {
+          [updateField]: {
+            increment: BigInt(1),
+          },
+        },
+        create: {
+          teamId: email.teamId,
+          domainId: email.domainId ?? 0,
+          [updateField]: BigInt(1),
+        },
+      });
+    }
   }
 
   if (email.campaignId) {
@@ -108,6 +144,7 @@ export async function parseSesHook(data: SesEvent) {
         campaignId: email.campaignId,
         teamId: email.teamId,
         event: mailStatus,
+        mailData: data,
       });
 
       const mailEvent = await db.emailEvent.findFirst({
@@ -118,7 +155,11 @@ export async function parseSesHook(data: SesEvent) {
       });
 
       if (!mailEvent) {
-        await updateCampaignAnalytics(email.campaignId, mailStatus);
+        await updateCampaignAnalytics(
+          email.campaignId,
+          mailStatus,
+          isHardBounced
+        );
       }
     }
   }
@@ -139,13 +180,23 @@ async function checkUnsubscribe({
   campaignId,
   teamId,
   event,
+  mailData,
 }: {
   contactId: string;
   campaignId: string;
   teamId: number;
   event: EmailStatus;
+  mailData: SesEvent;
 }) {
-  if (event === EmailStatus.BOUNCED || event === EmailStatus.COMPLAINED) {
+  /**
+   * If the email is bounced and the bounce type is permanent, we need to unsubscribe the contact
+   * If the email is complained, we need to unsubscribe the contact
+   */
+  if (
+    (event === EmailStatus.BOUNCED &&
+      mailData.bounce?.bounceType === "Permanent") ||
+    event === EmailStatus.COMPLAINED
+  ) {
     const contact = await db.contact.findUnique({
       where: {
         id: contactId,

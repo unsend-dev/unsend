@@ -125,13 +125,21 @@ export async function syncStripeData(customerId: string) {
     return;
   }
 
+  if (!subscription.items.data[0]) {
+    return;
+  }
+
   await db.subscription.upsert({
     where: { id: subscription.id },
     update: {
       status: subscription.status,
       priceId: subscription.items.data[0]?.price?.id || "",
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
+      currentPeriodEnd: new Date(
+        subscription.items.data[0]?.current_period_end * 1000
+      ),
+      currentPeriodStart: new Date(
+        subscription.items.data[0]?.current_period_start * 1000
+      ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)
         : null,
@@ -142,8 +150,12 @@ export async function syncStripeData(customerId: string) {
       id: subscription.id,
       status: subscription.status,
       priceId: subscription.items.data[0]?.price?.id || "",
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
+      currentPeriodEnd: new Date(
+        subscription.items.data[0]?.current_period_end * 1000
+      ),
+      currentPeriodStart: new Date(
+        subscription.items.data[0]?.current_period_start * 1000
+      ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)
         : null,

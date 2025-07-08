@@ -6,7 +6,7 @@ const METER_EVENT_NAME = "unsend_usage";
 
 export async function sendUsageToStripe(customerId: string, usage: number) {
   const stripe = new Stripe(env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-01-27.acacia",
+    apiVersion: "2025-03-31.basil",
   });
 
   const meterEvent = await stripe.billing.meterEvents.create({

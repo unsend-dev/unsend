@@ -18,7 +18,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY ./apps/web ./apps/web
 COPY ./packages ./packages
-RUN pnpm add turbo@^1.12.5 -g
+RUN pnpm add turbo@^2.5.2 -g
 
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
 # Assuming "web" is the name entered in the project's package.json: { name: "web" }

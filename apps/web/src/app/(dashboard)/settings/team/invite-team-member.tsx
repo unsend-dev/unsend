@@ -33,6 +33,7 @@ import {
   FormMessage,
 } from "@unsend/ui/src/form";
 import { useTeam } from "~/providers/team-context";
+import { isCloud, isSelfHosted } from "~/utils/common";
 
 const inviteTeamMemberSchema = z.object({
   email: z
@@ -47,6 +48,7 @@ type FormData = z.infer<typeof inviteTeamMemberSchema>;
 
 export default function InviteTeamMember() {
   const { currentIsAdmin } = useTeam();
+  const { data: domains } = api.domain.domains.useQuery();
 
   const [open, setOpen] = useState(false);
 
@@ -60,23 +62,53 @@ export default function InviteTeamMember() {
 
   const utils = api.useUtils();
 
-  const createInvite = api.team.createTeamInvite.useMutation({
-    onSuccess: () => {
-      form.reset();
-      setOpen(false);
-      void utils.team.getTeamInvites.invalidate();
-      toast.success("Invitation sent successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to send invitation");
-    },
-  });
+  const createInvite = api.team.createTeamInvite.useMutation();
 
   function onSubmit(values: FormData) {
-    createInvite.mutate({
-      email: values.email,
-      role: values.role,
-    });
+    createInvite.mutate(
+      {
+        email: values.email,
+        role: values.role,
+        sendEmail: true,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          setOpen(false);
+          void utils.team.getTeamInvites.invalidate();
+          toast.success("Invitation sent successfully");
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(error.message || "Failed to send invitation");
+        },
+      }
+    );
+  }
+
+  async function onCopyLink() {
+    createInvite.mutate(
+      {
+        email: form.getValues("email"),
+        role: form.getValues("role"),
+        sendEmail: false,
+      },
+      {
+        onSuccess: (invite) => {
+          void utils.team.getTeamInvites.invalidate();
+          navigator.clipboard.writeText(
+            `${location.origin}/join-team?inviteId=${invite.id}`
+          );
+          form.reset();
+          setOpen(false);
+          toast.success("Invitation link copied to clipboard");
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(error.message || "Failed to copy invitation link");
+        },
+      }
+    );
   }
 
   if (!currentIsAdmin) {
@@ -91,7 +123,7 @@ export default function InviteTeamMember() {
           Invite Member
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className=" max-w-lg">
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
         </DialogHeader>
@@ -152,6 +184,13 @@ export default function InviteTeamMember() {
                 </FormItem>
               )}
             />
+            {isSelfHosted() && domains?.length ? (
+              <div className="text-sm text-muted-foreground">
+                Will use{" "}
+                <span className="font-bold">hello@{domains[0]?.name}</span> to
+                send invitation
+              </div>
+            ) : null}
             <div className="flex justify-end gap-2 pt-4">
               <Button
                 type="button"
@@ -160,15 +199,26 @@ export default function InviteTeamMember() {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createInvite.isPending}
-                showSpinner
-                isLoading={createInvite.isPending}
-                className="w-[150px]"
-              >
-                {createInvite.isPending ? "Sending..." : "Send Invitation"}
-              </Button>
+              {isSelfHosted() ? (
+                <Button
+                  disabled={createInvite.isPending}
+                  isLoading={createInvite.isPending}
+                  className="w-[150px]"
+                  onClick={form.handleSubmit(onCopyLink)}
+                >
+                  Copy Invitation
+                </Button>
+              ) : null}
+              {isCloud() || domains?.length ? (
+                <Button
+                  type="submit"
+                  disabled={createInvite.isPending}
+                  isLoading={createInvite.isPending}
+                  className="w-[150px]"
+                >
+                  Send Invitation
+                </Button>
+              ) : null}
             </div>
           </form>
         </Form>

@@ -64,7 +64,7 @@ export const DeleteTeamMember: React.FC<{
           <DialogDescription>
             {self
               ? "Are you sure you want to leave the team? This action cannot be undone."
-              : 'Are you sure you want to remove"{teamUser.email}" from the team? This action cannot be undone.'}
+              : `Are you sure you want to remove ${teamUser.email} from the team? This action cannot be undone.`}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-4 mt-6">

@@ -54,6 +54,8 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_BASIC_PRICE_ID: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    SMTP_HOST: z.string().default("smtp.unsend.dev"),
+    SMTP_USER: z.string().default("unsend"),
   },
 
   /**
@@ -101,6 +103,8 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_USER: process.env.SMTP_USER,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

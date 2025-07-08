@@ -1,0 +1,43 @@
+name: Release JS Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/sdk/**" # Trigger only changes in packages
+      - ".github/workflows/release-js-package.yml"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/sdk
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create .npmrc file
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish
+        run: pnpm publish-sdk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

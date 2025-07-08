@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@unsend/ui/src/table";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
-import React from "react";
+import React, { use } from "react";
 import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
@@ -31,11 +31,13 @@ import { toast } from "@unsend/ui/src/toaster";
 export default function DomainItemPage({
   params,
 }: {
-  params: { domainId: string };
+  params: Promise<{ domainId: string }>;
 }) {
+  const { domainId } = use(params);
+
   const domainQuery = api.domain.getDomain.useQuery(
     {
-      id: Number(params.domainId),
+      id: Number(domainId),
     },
     {
       refetchInterval: (q) => (q?.state.data?.isVerifying ? 10000 : false),
@@ -47,7 +49,7 @@ export default function DomainItemPage({
 
   const handleVerify = () => {
     verifyQuery.mutate(
-      { id: Number(params.domainId) },
+      { id: Number(domainId) },
       {
         onSettled: () => {
           domainQuery.refetch();
@@ -93,11 +95,7 @@ export default function DomainItemPage({
             </div>
             <div className="flex gap-4">
               <div>
-                <Button
-                  variant="outline"
-                  onClick={handleVerify}
-                  disabled={domainQuery.data?.isVerifying}
-                >
+                <Button variant="outline" onClick={handleVerify}>
                   {domainQuery.data?.isVerifying
                     ? "Verifying..."
                     : domainQuery.data?.status === DomainStatus.SUCCESS
@@ -276,7 +274,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
         <Switch
           checked={clickTracking}
           onCheckedChange={handleClickTrackingChange}
-          className="data-[state=checked]:bg-emerald-500"
+          className="data-[state=checked]:bg-success"
         />
       </div>
 
@@ -290,7 +288,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
         <Switch
           checked={openTracking}
           onCheckedChange={handleOpenTrackingChange}
-          className="data-[state=checked]:bg-emerald-500"
+          className="data-[state=checked]:bg-success"
         />
       </div>
 

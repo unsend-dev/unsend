@@ -1,11 +1,9 @@
 "use client";
 
-import { z } from "zod";
-
 import { Button } from "@unsend/ui/src/button";
 import { Spinner } from "@unsend/ui/src/spinner";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@unsend/ui/src/toaster";
 import {
   Dialog,
@@ -23,19 +21,18 @@ type Invite = NonNullable<
   RouterOutputs["invitation"]["getUserInvites"]
 >[number];
 
-const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Team name must be at least 2 characters.",
-  }),
-});
-
 export default function JoinTeam({
   showCreateTeam = false,
 }: {
   showCreateTeam?: boolean;
 }) {
+  const searchParams = useSearchParams();
+  const inviteId = searchParams.get("inviteId");
+
   const { data: invites, status: invitesStatus } =
-    api.invitation.getUserInvites.useQuery();
+    api.invitation.getUserInvites.useQuery({
+      inviteId,
+    });
   const joinTeamMutation = api.invitation.acceptTeamInvite.useMutation();
   const [selectedInvite, setSelectedInvite] = useState<Invite | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -73,8 +70,11 @@ export default function JoinTeam({
     );
   };
 
-  if (!invites?.length)
-    return <div className="text-center text-xl">No invites found</div>;
+  if (!invites?.length) {
+    return !showCreateTeam ? (
+      <div className="text-center text-xl">No invites found</div>
+    ) : null;
+  }
 
   return (
     <div>
@@ -123,11 +123,11 @@ export default function JoinTeam({
             <DialogTitle>Accept Team Invitation</DialogTitle>
             <DialogDescription>
               Are you sure you want to join{" "}
-              <span className="font-semibold text-primary">
+              <span className="font-semibold text-foreground">
                 {selectedInvite?.team.name}
               </span>
               ? You will be added as a{" "}
-              <span className="font-semibold text-primary lowercase">
+              <span className="font-semibold text-foreground lowercase">
                 {selectedInvite?.role.toLowerCase()}
               </span>
               .

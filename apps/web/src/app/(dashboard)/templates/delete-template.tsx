@@ -83,8 +83,10 @@ export const DeleteTemplate: React.FC<{
           <DialogTitle>Delete Template</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-primary">{template.name}</span>?
-            You can't reverse this.
+            <span className="font-semibold text-foreground">
+              {template.name}
+            </span>
+            ? You can't reverse this.
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">

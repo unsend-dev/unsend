@@ -27,6 +27,7 @@ export class SesSettingsService {
     region = env.AWS_DEFAULT_REGION
   ): Promise<SesSetting | null> {
     await this.checkInitialized();
+
     if (this.cache[region]) {
       return this.cache[region] as SesSetting;
     }

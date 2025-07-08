@@ -104,6 +104,7 @@ model Team {
   plan             Plan              @default(FREE)
   stripeCustomerId String?           @unique
   isActive         Boolean           @default(true)
+  apiRateLimit     Int               @default(2)
   billingEmail     String?
   teamUsers        TeamUser[]
   domains          Domain[]
@@ -244,6 +245,7 @@ model Email {
   attachments  String?
   campaignId   String?
   contactId    String?
+  inReplyToId  String?
   team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   emailEvents  EmailEvent[]
 
@@ -325,6 +327,7 @@ model Campaign {
   clicked       Int            @default(0)
   unsubscribed  Int            @default(0)
   bounced       Int            @default(0)
+  hardBounced   Int            @default(0)
   complained    Int            @default(0)
   status        CampaignStatus @default(DRAFT)
   createdAt     DateTime       @default(now())
@@ -356,20 +359,31 @@ enum EmailUsageType {
 }
 
 model DailyEmailUsage {
-  teamId     Int
-  date       String
-  type       EmailUsageType
-  domainId   Int
-  sent       Int            @default(0)
-  delivered  Int            @default(0)
-  opened     Int            @default(0)
-  clicked    Int            @default(0)
-  bounced    Int            @default(0)
-  complained Int            @default(0)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  teamId      Int
+  date        String
+  type        EmailUsageType
+  domainId    Int
+  sent        Int            @default(0)
+  delivered   Int            @default(0)
+  opened      Int            @default(0)
+  clicked     Int            @default(0)
+  bounced     Int            @default(0)
+  complained  Int            @default(0)
+  hardBounced Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([teamId, domainId, date, type])
+}
+
+model CumulatedMetrics {
+  teamId      Int
+  domainId    Int
+  delivered   BigInt @default(0)
+  hardBounced BigInt @default(0)
+  complained  BigInt @default(0)
+
+  @@id([teamId, domainId])
 }

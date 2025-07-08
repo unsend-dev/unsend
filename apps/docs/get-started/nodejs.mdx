@@ -38,7 +38,14 @@ icon: node-js
     ```javascript
     import { Unsend } from "unsend";
 
-    const unsend = new Unsend({ apiKey: "us_12345" });
+    const unsend = new Unsend("us_12345");
+    ```
+
+    If you are running a self-hosted version of Unsend, pass the base URL as the
+    second argument:
+
+    ```javascript
+    const unsend = new Unsend("us_12345", "https://my-unsend-instance.com");
     ```
 
   </Step>

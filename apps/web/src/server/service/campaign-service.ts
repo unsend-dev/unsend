@@ -334,7 +334,8 @@ export async function sendCampaignEmail(
 
 export async function updateCampaignAnalytics(
   campaignId: string,
-  emailStatus: EmailStatus
+  emailStatus: EmailStatus,
+  hardBounce: boolean = false
 ) {
   const campaign = await db.campaign.findUnique({
     where: { id: campaignId },
@@ -361,6 +362,9 @@ export async function updateCampaignAnalytics(
       break;
     case EmailStatus.BOUNCED:
       updateData.bounced = { increment: 1 };
+      if (hardBounce) {
+        updateData.hardBounced = { increment: 1 };
+      }
       break;
     case EmailStatus.COMPLAINED:
       updateData.complained = { increment: 1 };

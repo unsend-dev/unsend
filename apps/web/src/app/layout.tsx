@@ -24,9 +24,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable} app`}>
-        <ThemeProvider attribute="class" defaultTheme="light">
+    <html lang="en" suppressHydrationWarning className="bg-sidebar-background">
+      <body className={`font-sans ${inter.variable} app bg-sidebar-background`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Toaster />
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ThemeProvider>

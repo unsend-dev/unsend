@@ -62,6 +62,8 @@ services:
       - REDIS_URL=${REDIS_URL:?err}
       - NEXT_PUBLIC_IS_CLOUD=${NEXT_PUBLIC_IS_CLOUD:-false}
       - API_RATE_LIMIT=${API_RATE_LIMIT:-1}
+      - SMTP_HOST=${SMTP_HOST:-smtp.unsend.dev}
+      - SMTP_USER=${SMTP_USER:-unsend}
     depends_on:
       postgres:
         condition: service_healthy

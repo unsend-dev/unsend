@@ -7,27 +7,29 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
   switch (status) {
     case "DELIVERED":
       badgeColor =
-        "bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border  border-green-500/25 dark:border-green-700/25";
+        "bg-[#40a02b]/15 dark:bg-[#a6e3a1]/15 text-[#40a02b] dark:text-[#a6e3a1] border  border-[#40a02b]/25 dark:border-[#a6e3a1]/25";
       break;
     case "BOUNCED":
     case "FAILED":
       badgeColor =
-        "bg-red-500/10 text-red-600 dark:text-red-700/90 border border-red-600/10";
+        "bg-[#d20f39]/15 dark:bg-[#f38ba8]/15 text-[#d20f39] dark:text-[#f38ba8] border border-[#d20f39]/20 dark:border-[#f38ba8]/20";
       break;
     case "CLICKED":
       badgeColor =
-        "bg-sky-500/15 text-sky-700 dark:text-sky-600 border border-sky-600/20";
+        "bg-[#04a5e5]/15 dark:bg-[#93c5fd]/15 text-[#04a5e5] dark:text-[#93c5fd] border border-[#04a5e5]/20 dark:border-[#93c5fd]/20";
       break;
     case "OPENED":
       badgeColor =
-        "bg-indigo-500/15 text-indigo-600 dark:text-indigo-500 border border-indigo-600/20";
-      break;
-    case "DELIVERY_DELAYED":
-      badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-600/20";
+        "bg-[#8839ef]/15 dark:bg-[#cba6f7]/15 text-[#8839ef] dark:text-[#cba6f7] border border-[#8839ef]/20 dark:border-[#cba6f7]/20";
       break;
     case "COMPLAINED":
       badgeColor =
-        "bg-yellow-500/20 dark:bg-yellow-500/10 text-yellow-600 border border-yellow-600/10";
+        "bg-[#df8e1d]/10 dark:bg-[#F9E2AF]/15 dark:text-[#F9E2AF] text-[#df8e1d] border dark:border-[#F9E2AF]/20 border-[#df8e1d]/20";
+      break;
+    case "DELIVERY_DELAYED":
+      badgeColor =
+        "bg-[#df8e1d]/10 dark:bg-[#F9E2AF]/15 dark:text-[#F9E2AF] text-[#df8e1d] border dark:border-[#F9E2AF]/20 border-[#df8e1d]/20";
+
       break;
 
     default:
@@ -47,38 +49,39 @@ export const EmailStatusBadge: React.FC<{ status: EmailStatus }> = ({
 export const EmailStatusIcon: React.FC<{ status: EmailStatus }> = ({
   status,
 }) => {
-  let outsideColor = "bg-gray-500";
-  let insideColor = "bg-gray-500/50";
+  let outsideColor = "bg-gray-600/30 dark:bg-gray-400/30"; // Default
+  let insideColor = "bg-gray-600 dark:bg-gray-400"; // Default
 
   switch (status) {
     case "DELIVERED":
-      outsideColor = "bg-green-500/30";
-      insideColor = "bg-green-500";
+      outsideColor = "bg-[#40a02b]/30 dark:bg-[#a6e3a1]/30";
+      insideColor = "bg-[#40a02b] dark:bg-[#a6e3a1]";
       break;
     case "BOUNCED":
     case "FAILED":
-      outsideColor = "bg-red-500/30";
-      insideColor = "bg-red-500";
+      outsideColor = "bg-[#d20f39]/30 dark:bg-[#f38ba8]/30";
+      insideColor = "bg-[#d20f39] dark:bg-[#f38ba8]";
       break;
     case "CLICKED":
-      outsideColor = "bg-sky-500/30";
-      insideColor = "bg-sky-500";
+      outsideColor = "bg-[#04a5e5]/30 dark:bg-[#93c5fd]/30";
+      insideColor = "bg-[#04a5e5] dark:bg-[#93c5fd]";
       break;
     case "OPENED":
-      outsideColor = "bg-indigo-500/30";
-      insideColor = "bg-indigo-500";
+      outsideColor = "bg-[#8839ef]/30 dark:bg-[#cba6f7]/30";
+      insideColor = "bg-[#8839ef] dark:bg-[#cba6f7]";
       break;
     case "DELIVERY_DELAYED":
-      outsideColor = "bg-yellow-500/30";
-      insideColor = "bg-yellow-500";
+      outsideColor = "bg-[#df8e1d]/30 dark:bg-[#F9E2AF]/30";
+      insideColor = "bg-[#df8e1d] dark:bg-[#F9E2AF]";
       break;
     case "COMPLAINED":
-      outsideColor = "bg-yellow-500/30";
-      insideColor = "bg-yellow-500";
+      outsideColor = "bg-[#df8e1d]/30 dark:bg-[#F9E2AF]/30";
+      insideColor = "bg-[#df8e1d] dark:bg-[#F9E2AF]";
       break;
     default:
-      outsideColor = "bg-gray-500/20";
-      insideColor = "bg-gray-500";
+      // Using the default values defined above
+      outsideColor = "bg-gray-600/30 dark:bg-gray-400/30";
+      insideColor = "bg-gray-600 dark:bg-gray-400";
   }
 
   return (

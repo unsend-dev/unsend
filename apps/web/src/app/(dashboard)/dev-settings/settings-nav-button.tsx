@@ -15,9 +15,9 @@ export const SettingsNavButton: React.FC<{
 
   if (comingSoon) {
     return (
-      <div className="flex items-center justify-between hover:text-primary cursor-not-allowed mt-1">
+      <div className="flex items-center justify-between hover:text-foreground cursor-not-allowed mt-1">
         <div
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary cursor-not-allowed ${isActive ? " bg-secondary" : "text-muted-foreground"}`}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-foreground cursor-not-allowed ${isActive ? " bg-secondary" : "text-muted-foreground"}`}
         >
           {children}
         </div>
@@ -31,7 +31,7 @@ export const SettingsNavButton: React.FC<{
   return (
     <Link
       href={href}
-      className={`flex text-sm items-center mt-1 gap-3 rounded px-2 py-1 transition-all hover:text-primary ${isActive ? " bg-accent" : "text-muted-foreground"}`}
+      className={`flex text-sm items-center mt-1 gap-3 rounded px-2 py-1 transition-all hover:text-foreground ${isActive ? " bg-accent" : "text-muted-foreground"}`}
     >
       {children}
     </Link>

@@ -51,7 +51,7 @@ const route = createRoute({
 
 function getContacts(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
-    const team = await getTeamFromToken(c);
+    const team = c.var.team;
 
     const cb = await getContactBook(c, team.id);
 

@@ -27,7 +27,7 @@ const allowedEvents: Stripe.Event.Type[] = [
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = headers().get("Stripe-Signature");
+  const signature = (await headers()).get("Stripe-Signature");
 
   if (!signature) {
     console.error("No signature");

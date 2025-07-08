@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { StatusCode } from "hono/utils/http-status";
+import { StatusCode, ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
 const ErrorCode = z.enum([
@@ -14,7 +14,7 @@ const ErrorCode = z.enum([
   "METHOD_NOT_ALLOWED",
 ]);
 
-function codeToStatus(code: z.infer<typeof ErrorCode>): StatusCode {
+function codeToStatus(code: z.infer<typeof ErrorCode>): ContentfulStatusCode {
   switch (code) {
     case "BAD_REQUEST":
       return 400;

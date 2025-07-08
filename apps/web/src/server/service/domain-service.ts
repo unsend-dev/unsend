@@ -9,7 +9,18 @@ import { UnsendApiError } from "../public-api/api-error";
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
 export async function validateDomainFromEmail(email: string, teamId: number) {
-  let fromDomain = email.split("@")[1];
+  // Extract email from format like 'Name <email@domain>' this will allow entries such as "Someone @ something <some@domain.com>" to parse correctly as well.
+  const match = email.match(/<([^>]+)>/);
+  let fromDomain: string | undefined;
+
+  if (match && match[1]) {
+    const parts = match[1].split("@");
+    fromDomain = parts.length > 1 ? parts[1] : undefined;
+  } else {
+    const parts = email.split("@");
+    fromDomain = parts.length > 1 ? parts[1] : undefined;
+  }
+
   if (fromDomain?.endsWith(">")) {
     fromDomain = fromDomain.slice(0, -1);
   }
@@ -28,15 +39,14 @@ export async function validateDomainFromEmail(email: string, teamId: number) {
   if (!domain) {
     throw new UnsendApiError({
       code: "BAD_REQUEST",
-      message:
-        "Domain of from email is wrong. Use the domain verified by unsend",
+      message: `Domain: ${fromDomain} of from email is wrong. Use the domain verified by unsend`,
     });
   }
 
   if (domain.status !== "SUCCESS") {
     throw new UnsendApiError({
       code: "BAD_REQUEST",
-      message: "Domain is not verified",
+      message: `Domain: ${fromDomain} is not verified`,
     });
   }
 
@@ -162,6 +172,17 @@ export async function deleteDomain(id: number) {
 
   return db.domain.delete({
     where: { id },
+  });
+}
+
+export async function getDomains(teamId: number) {
+  return db.domain.findMany({
+    where: {
+      teamId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
 

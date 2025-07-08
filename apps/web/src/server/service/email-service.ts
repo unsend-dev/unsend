@@ -63,6 +63,7 @@ export async function sendEmail(
     bcc,
     scheduledAt,
     apiKeyId,
+    inReplyToId,
   } = emailContent;
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
@@ -99,6 +100,29 @@ export async function sendEmail(
     }
   }
 
+  if (inReplyToId) {
+    const email = await db.email.findUnique({
+      where: {
+        id: inReplyToId,
+        teamId,
+      },
+    });
+
+    if (!email) {
+      throw new UnsendApiError({
+        code: "BAD_REQUEST",
+        message: '"inReplyTo" is invalid',
+      });
+    }
+  }
+
+  if (!text && !html) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "Either text or html is required",
+    });
+  }
+
   const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
   const delay = scheduledAtDate
     ? Math.max(0, scheduledAtDate.getTime() - Date.now())
@@ -124,6 +148,7 @@ export async function sendEmail(
       scheduledAt: scheduledAtDate,
       latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
       apiId: apiKeyId,
+      inReplyToId,
     },
   });
 
@@ -212,4 +237,214 @@ export async function cancelEmail(emailId: string) {
       status: "CANCELLED",
     },
   });
+}
+
+/**
+ * Send multiple emails in bulk (up to 100 at a time)
+ * Handles template rendering, variable replacement, and efficient bulk queuing
+ */
+export async function sendBulkEmails(
+  emailContents: Array<
+    EmailContent & {
+      teamId: number;
+      apiKeyId?: number;
+    }
+  >
+) {
+  if (emailContents.length === 0) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "No emails provided for bulk send",
+    });
+  }
+
+  if (emailContents.length > 100) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "Cannot send more than 100 emails in a single bulk request",
+    });
+  }
+
+  // Group emails by domain to minimize domain validations
+  const emailsByDomain = new Map<
+    string,
+    {
+      domain: Awaited<ReturnType<typeof validateDomainFromEmail>>;
+      emails: typeof emailContents;
+    }
+  >();
+
+  // First pass: validate domains and group emails
+  for (const content of emailContents) {
+    const { from } = content;
+    if (!emailsByDomain.has(from)) {
+      const domain = await validateDomainFromEmail(from, content.teamId);
+      emailsByDomain.set(from, { domain, emails: [] });
+    }
+    emailsByDomain.get(from)?.emails.push(content);
+  }
+
+  // Cache templates to avoid repeated database queries
+  const templateCache = new Map<
+    number,
+    { subject: string; content: any; renderer: EmailRenderer }
+  >();
+
+  const createdEmails = [];
+  const queueJobs = [];
+
+  // Process each domain group
+  for (const { domain, emails } of emailsByDomain.values()) {
+    // Process emails in each domain group
+    for (const content of emails) {
+      const {
+        to,
+        from,
+        subject: subjectFromApiCall,
+        templateId,
+        variables,
+        text,
+        html: htmlFromApiCall,
+        teamId,
+        attachments,
+        replyTo,
+        cc,
+        bcc,
+        scheduledAt,
+        apiKeyId,
+      } = content;
+
+      let subject = subjectFromApiCall;
+      let html = htmlFromApiCall;
+
+      // Process template if specified
+      if (templateId) {
+        let templateData = templateCache.get(Number(templateId));
+        if (!templateData) {
+          const template = await db.template.findUnique({
+            where: { id: templateId },
+          });
+          if (template) {
+            const jsonContent = JSON.parse(template.content || "{}");
+            templateData = {
+              subject: template.subject || "",
+              content: jsonContent,
+              renderer: new EmailRenderer(jsonContent),
+            };
+            templateCache.set(Number(templateId), templateData);
+          }
+        }
+
+        if (templateData) {
+          subject = replaceVariables(templateData.subject, variables || {});
+
+          // {{}} for link replacements
+          const modifiedVariables = {
+            ...variables,
+            ...Object.keys(variables || {}).reduce(
+              (acc, key) => {
+                acc[`{{${key}}}`] = variables?.[key] || "";
+                return acc;
+              },
+              {} as Record<string, string>
+            ),
+          };
+
+          html = await templateData.renderer.render({
+            shouldReplaceVariableValues: true,
+            variableValues: modifiedVariables,
+          });
+        }
+      }
+
+      if (!text && !html) {
+        throw new UnsendApiError({
+          code: "BAD_REQUEST",
+          message: `Either text or html is required for email to ${to}`,
+        });
+      }
+
+      const scheduledAtDate = scheduledAt ? new Date(scheduledAt) : undefined;
+      const delay = scheduledAtDate
+        ? Math.max(0, scheduledAtDate.getTime() - Date.now())
+        : undefined;
+
+      try {
+        // Create email record
+        const email = await db.email.create({
+          data: {
+            to: Array.isArray(to) ? to : [to],
+            from,
+            subject: subject as string,
+            replyTo: replyTo
+              ? Array.isArray(replyTo)
+                ? replyTo
+                : [replyTo]
+              : undefined,
+            cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+            bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+            text,
+            html,
+            teamId,
+            domainId: domain.id,
+            attachments: attachments ? JSON.stringify(attachments) : undefined,
+            scheduledAt: scheduledAtDate,
+            latestStatus: scheduledAtDate ? "SCHEDULED" : "QUEUED",
+            apiId: apiKeyId,
+          },
+        });
+
+        createdEmails.push(email);
+
+        // Prepare queue job
+        queueJobs.push({
+          emailId: email.id,
+          region: domain.region,
+          transactional: true, // Bulk emails are still transactional
+          delay,
+          timestamp: Date.now(),
+        });
+      } catch (error: any) {
+        console.error(
+          `Failed to create email record for recipient ${to}:`,
+          error
+        );
+        // Continue processing other emails
+      }
+    }
+  }
+
+  if (queueJobs.length === 0) {
+    throw new UnsendApiError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create any email records",
+    });
+  }
+
+  // Bulk queue all jobs
+  try {
+    await EmailQueueService.queueBulk(queueJobs);
+  } catch (error: any) {
+    // Mark all created emails as failed
+    await Promise.all(
+      createdEmails.map(async (email) => {
+        await db.emailEvent.create({
+          data: {
+            emailId: email.id,
+            status: "FAILED",
+            data: {
+              error: error.toString(),
+            },
+          },
+        });
+        await db.email.update({
+          where: { id: email.id },
+          data: { latestStatus: "FAILED" },
+        });
+      })
+    );
+    throw error;
+  }
+
+  return createdEmails;
 }

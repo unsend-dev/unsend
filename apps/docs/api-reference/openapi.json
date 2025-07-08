@@ -85,6 +85,22 @@
                       },
                       "updatedAt": {
                         "type": "string"
+                      },
+                      "dmarcAdded": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "isVerifying": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "errorMessage": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "subdomain": {
+                        "type": "string",
+                        "nullable": true
                       }
                     },
                     "required": [
@@ -97,6 +113,159 @@
                       "updatedAt"
                     ]
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "region"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create a new domain",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "description": "The ID of the domain",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the domain",
+                      "example": "example.com"
+                    },
+                    "teamId": {
+                      "type": "number",
+                      "description": "The ID of the team",
+                      "example": 1
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_STARTED",
+                        "PENDING",
+                        "SUCCESS",
+                        "FAILED",
+                        "TEMPORARY_FAILURE"
+                      ]
+                    },
+                    "region": {
+                      "type": "string",
+                      "default": "us-east-1"
+                    },
+                    "clickTracking": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "openTracking": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "publicKey": {
+                      "type": "string"
+                    },
+                    "dkimStatus": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "spfDetails": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "dmarcAdded": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isVerifying": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "errorMessage": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "subdomain": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "teamId",
+                    "status",
+                    "publicKey",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/domains/{id}/verify": {
+      "put": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Create a new domain",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 }
               }
             }
@@ -315,6 +484,223 @@
       }
     },
     "/v1/emails": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "default": "1",
+              "example": "1"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "default": "50",
+              "example": "50"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-01-01T00:00:00Z"
+            },
+            "required": false,
+            "name": "startDate",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2024-01-31T23:59:59Z"
+            },
+            "required": false,
+            "name": "endDate",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "example": "123"
+            },
+            "required": false,
+            "name": "domainId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieve a list of emails",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          },
+                          "replyTo": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "nullable": true
+                              }
+                            ]
+                          },
+                          "cc": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "nullable": true
+                              }
+                            ]
+                          },
+                          "bcc": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "nullable": true
+                              }
+                            ]
+                          },
+                          "from": {
+                            "type": "string"
+                          },
+                          "subject": {
+                            "type": "string"
+                          },
+                          "html": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "text": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          },
+                          "latestStatus": {
+                            "type": "string",
+                            "nullable": true,
+                            "enum": [
+                              "SCHEDULED",
+                              "QUEUED",
+                              "SENT",
+                              "DELIVERY_DELAYED",
+                              "BOUNCED",
+                              "REJECTED",
+                              "RENDERING_FAILURE",
+                              "DELIVERED",
+                              "OPENED",
+                              "CLICKED",
+                              "COMPLAINED",
+                              "FAILED",
+                              "CANCELLED"
+                            ]
+                          },
+                          "scheduledAt": {
+                            "type": "string",
+                            "nullable": true,
+                            "format": "date-time"
+                          },
+                          "domainId": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "to",
+                          "from",
+                          "subject",
+                          "html",
+                          "text",
+                          "createdAt",
+                          "updatedAt",
+                          "latestStatus",
+                          "scheduledAt",
+                          "domainId"
+                        ]
+                      }
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "count"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "requestBody": {
           "required": true,
@@ -341,6 +727,7 @@
                   },
                   "subject": {
                     "type": "string",
+                    "minLength": 1,
                     "description": "Optional when templateId is provided"
                   },
                   "templateId": {
@@ -356,12 +743,14 @@
                   "replyTo": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
@@ -369,12 +758,14 @@
                   "cc": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
@@ -382,21 +773,27 @@
                   "bcc": {
                     "anyOf": [
                       {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email"
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "format": "email"
                         }
                       }
                     ]
                   },
                   "text": {
-                    "type": "string"
+                    "type": "string",
+                    "nullable": true,
+                    "minLength": 1
                   },
                   "html": {
-                    "type": "string"
+                    "type": "string",
+                    "nullable": true,
+                    "minLength": 1
                   },
                   "attachments": {
                     "type": "array",
@@ -404,21 +801,28 @@
                       "type": "object",
                       "properties": {
                         "filename": {
-                          "type": "string"
+                          "type": "string",
+                          "minLength": 1
                         },
                         "content": {
-                          "type": "string"
+                          "type": "string",
+                          "minLength": 1
                         }
                       },
                       "required": [
                         "filename",
                         "content"
                       ]
-                    }
+                    },
+                    "maxItems": 10
                   },
                   "scheduledAt": {
                     "type": "string",
                     "format": "date-time"
+                  },
+                  "inReplyToId": {
+                    "type": "string",
+                    "nullable": true
                   }
                 },
                 "required": [
@@ -441,6 +845,176 @@
                       "type": "string"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/batch": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "to": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "subject": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Optional when templateId is provided"
+                    },
+                    "templateId": {
+                      "type": "string",
+                      "description": "ID of a template from the dashboard"
+                    },
+                    "variables": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "replyTo": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "cc": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "bcc": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      ]
+                    },
+                    "text": {
+                      "type": "string",
+                      "nullable": true,
+                      "minLength": 1
+                    },
+                    "html": {
+                      "type": "string",
+                      "nullable": true,
+                      "minLength": 1
+                    },
+                    "attachments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "filename": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "content": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "filename",
+                          "content"
+                        ]
+                      },
+                      "maxItems": 10
+                    },
+                    "scheduledAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "inReplyToId": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "to",
+                    "from"
+                  ]
+                },
+                "maxItems": 100
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of successfully created email IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "emailId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "emailId"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 }
               }
             }

@@ -41,6 +41,7 @@ import { Input } from "@unsend/ui/src/input";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 import { useDebouncedCallback } from "use-debounce";
 import { useState } from "react";
+import { SheetTitle, SheetDescription } from "@unsend/ui/src/sheet";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
@@ -81,11 +82,11 @@ export default function EmailsList() {
   };
 
   const handleDomain = (val: string) => {
-    setDomain(val === "All Domain" ? null : val);
+    setDomain(val === "All Domains" ? null : val);
   };
 
   const handleApiKey = (val: string) => {
-    setApiKey(val === "All ApiKey" ? null : val);
+    setApiKey(val === "All API Keys" ? null : val);
   };
 
   const handleSheetChange = (isOpen: boolean) => {
@@ -109,41 +110,41 @@ export default function EmailsList() {
         />
         <div className="flex justify-center items-center gap-x-3">
           <Select
-            value={apiKey ?? "All ApiKey"}
+            value={apiKey ?? "All API Keys"}
             onValueChange={(val) => handleApiKey(val)}
           >
             <SelectTrigger className="w-[180px]">
               {apiKey
                 ? apiKeysQuery?.find((apikey) => apikey.id === Number(apiKey))
                     ?.name
-                : "All ApiKey"}
+                : "All API Keys"}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All ApiKey">All ApiKey</SelectItem>
+              <SelectItem value="All API Keys">All API Keys</SelectItem>
               {apiKeysQuery &&
                 apiKeysQuery.map((apikey) => (
-                  <SelectItem value={apikey.id.toString()}>
+                  <SelectItem key={apikey.id} value={apikey.id.toString()}>
                     {apikey.name}
                   </SelectItem>
                 ))}
             </SelectContent>
           </Select>
           <Select
-            value={domain ?? "All Domain"}
+            value={domain ?? "All Domains"}
             onValueChange={(val) => handleDomain(val)}
           >
             <SelectTrigger className="w-[180px]">
               {domain
                 ? domainsQuery?.find((d) => d.id === Number(domain))?.name
-                : "All Domain"}
+                : "All Domains"}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All Domain" className=" capitalize">
-                All Domain
+              <SelectItem value="All Domains" className=" capitalize">
+                All Domains
               </SelectItem>
               {domainsQuery &&
                 domainsQuery.map((domain) => (
-                  <SelectItem value={domain.id.toString()}>
+                  <SelectItem key={domain.id} value={domain.id.toString()}>
                     {domain.name}
                   </SelectItem>
                 ))}
@@ -173,7 +174,7 @@ export default function EmailsList() {
                 "DELIVERY_DELAYED",
                 "COMPLAINED",
               ]).map((status) => (
-                <SelectItem value={status} className=" capitalize">
+                <SelectItem key={status} value={status} className=" capitalize">
                   {status.toLowerCase().replace("_", " ")}
                 </SelectItem>
               ))}
@@ -266,6 +267,10 @@ export default function EmailsList() {
           onOpenChange={handleSheetChange}
         >
           <DynamicSheetContentWithNoSSR className=" sm:max-w-3xl">
+            <SheetTitle className="sr-only">Email Details</SheetTitle>
+            <SheetDescription className="sr-only">
+              Detailed view of the selected email.
+            </SheetDescription>
             {selectedEmail ? <EmailDetails emailId={selectedEmail} /> : null}
           </DynamicSheetContentWithNoSSR>
         </DynamicSheetWithNoSSR>
