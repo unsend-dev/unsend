@@ -58,6 +58,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@unsend/ui/src/dropdown-menu";
+import { ChangeTeam } from "./theme/ChangeTeam";
 
 // General items
 const generalItems = [
@@ -336,6 +337,9 @@ export function NavUser({
               </DropdownMenuItem>
               <div className="px-2 py-0.5">
                 <ThemeSwitcher />
+              </div>
+              <div className="px-2 py-0.5">
+                <ChangeTeam />
               </div>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
