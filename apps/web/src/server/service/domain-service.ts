@@ -4,6 +4,7 @@ import * as tldts from "tldts";
 import * as ses from "~/server/aws/ses";
 import { db } from "~/server/db";
 import { SesSettingsService } from "./ses-settings-service";
+import { WebhookService } from "./webhook-service";
 import { UnsendApiError } from "../public-api/api-error";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
@@ -114,6 +115,20 @@ export async function getDomain(id: number) {
     const _dmarcRecord = await getDmarcRecord(domain.name);
     const dmarcRecord = _dmarcRecord?.[0]?.[0];
 
+    const isVerifying =
+      verificationStatus === "SUCCESS" &&
+      dkimStatus === "SUCCESS" &&
+      spfDetails === "SUCCESS"
+        ? false
+        : true;
+
+    if (domain.isVerifying && !isVerifying) {
+      WebhookService.triggerWebhook(domain.teamId, "DOMAIN_VERIFIED", {
+        domain: domain.name,
+        status: "SUCCESS",
+      });
+    }
+
     domain = await db.domain.update({
       where: {
         id,
@@ -123,12 +138,7 @@ export async function getDomain(id: number) {
         spfDetails,
         status: verificationStatus ?? "NOT_STARTED",
         dmarcAdded: dmarcRecord ? true : false,
-        isVerifying:
-          verificationStatus === "SUCCESS" &&
-          dkimStatus === "SUCCESS" &&
-          spfDetails === "SUCCESS"
-            ? false
-            : true,
+        isVerifying,
       },
     });
 

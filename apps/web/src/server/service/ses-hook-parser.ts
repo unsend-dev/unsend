@@ -12,6 +12,7 @@ import {
 } from "./campaign-service";
 import { env } from "~/env";
 import { getRedis } from "../redis";
+import { WebhookService } from "./webhook-service";
 import { Queue, Worker } from "bullmq";
 import {
   DEFAULT_QUEUE_OPTIONS,
@@ -172,7 +173,39 @@ export async function parseSesHook(data: SesEvent) {
     },
   });
 
+  try {
+    const webhookEvent = toWebhookEvent(mailStatus);
+    if (webhookEvent) {
+        await WebhookService.triggerWebhook(email.teamId, webhookEvent, {
+        emailId: email.id,
+        status: mailStatus,
+        data: mailData,
+        });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
   return true;
+}
+
+function toWebhookEvent(status: EmailStatus) {
+  switch (status) {
+    case EmailStatus.SENT:
+      return "EMAIL_SENT";
+    case EmailStatus.DELIVERED:
+      return "EMAIL_DELIVERED";
+    case EmailStatus.OPENED:
+      return "EMAIL_OPENED";
+    case EmailStatus.CLICKED:
+      return "EMAIL_CLICKED";
+    case EmailStatus.BOUNCED:
+      return "EMAIL_BOUNCED";
+    case EmailStatus.COMPLAINED:
+      return "EMAIL_COMPLAINED";
+    default:
+      return null;
+  }
 }
 
 async function checkUnsubscribe({
