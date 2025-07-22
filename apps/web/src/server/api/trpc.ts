@@ -8,6 +8,7 @@
  */
 
 import { initTRPC, TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
 import superjson from "superjson";
 import { z, ZodError } from "zod";
 import { env } from "~/env";
@@ -110,14 +111,21 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const cookieStore = cookies();
+
+  const currentTeamId = cookieStore.get("unsendTeamId")?.value
+    ? parseInt(cookieStore.get("unsendTeamId")!.value, 10)
+    : null;
+
   const teamUser = await db.teamUser.findFirst({
-    where: { userId: ctx.session.user.id },
+    where: { userId: ctx.session.user.id, ...(currentTeamId && { teamId: currentTeamId }) },
     include: { team: true },
   });
 
   if (!teamUser) {
     throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
   }
+
   return next({
     ctx: {
       team: teamUser.team,
