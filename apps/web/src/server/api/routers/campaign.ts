@@ -56,7 +56,6 @@ export const campaignRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
           status: true,
-          html: true,
         },
         orderBy: {
           createdAt: "desc",
