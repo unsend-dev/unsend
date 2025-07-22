@@ -17,7 +17,7 @@ import {
 import { validateDomainFromEmail } from "~/server/service/domain-service";
 import {
   getDocumentUploadUrl,
-  isStorageConfigured
+  isStorageConfigured,
 } from "~/server/service/storage-service";
 
 const statuses = Object.values(CampaignStatus) as [CampaignStatus];
@@ -63,8 +63,18 @@ export const campaignRouter = createTRPCRouter({
         skip: offset,
         take: limit,
       });
+      let time = performance.now();
+
+      campaignsP.then((campaigns) => {
+        console.log(
+          `Time taken to get campaigns: ${performance.now() - time} milliseconds`
+        );
+      });
 
       const [campaigns, count] = await Promise.all([campaignsP, countP]);
+      console.log(
+        `Time taken to get campaigns and count: ${performance.now() - time} milliseconds`
+      );
 
       return { campaigns, totalPage: Math.ceil(count / limit) };
     }),

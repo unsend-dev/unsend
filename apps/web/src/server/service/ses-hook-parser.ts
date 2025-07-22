@@ -290,7 +290,7 @@ export class SesHookParser {
     },
     {
       connection: getRedis(),
-      concurrency: 200,
+      concurrency: 50,
     }
   );
 

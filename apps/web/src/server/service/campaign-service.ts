@@ -379,7 +379,7 @@ export async function updateCampaignAnalytics(
   });
 }
 
-const CAMPAIGN_EMAIL_CONCURRENCY = 200;
+const CAMPAIGN_EMAIL_CONCURRENCY = 50;
 
 class CampaignEmailService {
   private static campaignQueue = new Queue(CAMPAIGN_MAIL_PROCESSING_QUEUE, {
