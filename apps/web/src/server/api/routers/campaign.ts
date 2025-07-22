@@ -31,6 +31,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx: { db, team }, input }) => {
+      let completeTime = performance.now();
       const page = input.page || 1;
       const limit = 30;
       const offset = (page - 1) * limit;
@@ -73,7 +74,7 @@ export const campaignRouter = createTRPCRouter({
 
       const [campaigns, count] = await Promise.all([campaignsP, countP]);
       console.log(
-        `Time taken to get campaigns and count: ${performance.now() - time} milliseconds`
+        `Time taken to complete request: ${performance.now() - completeTime} milliseconds`
       );
 
       return { campaigns, totalPage: Math.ceil(count / limit) };
