@@ -5,6 +5,7 @@ import { getUsageDate, getUsageUinits } from "~/lib/usage";
 import { sendUsageToStripe } from "~/server/billing/usage";
 import { getRedis } from "~/server/redis";
 import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
+import { logger } from "../logger/log";
 
 const USAGE_QUEUE_NAME = "usage-reporting";
 
@@ -51,13 +52,18 @@ const worker = new Worker(
 
       try {
         await sendUsageToStripe(team.stripeCustomerId, totalUsage);
-        console.log(
-          `[Usage Reporting] Reported usage for team ${team.id}, date: ${getUsageDate()}, usage: ${totalUsage}`
+        logger.info(
+          { teamId: team.id, date: getUsageDate(), usage: totalUsage },
+          `[Usage Reporting] Reported usage for team`
         );
       } catch (error) {
-        console.error(
-          `[Usage Reporting] Failed to report usage for team ${team.id}:`,
-          error instanceof Error ? error.message : error
+        logger.error(
+          {
+            err: error,
+            teamId: team.id,
+            message: error instanceof Error ? error.message : error,
+          },
+          `[Usage Reporting] Failed to report usage for team`
         );
       }
     }
@@ -82,9 +88,9 @@ await usageQueue.upsertJobScheduler(
 );
 
 worker.on("completed", (job) => {
-  console.log(`[Usage Reporting] Job ${job.id} completed`);
+  logger.info({ jobId: job.id }, `[Usage Reporting] Job completed`);
 });
 
 worker.on("failed", (job, err) => {
-  console.error(`[Usage Reporting] Job ${job?.id} failed:`, err);
+  logger.error({ err, jobId: job?.id }, `[Usage Reporting] Job failed`);
 });

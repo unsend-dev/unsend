@@ -6,6 +6,7 @@ import * as ses from "~/server/aws/ses";
 import { EventType } from "@aws-sdk/client-sesv2";
 import { EmailQueueService } from "./email-queue-service";
 import { smallNanoid } from "../nanoid";
+import { logger } from "../logger/log";
 
 const GENERAL_EVENTS: EventType[] = [
   "BOUNCE",
@@ -121,9 +122,12 @@ export class SesSettingsService {
         setting.sesEmailRateLimit,
         setting.transactionalQuota
       );
-      console.log(
-        EmailQueueService.transactionalQueue,
-        EmailQueueService.marketingQueue
+      logger.info(
+        {
+          transactionalQueue: EmailQueueService.transactionalQueue,
+          marketingQueue: EmailQueueService.marketingQueue,
+        },
+        "Email queues initialized"
       );
 
       await this.invalidateCache();
@@ -132,10 +136,13 @@ export class SesSettingsService {
         try {
           await sns.deleteTopic(topicArn, region);
         } catch (deleteError) {
-          console.error("Failed to delete SNS topic after error:", deleteError);
+          logger.error(
+            { err: deleteError },
+            "Failed to delete SNS topic after error"
+          );
         }
       }
-      console.error("Failed to create SES setting", error);
+      logger.error({ err: error }, "Failed to create SES setting");
       throw error;
     }
   }
@@ -160,9 +167,12 @@ export class SesSettingsService {
         sesEmailRateLimit: sendingRateLimit,
       },
     });
-    console.log(
-      EmailQueueService.transactionalQueue,
-      EmailQueueService.marketingQueue
+    logger.info(
+      {
+        transactionalQueue: EmailQueueService.transactionalQueue,
+        marketingQueue: EmailQueueService.marketingQueue,
+      },
+      "Email queues before update"
     );
 
     EmailQueueService.initializeQueue(
@@ -171,9 +181,12 @@ export class SesSettingsService {
       setting.transactionalQuota
     );
 
-    console.log(
-      EmailQueueService.transactionalQueue,
-      EmailQueueService.marketingQueue
+    logger.info(
+      {
+        transactionalQueue: EmailQueueService.transactionalQueue,
+        marketingQueue: EmailQueueService.marketingQueue,
+      },
+      "Email queues after update"
     );
 
     await this.invalidateCache();
@@ -261,7 +274,7 @@ async function registerConfigurationSet(setting: SesSetting) {
 }
 
 async function isValidUnsendUrl(url: string) {
-  console.log("Checking if URL is valid", url);
+  logger.info({ url }, "Checking if URL is valid");
   try {
     const response = await fetch(`${url}/api/ses_callback`, {
       method: "GET",
@@ -272,7 +285,7 @@ async function isValidUnsendUrl(url: string) {
       error: response.statusText,
     };
   } catch (e) {
-    console.log("Error checking if URL is valid", e);
+    logger.error({ err: e }, "Error checking if URL is valid");
     return {
       isValid: false,
       code: 500,

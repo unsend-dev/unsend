@@ -14,6 +14,8 @@ import { env } from "~/env";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import { getChildLogger, logger, withLogger } from "../logger/log";
+import { randomUUID } from "crypto";
 
 /**
  * 1. CONTEXT
@@ -118,13 +120,22 @@ export const teamProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   if (!teamUser) {
     throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
   }
-  return next({
-    ctx: {
-      team: teamUser.team,
-      teamUser,
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
+
+  return withLogger(
+    getChildLogger({
+      teamId: teamUser.team.id,
+      requestId: randomUUID(),
+    }),
+    async () => {
+      return next({
+        ctx: {
+          team: teamUser.team,
+          teamUser,
+          session: { ...ctx.session, user: ctx.session.user },
+        },
+      });
+    }
+  );
 });
 
 export const teamAdminProcedure = teamProcedure.use(async ({ ctx, next }) => {

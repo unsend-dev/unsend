@@ -4,6 +4,7 @@ import { isSelfHosted } from "~/utils/common";
 import { db } from "./db";
 import { getDomains } from "./service/domain-service";
 import { sendEmail } from "./service/email-service";
+import { logger } from "./logger/log";
 
 let unsend: Unsend | undefined;
 
@@ -22,7 +23,7 @@ export async function sendSignUpEmail(
   const { host } = new URL(url);
 
   if (env.NODE_ENV === "development") {
-    console.log("Sending sign in email", { email, url, token });
+    logger.info({ email, url, token }, "Sending sign in email");
     return;
   }
 
@@ -41,7 +42,7 @@ export async function sendTeamInviteEmail(
   const { host } = new URL(url);
 
   if (env.NODE_ENV === "development") {
-    console.log("Sending team invite email", { email, url, teamName });
+    logger.info({ email, url, teamName }, "Sending team invite email");
     return;
   }
 
@@ -59,7 +60,7 @@ async function sendMail(
   html: string
 ) {
   if (isSelfHosted()) {
-    console.log("Sending email using self hosted");
+    logger.info("Sending email using self hosted");
     /* 
       Self hosted so checking if we can send using one of the available domain
       Assuming self hosted will have only one team
@@ -67,14 +68,14 @@ async function sendMail(
      */
     const team = await db.team.findFirst({});
     if (!team) {
-      console.error("No team found");
+      logger.error("No team found");
       return;
     }
 
     const domains = await getDomains(team.id);
 
     if (domains.length === 0 || !domains[0]) {
-      console.error("No domains found");
+      logger.error("No domains found");
       return;
     }
 
@@ -101,13 +102,12 @@ async function sendMail(
     });
 
     if (resp.data) {
-      console.log("Email sent using unsend");
+      logger.info("Email sent using unsend");
       return;
     } else {
-      console.log(
-        "Error sending email using unsend, so fallback to resend",
-        resp.error?.code,
-        resp.error?.message
+      logger.error(
+        { code: resp.error?.code, message: resp.error?.message },
+        "Error sending email using unsend, so fallback to resend"
       );
     }
   } else {

@@ -3,6 +3,7 @@ import { db } from "../db";
 import { randomBytes } from "crypto";
 import { smallNanoid } from "../nanoid";
 import { createSecureHash, verifySecureHash } from "../crypto";
+import { logger } from "../logger/log";
 
 export async function addApiKey({
   name,
@@ -32,7 +33,7 @@ export async function addApiKey({
     });
     return apiKey;
   } catch (error) {
-    console.error("Error adding API key:", error);
+    logger.error({ err: error }, "Error adding API key");
     throw error;
   }
 }
@@ -64,7 +65,7 @@ export async function getTeamAndApiKey(apiKey: string) {
 
     return { team, apiKey: apiKeyRow };
   } catch (error) {
-    console.error("Error verifying API key:", error);
+    logger.error({ err: error }, "Error verifying API key");
     return null;
   }
 }
@@ -77,7 +78,7 @@ export async function deleteApiKey(id: number) {
       },
     });
   } catch (error) {
-    console.error("Error deleting API key:", error);
+    logger.error({ err: error }, "Error deleting API key");
     throw error;
   }
 }

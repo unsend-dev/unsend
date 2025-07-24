@@ -5,6 +5,7 @@ import * as ses from "~/server/aws/ses";
 import { db } from "~/server/db";
 import { SesSettingsService } from "./ses-settings-service";
 import { UnsendApiError } from "../public-api/api-error";
+import { logger } from "../logger/log";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
@@ -60,7 +61,7 @@ export async function createDomain(
 ) {
   const domainStr = tldts.getDomain(name);
 
-  console.log("Creating domain", { domainStr, name, region });
+  logger.info({ domainStr, name, region }, "Creating domain");
 
   if (!domainStr) {
     throw new Error("Invalid domain");
@@ -191,7 +192,7 @@ async function getDmarcRecord(domain: string) {
     const dmarcRecord = await dnsResolveTxt(`_dmarc.${domain}`);
     return dmarcRecord;
   } catch (error) {
-    console.error("Error fetching DMARC record:", error);
+    logger.error({ err: error, domain }, "Error fetching DMARC record");
     return null; // or handle error as appropriate
   }
 }

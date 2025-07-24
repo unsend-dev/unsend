@@ -16,6 +16,7 @@ import {
   CAMPAIGN_MAIL_PROCESSING_QUEUE,
   DEFAULT_QUEUE_OPTIONS,
 } from "../queue/queue-constants";
+import { logger } from "../logger/log";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
@@ -41,7 +42,7 @@ export async function sendCampaign(id: string) {
       data: { html },
     });
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error }, "Failed to parse campaign content");
     throw new Error("Failed to parse campaign content");
   }
 
@@ -158,7 +159,7 @@ export async function unsubscribeContact({
 
     return contact;
   } catch (error) {
-    console.error("Error unsubscribing contact:", error);
+    logger.error({ err: error }, "Error unsubscribing contact");
     throw new Error("Failed to unsubscribe contact");
   }
 }
@@ -207,7 +208,7 @@ export async function subscribeContact(id: string, hash: string) {
 
     return true;
   } catch (error) {
-    console.error("Error subscribing contact:", error);
+    logger.error({ err: error }, "Error subscribing contact");
     throw new Error("Failed to subscribe contact");
   }
 }
@@ -306,7 +307,7 @@ export async function sendCampaignEmail(
 
   const domain = await validateDomainFromEmail(from, teamId);
 
-  console.log("Bulk queueing contacts");
+  logger.info("Bulk queueing contacts");
 
   await CampaignEmailService.queueBulkContacts(
     contacts.map((contact) => ({
