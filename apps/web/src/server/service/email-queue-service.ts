@@ -141,6 +141,7 @@ export class EmailQueueService {
   public static async queueBulk(
     jobs: {
       emailId: string;
+      teamId: number;
       region: string;
       transactional: boolean;
       unsubUrl?: string;
@@ -212,6 +213,7 @@ export class EmailQueueService {
           timestamp: job.timestamp ?? Date.now(),
           unsubUrl: job.unsubUrl,
           isBulk,
+          teamId: job.teamId,
         },
         opts: {
           jobId: job.emailId, // Use emailId as jobId

@@ -18,6 +18,7 @@ import {
   SES_WEBHOOK_QUEUE,
 } from "../queue/queue-constants";
 import { getChildLogger, logger, withLogger } from "../logger/log";
+import { randomUUID } from "crypto";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -293,9 +294,9 @@ export class SesHookParser {
   private static worker = new Worker(
     SES_WEBHOOK_QUEUE,
     async (job) => {
-      withLogger(
+      return await withLogger(
         getChildLogger({
-          queueId: job.id,
+          queueId: job.id ?? randomUUID(),
         }),
         async () => {
           await this.execute(job.data);

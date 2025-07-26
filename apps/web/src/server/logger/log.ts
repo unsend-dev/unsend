@@ -38,7 +38,6 @@ export const logger = new Proxy(
           const store = loggerStore.getStore();
           if (!store) {
             // If not in a context, just update the root logger (though this won't persist)
-            rootLogger.setBindings(bindings);
             return;
           }
 

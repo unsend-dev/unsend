@@ -401,6 +401,7 @@ export async function sendBulkEmails(
         // Prepare queue job
         queueJobs.push({
           emailId: email.id,
+          teamId,
           region: domain.region,
           transactional: true, // Bulk emails are still transactional
           delay,

@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { getChildLogger, withLogger } from "../logger/log";
 import { Job } from "bullmq";
 
@@ -13,10 +14,10 @@ export function createWorkerHandler<T>(
     withLogger(
       getChildLogger({
         teamId: job.data.teamId,
-        queueId: job.id ?? "",
+        queueId: job.id ?? randomUUID(),
       }),
       async () => {
-        return handler(job);
+        return await handler(job);
       }
     );
   };
