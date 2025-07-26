@@ -54,7 +54,7 @@ jobs:
 
           # Optional: Add custom instructions for Claude to customize its behavior for your project
           custom_instructions: |
-            follow rules from claude.md
+            follow rules from CLAUDE.md
 
           # Optional: Custom environment variables for Claude
           # claude_env: |
