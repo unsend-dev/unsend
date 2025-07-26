@@ -381,6 +381,7 @@ async function executeEmail(job: QueueEmailJob) {
       unsubUrl,
       isBulk,
       inReplyToMessageId,
+      emailId: email.id,
     });
 
     logger.info(

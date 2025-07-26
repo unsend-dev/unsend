@@ -32,11 +32,38 @@ export async function parseSesHook(data: SesEvent) {
 
   const mailData = getEmailData(data);
 
-  const email = await db.email.findUnique({
+  let email = await db.email.findUnique({
     where: {
       sesEmailId,
     },
   });
+
+  // Handle race condition: If email not found by sesEmailId, try to find by custom header
+  if (!email) {
+    const emailIdHeader = data.mail.headers.find(
+      (h) => h.name === "X-Unsend-Email-ID"
+    );
+
+    if (emailIdHeader?.value) {
+      email = await db.email.findUnique({
+        where: {
+          id: emailIdHeader.value,
+        },
+      });
+
+      // If found, update the sesEmailId to fix the missing reference
+      if (email) {
+        await db.email.update({
+          where: { id: email.id },
+          data: { sesEmailId },
+        });
+        logger.info(
+          { emailId: email.id, sesEmailId },
+          "Updated email with sesEmailId from webhook (race condition resolved)"
+        );
+      }
+    }
+  }
 
   logger.setBindings({
     sesEmailId,

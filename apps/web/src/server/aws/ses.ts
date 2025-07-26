@@ -123,6 +123,7 @@ export async function sendRawEmail({
   unsubUrl,
   isBulk,
   inReplyToMessageId,
+  emailId,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
@@ -134,6 +135,7 @@ export async function sendRawEmail({
   unsubUrl?: string;
   isBulk?: boolean;
   inReplyToMessageId?: string;
+  emailId?: string;
 }) {
   const sesClient = getSesClient(region);
 
@@ -155,6 +157,7 @@ export async function sendRawEmail({
       bcc,
       headers: {
         "X-Entity-Ref-ID": nanoid(),
+        ...(emailId ? { "X-Unsend-Email-ID": emailId } : {}),
         ...(unsubUrl
           ? {
               "List-Unsubscribe": `<${unsubUrl}>`,
