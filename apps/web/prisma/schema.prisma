@@ -116,6 +116,7 @@ model Team {
   dailyEmailUsages DailyEmailUsage[]
   subscription     Subscription[]
   invites          TeamInvite[]
+  webhooks         Webhook[]
 }
 
 model TeamInvite {
@@ -187,6 +188,7 @@ model Domain {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   team          Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  webhooks      Webhook[]
 }
 
 enum ApiPermission {
@@ -386,4 +388,32 @@ model CumulatedMetrics {
   complained  BigInt @default(0)
 
   @@id([teamId, domainId])
+}
+
+enum WebhookEvent {
+  // Events of Domains
+  DOMAIN_VERIFIED
+
+  // Events of Email (baseaded on EmailStatus)
+  EMAIL_SENT
+  EMAIL_DELIVERED
+  EMAIL_OPENED
+  EMAIL_CLICKED
+  EMAIL_BOUNCED
+  EMAIL_COMPLAINED
+}
+
+model Webhook {
+  id        String         @id @default(cuid())
+  url       String
+  teamId    Int
+  domainId  Int?
+  events    WebhookEvent[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  domain Domain? @relation(fields: [domainId], references: [id], onDelete: SetNull)
+
+  @@index([teamId])
 }
