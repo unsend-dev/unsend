@@ -383,6 +383,11 @@ async function executeEmail(job: QueueEmailJob) {
       inReplyToMessageId,
     });
 
+    logger.info(
+      { emailId: email.id, sesEmailId: messageId },
+      `[EmailQueueService]: Email sent`
+    );
+
     // Delete attachments after sending the email
     await db.email.update({
       where: { id: email.id },
