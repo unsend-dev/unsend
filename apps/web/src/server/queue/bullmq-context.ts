@@ -11,7 +11,7 @@ export function createWorkerHandler<T>(
   handler: (job: TeamJob<T>) => Promise<void>
 ) {
   return async (job: TeamJob<T>) => {
-    withLogger(
+    return await withLogger(
       getChildLogger({
         teamId: job.data.teamId,
         queueId: job.id ?? randomUUID(),
