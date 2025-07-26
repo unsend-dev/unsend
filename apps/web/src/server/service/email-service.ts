@@ -5,6 +5,7 @@ import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
 import { EmailRenderer } from "@unsend/email-editor/src/renderer";
 import { logger } from "../logger/log";
+import { SuppressionService } from "./suppression-service";
 
 async function checkIfValidEmail(emailId: string) {
   const email = await db.email.findUnique({
@@ -70,6 +71,25 @@ export async function sendEmail(
   let html = htmlFromApiCall;
 
   const domain = await validateDomainFromEmail(from, teamId);
+
+  // Check for suppressed emails before sending
+  const emailsToCheck = Array.isArray(to) ? to : [to];
+  const suppressedEmails = await Promise.all(
+    emailsToCheck.map((email) =>
+      SuppressionService.isEmailSuppressed(email, teamId)
+    )
+  );
+
+  const suppressedEmailAddresses = emailsToCheck.filter(
+    (_, index) => suppressedEmails[index]
+  );
+
+  if (suppressedEmailAddresses.length > 0) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: `One or more recipients are suppressed: ${suppressedEmailAddresses.join(", ")}`,
+    });
+  }
 
   if (templateId) {
     const template = await db.template.findUnique({
@@ -267,17 +287,69 @@ export async function sendBulkEmails(
     });
   }
 
+  // Filter out suppressed emails
+  const emailChecks = await Promise.all(
+    emailContents.map(async (content) => {
+      const emailsToCheck = Array.isArray(content.to)
+        ? content.to
+        : [content.to];
+      const suppressionResults = await SuppressionService.checkMultipleEmails(
+        emailsToCheck,
+        content.teamId
+      );
+
+      const hasSuppressedEmails =
+        Object.values(suppressionResults).some(Boolean);
+
+      return {
+        content,
+        suppressed: hasSuppressedEmails,
+        suppressedEmails: emailsToCheck.filter(
+          (email) => suppressionResults[email]
+        ),
+      };
+    })
+  );
+
+  const validEmails = emailChecks.filter((check) => !check.suppressed);
+  const suppressedEmailsInfo = emailChecks.filter((check) => check.suppressed);
+
+  // Log suppressed emails for reporting
+  if (suppressedEmailsInfo.length > 0) {
+    logger.info(
+      {
+        suppressedCount: suppressedEmailsInfo.length,
+        totalCount: emailContents.length,
+        suppressedEmails: suppressedEmailsInfo.map((info) => ({
+          to: info.content.to,
+          suppressedAddresses: info.suppressedEmails,
+        })),
+      },
+      "Filtered suppressed emails from bulk send"
+    );
+  }
+
+  // Update emailContents to only include valid emails
+  const filteredEmailContents = validEmails.map((check) => check.content);
+
+  if (filteredEmailContents.length === 0) {
+    throw new UnsendApiError({
+      code: "BAD_REQUEST",
+      message: "All recipients are suppressed. No emails to send.",
+    });
+  }
+
   // Group emails by domain to minimize domain validations
   const emailsByDomain = new Map<
     string,
     {
       domain: Awaited<ReturnType<typeof validateDomainFromEmail>>;
-      emails: typeof emailContents;
+      emails: typeof filteredEmailContents;
     }
   >();
 
   // First pass: validate domains and group emails
-  for (const content of emailContents) {
+  for (const content of filteredEmailContents) {
     const { from } = content;
     if (!emailsByDomain.has(from)) {
       const domain = await validateDomainFromEmail(from, content.teamId);

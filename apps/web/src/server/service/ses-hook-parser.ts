@@ -1,4 +1,9 @@
-import { EmailStatus, Prisma, UnsubscribeReason } from "@prisma/client";
+import {
+  EmailStatus,
+  Prisma,
+  UnsubscribeReason,
+  SuppressionReason,
+} from "@prisma/client";
 import {
   SesBounce,
   SesClick,
@@ -19,6 +24,7 @@ import {
 } from "../queue/queue-constants";
 import { getChildLogger, logger, withLogger } from "../logger/log";
 import { randomUUID } from "crypto";
+import { SuppressionService } from "./suppression-service";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -100,6 +106,45 @@ export async function parseSesHook(data: SesEvent) {
   const isHardBounced =
     mailStatus === EmailStatus.BOUNCED &&
     (mailData as SesBounce).bounceType === "Permanent";
+
+  // Add emails to suppression list for hard bounces and complaints
+  if (isHardBounced || mailStatus === EmailStatus.COMPLAINED) {
+    const recipientEmails = Array.isArray(email.to) ? email.to : [email.to];
+
+    try {
+      await Promise.all(
+        recipientEmails.map((recipientEmail) =>
+          SuppressionService.addSuppression({
+            email: recipientEmail,
+            teamId: email.teamId,
+            reason: isHardBounced
+              ? SuppressionReason.HARD_BOUNCE
+              : SuppressionReason.COMPLAINT,
+            source: email.id,
+          })
+        )
+      );
+
+      logger.info(
+        {
+          emailId: email.id,
+          recipients: recipientEmails,
+          reason: isHardBounced ? "HARD_BOUNCE" : "COMPLAINT",
+        },
+        "Added emails to suppression list due to bounce/complaint"
+      );
+    } catch (error) {
+      logger.error(
+        {
+          emailId: email.id,
+          recipients: recipientEmails,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "Failed to add emails to suppression list"
+      );
+      // Don't throw error - continue processing the webhook
+    }
+  }
 
   if (
     [
