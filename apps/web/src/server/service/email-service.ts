@@ -4,6 +4,7 @@ import { UnsendApiError } from "~/server/public-api/api-error";
 import { EmailQueueService } from "./email-queue-service";
 import { validateDomainFromEmail } from "./domain-service";
 import { EmailRenderer } from "@unsend/email-editor/src/renderer";
+import { logger } from "../logger/log";
 
 async function checkIfValidEmail(emailId: string) {
   const email = await db.email.findUnique({
@@ -155,6 +156,7 @@ export async function sendEmail(
   try {
     await EmailQueueService.queueEmail(
       email.id,
+      teamId,
       domain.region,
       true,
       undefined,
@@ -399,15 +401,16 @@ export async function sendBulkEmails(
         // Prepare queue job
         queueJobs.push({
           emailId: email.id,
+          teamId,
           region: domain.region,
           transactional: true, // Bulk emails are still transactional
           delay,
           timestamp: Date.now(),
         });
       } catch (error: any) {
-        console.error(
-          `Failed to create email record for recipient ${to}:`,
-          error
+        logger.error(
+          { err: error, to },
+          `Failed to create email record for recipient`
         );
         // Continue processing other emails
       }

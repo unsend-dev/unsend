@@ -10,6 +10,7 @@ import {
 } from "~/server/api/trpc";
 import { sendTeamInviteEmail } from "~/server/mailer";
 import send from "~/server/public-api/api/emails/send-email";
+import { logger } from "~/server/logger/log";
 
 export const teamRouter = createTRPCRouter({
   createTeam: protectedProcedure
@@ -26,7 +27,7 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (teams.length > 0) {
-        console.log("User already has a team");
+        logger.info({ userId: ctx.session.user.id }, "User already has a team");
         return;
       }
 

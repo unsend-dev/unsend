@@ -1,11 +1,12 @@
 import { env } from "~/env";
+import { logger } from "../logger/log";
 
 export async function sendToDiscord(message: string) {
   if (!env.DISCORD_WEBHOOK_URL) {
-    console.error(
+    logger.error(
       "Discord webhook URL is not defined in the environment variables. So printing the message to the console."
     );
-    console.log("Message: ", message);
+    logger.info({ message }, "Message");
     return;
   }
 
@@ -19,9 +20,12 @@ export async function sendToDiscord(message: string) {
   });
 
   if (response.ok) {
-    console.log("Message sent to Discord successfully.");
+    logger.info("Message sent to Discord successfully.");
   } else {
-    console.error("Failed to send message to Discord:", response.statusText);
+    logger.error(
+      { statusText: response.statusText },
+      "Failed to send message to Discord:"
+    );
   }
 
   return;

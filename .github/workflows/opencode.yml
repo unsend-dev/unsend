@@ -1,0 +1,28 @@
+name: opencode
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  opencode:
+    if: |
+      startsWith(github.event.comment.body, 'opencode') ||
+      startsWith(github.event.comment.body, 'hi opencode') ||
+      startsWith(github.event.comment.body, 'hey opencode') ||
+      contains(github.event.comment.body, '@opencode-agent')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run opencode
+        uses: sst/opencode/sdks/github@github-v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: github-copilot/claude-sonnet-4

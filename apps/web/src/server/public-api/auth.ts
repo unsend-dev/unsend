@@ -3,6 +3,7 @@ import { db } from "../db";
 import { UnsendApiError } from "./api-error";
 import { getTeamAndApiKey } from "../service/api-service";
 import { isSelfHosted } from "~/utils/common";
+import { logger } from "../logger/log";
 
 /**
  * Gets the team from the token. Also will check if the token is valid.
@@ -54,7 +55,9 @@ export const getTeamFromToken = async (c: Context) => {
         lastUsed: new Date(),
       },
     })
-    .catch(console.error);
+    .catch((err) =>
+      logger.error({ err }, "Failed to update lastUsed on API key")
+    );
 
   return { ...team, apiKeyId: apiKey.id };
 };

@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { StatusCode, ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
+import { logger } from "../logger/log";
 
 const ErrorCode = z.enum([
   "BAD_REQUEST",
@@ -79,11 +80,10 @@ export function handleError(err: Error, c: Context): Response {
    */
   if (err instanceof UnsendApiError) {
     if (err.status >= 500) {
-      console.error(err.message, {
-        name: err.name,
-        code: err.code,
-        status: err.status,
-      });
+      logger.error(
+        { name: err.name, code: err.code, status: err.status, err },
+        err.message
+      );
     }
     return c.json(
       {
@@ -102,10 +102,10 @@ export function handleError(err: Error, c: Context): Response {
    */
   if (err instanceof HTTPException) {
     if (err.status >= 500) {
-      console.error("HTTPException", {
-        message: err.message,
-        status: err.status,
-      });
+      logger.error(
+        { message: err.message, status: err.status, err },
+        "HTTPException"
+      );
     }
     const code = statusToCode(err.status);
     return c.json(
@@ -122,12 +122,16 @@ export function handleError(err: Error, c: Context): Response {
   /**
    * We're lost here, all we can do is return a 500 and log it to investigate
    */
-  console.error("unhandled exception", {
-    name: err.name,
-    message: err.message,
-    cause: err.cause,
-    stack: err.stack,
-  });
+  logger.error(
+    {
+      err,
+      name: err.name,
+      message: err.message,
+      cause: err.cause,
+      stack: err.stack,
+    },
+    "unhandled exception"
+  );
   return c.json(
     {
       error: {

@@ -17,6 +17,7 @@ import { Readable } from "stream";
 import { env } from "~/env";
 import { EmailContent } from "~/types";
 import { nanoid } from "../nanoid";
+import { logger } from "../logger/log";
 
 function getSesClient(region: string) {
   return new SESv2Client({
@@ -79,8 +80,10 @@ export async function addDomain(domain: string, region: string) {
     response.$metadata.httpStatusCode !== 200 ||
     emailIdentityResponse.$metadata.httpStatusCode !== 200
   ) {
-    console.log(response);
-    console.log(emailIdentityResponse);
+    logger.error(
+      { response, emailIdentityResponse },
+      "Failed to create domain identity"
+    );
     throw new Error("Failed to create domain identity");
   }
 
@@ -185,10 +188,10 @@ export async function sendRawEmail({
 
   try {
     const response = await sesClient.send(command);
-    console.log("Email sent! Message ID:", response.MessageId);
+    logger.info({ messageId: response.MessageId }, "Email sent!");
     return response.MessageId;
   } catch (error) {
-    console.error("Failed to send email", error);
+    logger.error({ err: error }, "Failed to send email");
     // It's better to throw the original error or a new error with more context
     // throw new Error("Failed to send email");
     throw error;

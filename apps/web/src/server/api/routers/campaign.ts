@@ -9,6 +9,7 @@ import {
   campaignProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { logger } from "~/server/logger/log";
 import { nanoid } from "~/server/nanoid";
 import {
   sendCampaign,
@@ -66,14 +67,15 @@ export const campaignRouter = createTRPCRouter({
       let time = performance.now();
 
       campaignsP.then((campaigns) => {
-        console.log(
+        logger.info(
           `Time taken to get campaigns: ${performance.now() - time} milliseconds`
         );
       });
 
       const [campaigns, count] = await Promise.all([campaignsP, countP]);
-      console.log(
-        `Time taken to complete request: ${performance.now() - completeTime} milliseconds`
+      logger.info(
+        { duration: performance.now() - completeTime },
+        `Time taken to complete request`
       );
 
       return { campaigns, totalPage: Math.ceil(count / limit) };

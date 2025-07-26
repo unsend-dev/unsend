@@ -16,6 +16,8 @@ import {
   CAMPAIGN_MAIL_PROCESSING_QUEUE,
   DEFAULT_QUEUE_OPTIONS,
 } from "../queue/queue-constants";
+import { logger } from "../logger/log";
+import { createWorkerHandler, TeamJob } from "../queue/bullmq-context";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
@@ -41,7 +43,7 @@ export async function sendCampaign(id: string) {
       data: { html },
     });
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error }, "Failed to parse campaign content");
     throw new Error("Failed to parse campaign content");
   }
 
@@ -158,7 +160,7 @@ export async function unsubscribeContact({
 
     return contact;
   } catch (error) {
-    console.error("Error unsubscribing contact:", error);
+    logger.error({ err: error }, "Error unsubscribing contact");
     throw new Error("Failed to unsubscribe contact");
   }
 }
@@ -207,7 +209,7 @@ export async function subscribeContact(id: string, hash: string) {
 
     return true;
   } catch (error) {
-    console.error("Error subscribing contact:", error);
+    logger.error({ err: error }, "Error subscribing contact");
     throw new Error("Failed to subscribe contact");
   }
 }
@@ -241,6 +243,8 @@ type CampaignEmailJob = {
     region: string;
   };
 };
+
+type QueueCampaignEmailJob = TeamJob<CampaignEmailJob>;
 
 async function processContactEmail(jobData: CampaignEmailJob) {
   const { contact, campaign, emailConfig } = jobData;
@@ -282,6 +286,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
   // Queue email for sending
   await EmailQueueService.queueEmail(
     email.id,
+    emailConfig.teamId,
     emailConfig.region,
     false,
     unsubscribeUrl
@@ -306,7 +311,7 @@ export async function sendCampaignEmail(
 
   const domain = await validateDomainFromEmail(from, teamId);
 
-  console.log("Bulk queueing contacts");
+  logger.info("Bulk queueing contacts");
 
   await CampaignEmailService.queueBulkContacts(
     contacts.map((contact) => ({
@@ -382,15 +387,19 @@ export async function updateCampaignAnalytics(
 const CAMPAIGN_EMAIL_CONCURRENCY = 50;
 
 class CampaignEmailService {
-  private static campaignQueue = new Queue(CAMPAIGN_MAIL_PROCESSING_QUEUE, {
-    connection: getRedis(),
-  });
+  private static campaignQueue = new Queue<QueueCampaignEmailJob>(
+    CAMPAIGN_MAIL_PROCESSING_QUEUE,
+    {
+      connection: getRedis(),
+    }
+  );
 
+  // TODO: Add team context to job data when queueing
   static worker = new Worker(
     CAMPAIGN_MAIL_PROCESSING_QUEUE,
-    async (job) => {
+    createWorkerHandler(async (job: QueueCampaignEmailJob) => {
       await processContactEmail(job.data);
-    },
+    }),
     {
       connection: getRedis(),
       concurrency: CAMPAIGN_EMAIL_CONCURRENCY,
@@ -400,7 +409,10 @@ class CampaignEmailService {
   static async queueContact(data: CampaignEmailJob) {
     return await this.campaignQueue.add(
       `contact-${data.contact.id}`,
-      data,
+      {
+        ...data,
+        teamId: data.emailConfig.teamId,
+      },
       DEFAULT_QUEUE_OPTIONS
     );
   }
@@ -409,7 +421,10 @@ class CampaignEmailService {
     return await this.campaignQueue.addBulk(
       data.map((item) => ({
         name: `contact-${item.contact.id}`,
-        data: item,
+        data: {
+          ...item,
+          teamId: item.emailConfig.teamId,
+        },
         opts: {
           ...DEFAULT_QUEUE_OPTIONS,
         },

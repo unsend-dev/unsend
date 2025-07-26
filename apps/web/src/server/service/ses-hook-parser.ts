@@ -17,12 +17,14 @@ import {
   DEFAULT_QUEUE_OPTIONS,
   SES_WEBHOOK_QUEUE,
 } from "../queue/queue-constants";
+import { getChildLogger, logger, withLogger } from "../logger/log";
+import { randomUUID } from "crypto";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
 
   if (!mailStatus) {
-    console.error("Unknown email status", data);
+    logger.error({ data }, "Unknown email status");
     return false;
   }
 
@@ -36,8 +38,14 @@ export async function parseSesHook(data: SesEvent) {
     },
   });
 
+  logger.setBindings({
+    sesEmailId,
+    mailId: email?.id,
+    teamId: email?.teamId,
+  });
+
   if (!email) {
-    console.error("Email not found", data);
+    logger.error({ data }, "Email not found");
     return false;
   }
 
@@ -286,7 +294,14 @@ export class SesHookParser {
   private static worker = new Worker(
     SES_WEBHOOK_QUEUE,
     async (job) => {
-      await this.execute(job.data);
+      return await withLogger(
+        getChildLogger({
+          queueId: job.id ?? randomUUID(),
+        }),
+        async () => {
+          await this.execute(job.data);
+        }
+      );
     },
     {
       connection: getRedis(),
