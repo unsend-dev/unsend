@@ -17,6 +17,7 @@ import {
   DEFAULT_QUEUE_OPTIONS,
 } from "../queue/queue-constants";
 import { logger } from "../logger/log";
+import { createWorkerHandler, TeamJob } from "../queue/bullmq-context";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
@@ -243,6 +244,8 @@ type CampaignEmailJob = {
   };
 };
 
+type QueueCampaignEmailJob = TeamJob<CampaignEmailJob>;
+
 async function processContactEmail(jobData: CampaignEmailJob) {
   const { contact, campaign, emailConfig } = jobData;
   const jsonContent = JSON.parse(campaign.content || "{}");
@@ -283,6 +286,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
   // Queue email for sending
   await EmailQueueService.queueEmail(
     email.id,
+    emailConfig.teamId,
     emailConfig.region,
     false,
     unsubscribeUrl
@@ -383,15 +387,19 @@ export async function updateCampaignAnalytics(
 const CAMPAIGN_EMAIL_CONCURRENCY = 50;
 
 class CampaignEmailService {
-  private static campaignQueue = new Queue(CAMPAIGN_MAIL_PROCESSING_QUEUE, {
-    connection: getRedis(),
-  });
+  private static campaignQueue = new Queue<QueueCampaignEmailJob>(
+    CAMPAIGN_MAIL_PROCESSING_QUEUE,
+    {
+      connection: getRedis(),
+    }
+  );
 
+  // TODO: Add team context to job data when queueing
   static worker = new Worker(
     CAMPAIGN_MAIL_PROCESSING_QUEUE,
-    async (job) => {
+    createWorkerHandler(async (job: QueueCampaignEmailJob) => {
       await processContactEmail(job.data);
-    },
+    }),
     {
       connection: getRedis(),
       concurrency: CAMPAIGN_EMAIL_CONCURRENCY,
@@ -401,7 +409,10 @@ class CampaignEmailService {
   static async queueContact(data: CampaignEmailJob) {
     return await this.campaignQueue.add(
       `contact-${data.contact.id}`,
-      data,
+      {
+        ...data,
+        teamId: data.emailConfig.teamId,
+      },
       DEFAULT_QUEUE_OPTIONS
     );
   }
@@ -410,7 +421,10 @@ class CampaignEmailService {
     return await this.campaignQueue.addBulk(
       data.map((item) => ({
         name: `contact-${item.contact.id}`,
-        data: item,
+        data: {
+          ...item,
+          teamId: item.emailConfig.teamId,
+        },
         opts: {
           ...DEFAULT_QUEUE_OPTIONS,
         },

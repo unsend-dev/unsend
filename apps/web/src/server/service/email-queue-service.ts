@@ -9,6 +9,14 @@ import { getRedis } from "../redis";
 import { DEFAULT_QUEUE_OPTIONS } from "../queue/queue-constants";
 import { Prisma } from "@prisma/client";
 import { logger } from "../logger/log";
+import { createWorkerHandler, TeamJob } from "../queue/bullmq-context";
+
+type QueueEmailJob = TeamJob<{
+  emailId: string;
+  timestamp: number;
+  unsubUrl?: string;
+  isBulk?: boolean;
+}>;
 
 function createQueueAndWorker(region: string, quota: number, suffix: string) {
   const connection = getRedis();
@@ -17,7 +25,8 @@ function createQueueAndWorker(region: string, quota: number, suffix: string) {
 
   const queue = new Queue(queueName, { connection });
 
-  const worker = new Worker(queueName, executeEmail, {
+  // TODO: Add team context to job data when queueing
+  const worker = new Worker(queueName, createWorkerHandler(executeEmail), {
     concurrency: quota,
     connection,
   });
@@ -27,9 +36,9 @@ function createQueueAndWorker(region: string, quota: number, suffix: string) {
 
 export class EmailQueueService {
   private static initialized = false;
-  public static transactionalQueue = new Map<string, Queue>();
+  public static transactionalQueue = new Map<string, Queue<QueueEmailJob>>();
   private static transactionalWorker = new Map<string, Worker>();
-  public static marketingQueue = new Map<string, Queue>();
+  public static marketingQueue = new Map<string, Queue<QueueEmailJob>>();
   private static marketingWorker = new Map<string, Worker>();
 
   public static initializeQueue(
@@ -99,6 +108,7 @@ export class EmailQueueService {
 
   public static async queueEmail(
     emailId: string,
+    teamId: number,
     region: string,
     transactional: boolean,
     unsubUrl?: string,
@@ -116,7 +126,7 @@ export class EmailQueueService {
     }
     queue.add(
       emailId,
-      { emailId, timestamp: Date.now(), unsubUrl, isBulk },
+      { emailId, timestamp: Date.now(), unsubUrl, isBulk, teamId },
       { jobId: emailId, delay, ...DEFAULT_QUEUE_OPTIONS }
     );
   }
@@ -289,14 +299,7 @@ export class EmailQueueService {
   }
 }
 
-async function executeEmail(
-  job: Job<{
-    emailId: string;
-    timestamp: number;
-    unsubUrl?: string;
-    isBulk?: boolean;
-  }>
-) {
+async function executeEmail(job: QueueEmailJob) {
   logger.info(
     { emailId: job.data.emailId, elapsed: Date.now() - job.data.timestamp },
     `[EmailQueueService]: Executing email job`

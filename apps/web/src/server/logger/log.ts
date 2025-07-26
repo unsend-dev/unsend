@@ -1,14 +1,26 @@
 // lib/logging.ts
 import pino from "pino";
+import pinoPretty from "pino-pretty";
 import { AsyncLocalStorage } from "node:async_hooks";
+
+const isDev = process.env.NODE_ENV !== "production";
 
 type Store = { logger: pino.Logger }; // what we stash per request
 const loggerStore = new AsyncLocalStorage<Store>();
 
-export const rootLogger = pino({
-  level: process.env.LOG_LEVEL ?? "info",
-  base: { service: "next-app" }, // appears on every line
-});
+export const rootLogger = pino(
+  {
+    level: process.env.LOG_LEVEL ?? (isDev ? "debug" : "info"),
+    base: { service: "next-app" },
+  },
+  isDev
+    ? pinoPretty({
+        colorize: true,
+        translateTime: "SYS:yyyy-mm-dd HH:MM:ss.l",
+        ignore: "pid,hostname",
+      })
+    : undefined
+);
 
 // Helper function to get the current logger
 function getCurrentLogger(): pino.Logger {
@@ -16,21 +28,41 @@ function getCurrentLogger(): pino.Logger {
 }
 
 // Create a proxy that delegates all property access to the current logger
-export const logger = new Proxy({} as pino.Logger, {
-  get(target, prop, receiver) {
-    const currentLogger = getCurrentLogger();
-    const value = currentLogger[prop as keyof pino.Logger];
+export const logger = new Proxy(
+  {} as pino.Logger & { setBindings: (bindings: Record<string, any>) => void },
+  {
+    get(target, prop, receiver) {
+      // Handle the special setBindings method
+      if (prop === "setBindings") {
+        return (bindings: Record<string, any>) => {
+          const store = loggerStore.getStore();
+          if (!store) {
+            // If not in a context, just update the root logger (though this won't persist)
+            rootLogger.setBindings(bindings);
+            return;
+          }
 
-    // If it's a function, bind it to the current logger instance
-    if (typeof value === "function") {
-      return value.bind(currentLogger);
-    }
+          // Create a new child logger with the merged bindings
+          const currentLogger = store.logger;
+          const newLogger = currentLogger.child(bindings);
 
-    return value;
-  },
-});
+          // Update the store with the new logger
+          store.logger = newLogger;
+        };
+      }
 
-// Tiny helper to run a fn inside a context that knows the child logger
+      const currentLogger = getCurrentLogger();
+      const value = currentLogger[prop as keyof pino.Logger];
+
+      if (typeof value === "function") {
+        return value.bind(currentLogger);
+      }
+
+      return value;
+    },
+  }
+);
+
 export function withLogger<T>(child: pino.Logger, fn: () => Promise<T> | T) {
   return loggerStore.run({ logger: child }, fn);
 }

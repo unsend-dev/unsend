@@ -156,6 +156,7 @@ export async function sendEmail(
   try {
     await EmailQueueService.queueEmail(
       email.id,
+      teamId,
       domain.region,
       true,
       undefined,

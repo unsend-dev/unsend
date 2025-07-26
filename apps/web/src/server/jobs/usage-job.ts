@@ -13,7 +13,6 @@ const usageQueue = new Queue(USAGE_QUEUE_NAME, {
   connection: getRedis(),
 });
 
-// Process usage reporting jobs
 const worker = new Worker(
   USAGE_QUEUE_NAME,
   async () => {

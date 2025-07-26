@@ -17,7 +17,7 @@ import {
   DEFAULT_QUEUE_OPTIONS,
   SES_WEBHOOK_QUEUE,
 } from "../queue/queue-constants";
-import { logger } from "../logger/log";
+import { getChildLogger, logger, withLogger } from "../logger/log";
 
 export async function parseSesHook(data: SesEvent) {
   const mailStatus = getEmailStatus(data);
@@ -35,6 +35,12 @@ export async function parseSesHook(data: SesEvent) {
     where: {
       sesEmailId,
     },
+  });
+
+  logger.setBindings({
+    sesEmailId,
+    mailId: email?.id,
+    teamId: email?.teamId,
   });
 
   if (!email) {
@@ -287,7 +293,14 @@ export class SesHookParser {
   private static worker = new Worker(
     SES_WEBHOOK_QUEUE,
     async (job) => {
-      await this.execute(job.data);
+      withLogger(
+        getChildLogger({
+          queueId: job.id,
+        }),
+        async () => {
+          await this.execute(job.data);
+        }
+      );
     },
     {
       connection: getRedis(),
