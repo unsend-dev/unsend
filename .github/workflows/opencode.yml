@@ -7,12 +7,11 @@ on:
 jobs:
   opencode:
     if: |
-      startsWith(github.event.comment.body, 'opencode') ||
-      startsWith(github.event.comment.body, 'hi opencode') ||
-      startsWith(github.event.comment.body, 'hey opencode') ||
-      contains(github.event.comment.body, '@opencode-agent')
+      contains(github.event.comment.body, '/oc') ||
+      contains(github.event.comment.body, '/opencode')
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Checkout repository
@@ -21,7 +20,7 @@ jobs:
           fetch-depth: 1
 
       - name: Run opencode
-        uses: sst/opencode/sdks/github@github-v1
+        uses: sst/opencode/github@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
