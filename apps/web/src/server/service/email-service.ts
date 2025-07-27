@@ -74,21 +74,46 @@ export async function sendEmail(
 
   // Check for suppressed emails before sending
   const emailsToCheck = Array.isArray(to) ? to : [to];
-  const suppressedEmails = await Promise.all(
-    emailsToCheck.map((email) =>
-      SuppressionService.isEmailSuppressed(email, teamId)
-    )
+
+  const filteredToEmails = emailsToCheck.filter(
+    (email) => !SuppressionService.isEmailSuppressed(email, teamId)
   );
 
-  const suppressedEmailAddresses = emailsToCheck.filter(
-    (_, index) => suppressedEmails[index]
-  );
+  if (filteredToEmails.length === 0) {
+    logger.info(
+      {
+        to,
+        teamId,
+      },
+      "All recipients are suppressed. No emails to send."
+    );
 
-  if (suppressedEmailAddresses.length > 0) {
-    throw new UnsendApiError({
-      code: "BAD_REQUEST",
-      message: `One or more recipients are suppressed: ${suppressedEmailAddresses.join(", ")}`,
+    const email = await db.email.create({
+      data: {
+        to: emailsToCheck,
+        from,
+        subject: subject as string,
+        teamId,
+        domainId: domain.id,
+        latestStatus: "SUPPRESSED",
+        apiId: apiKeyId,
+        text,
+        html,
+        inReplyToId,
+      },
     });
+
+    await db.emailEvent.create({
+      data: {
+        emailId: email.id,
+        status: "SUPPRESSED",
+        data: {
+          error: "All recipients are suppressed. No emails to send.",
+        },
+      },
+    });
+
+    return;
   }
 
   if (templateId) {
@@ -151,7 +176,7 @@ export async function sendEmail(
 
   const email = await db.email.create({
     data: {
-      to: Array.isArray(to) ? to : [to],
+      to: filteredToEmails,
       from,
       subject: subject as string,
       replyTo: replyTo
