@@ -268,6 +268,13 @@ const EmailStatusText = ({
     );
   } else if (status === "CANCELLED") {
     return <div>This scheduled email was cancelled</div>;
+  } else if (status === "SUPPRESSED") {
+    return (
+      <div>
+        This email was suppressed because this email is previously either
+        bounced or the recipient complained.
+      </div>
+    );
   }
 
   return <div className="w-full">{status}</div>;

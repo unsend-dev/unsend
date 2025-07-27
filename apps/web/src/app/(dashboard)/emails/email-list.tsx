@@ -173,6 +173,7 @@ export default function EmailsList() {
                 "OPENED",
                 "DELIVERY_DELAYED",
                 "COMPLAINED",
+                "SUPPRESSED",
               ]).map((status) => (
                 <SelectItem key={status} value={status} className=" capitalize">
                   {status.toLowerCase().replace("_", " ")}

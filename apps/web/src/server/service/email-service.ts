@@ -75,8 +75,13 @@ export async function sendEmail(
   // Check for suppressed emails before sending
   const emailsToCheck = Array.isArray(to) ? to : [to];
 
+  const suppressionResults = await SuppressionService.checkMultipleEmails(
+    emailsToCheck,
+    teamId
+  );
+
   const filteredToEmails = emailsToCheck.filter(
-    (email) => !SuppressionService.isEmailSuppressed(email, teamId)
+    (email) => !suppressionResults[email]
   );
 
   if (filteredToEmails.length === 0) {
@@ -113,7 +118,7 @@ export async function sendEmail(
       },
     });
 
-    return;
+    return email;
   }
 
   if (templateId) {
