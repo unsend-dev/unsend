@@ -241,36 +241,52 @@ export class SuppressionService {
    * Add multiple emails to suppression list
    */
   static async addMultipleSuppressions(
-    suppressions: AddSuppressionParams[]
-  ): Promise<SuppressionList[]> {
+    teamId: number,
+    emails: string[],
+    reason: SuppressionReason
+  ) {
+    // Remove duplicates by normalizing emails first, then using Set
+    const normalizedEmails = emails.map((email) => email.toLowerCase().trim());
+    const uniqueEmails = Array.from(new Set(normalizedEmails));
+
     try {
-      const results: SuppressionList[] = [];
-
       // Process in batches to avoid overwhelming the database
-      const batchSize = 100;
-      for (let i = 0; i < suppressions.length; i += batchSize) {
-        const batch = suppressions.slice(i, i + batchSize);
+      const batchSize = 1000;
+      for (let i = 0; i < uniqueEmails.length; i += batchSize) {
+        const batch = uniqueEmails.slice(i, i + batchSize);
 
-        const batchResults = await Promise.all(
-          batch.map((suppression) => this.addSuppression(suppression))
+        const alreadySuppressed = await db.suppressionList.findMany({
+          where: {
+            teamId,
+            email: { in: batch },
+          },
+        });
+
+        const emailsToAdd = batch.filter(
+          (email) => !alreadySuppressed.some((s) => s.email === email)
         );
 
-        results.push(...batchResults);
+        await db.suppressionList.createMany({
+          data: emailsToAdd.map((email) => ({
+            teamId,
+            email,
+            reason,
+          })),
+        });
       }
 
       logger.info(
         {
-          count: suppressions.length,
-          teamId: suppressions[0]?.teamId,
+          originalCount: emails.length,
+          uniqueCount: uniqueEmails.length,
         },
         "Added multiple emails to suppression list"
       );
-
-      return results;
     } catch (error) {
       logger.error(
         {
-          count: suppressions.length,
+          originalCount: emails.length,
+          uniqueCount: uniqueEmails.length,
           error: error instanceof Error ? error.message : "Unknown error",
         },
         "Failed to add multiple emails to suppression list"

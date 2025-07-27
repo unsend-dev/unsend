@@ -18,6 +18,7 @@ import {
 } from "../queue/queue-constants";
 import { logger } from "../logger/log";
 import { createWorkerHandler, TeamJob } from "../queue/bullmq-context";
+import { SuppressionService } from "./suppression-service";
 
 export async function sendCampaign(id: string) {
   let campaign = await db.campaign.findUnique({
@@ -253,6 +254,35 @@ async function processContactEmail(jobData: CampaignEmailJob) {
 
   const unsubscribeUrl = createUnsubUrl(contact.id, emailConfig.campaignId);
 
+  // Check for suppressed emails before processing
+  const toEmails = [contact.email];
+  const ccEmails = emailConfig.cc || [];
+  const bccEmails = emailConfig.bcc || [];
+
+  // Collect all unique emails to check for suppressions
+  const allEmailsToCheck = [
+    ...new Set([...toEmails, ...ccEmails, ...bccEmails]),
+  ];
+
+  const suppressionResults = await SuppressionService.checkMultipleEmails(
+    allEmailsToCheck,
+    emailConfig.teamId
+  );
+
+  // Filter each field separately
+  const filteredToEmails = toEmails.filter(
+    (email) => !suppressionResults[email]
+  );
+  const filteredCcEmails = ccEmails.filter(
+    (email) => !suppressionResults[email]
+  );
+  const filteredBccEmails = bccEmails.filter(
+    (email) => !suppressionResults[email]
+  );
+
+  // Check if the contact's email (TO recipient) is suppressed
+  const isContactSuppressed = filteredToEmails.length === 0;
+
   const html = await renderer.render({
     shouldReplaceVariableValues: true,
     variableValues: {
@@ -265,13 +295,80 @@ async function processContactEmail(jobData: CampaignEmailJob) {
     },
   });
 
-  // Create single email
+  if (isContactSuppressed) {
+    // Create suppressed email record
+    logger.info(
+      {
+        contactEmail: contact.email,
+        campaignId: emailConfig.campaignId,
+        teamId: emailConfig.teamId,
+      },
+      "Contact email is suppressed. Creating suppressed email record."
+    );
+
+    const email = await db.email.create({
+      data: {
+        to: toEmails,
+        replyTo: emailConfig.replyTo,
+        cc: ccEmails.length > 0 ? ccEmails : undefined,
+        bcc: bccEmails.length > 0 ? bccEmails : undefined,
+        from: emailConfig.from,
+        subject: emailConfig.subject,
+        html,
+        text: emailConfig.previewText,
+        teamId: emailConfig.teamId,
+        campaignId: emailConfig.campaignId,
+        contactId: contact.id,
+        domainId: emailConfig.domainId,
+        latestStatus: "SUPPRESSED",
+      },
+    });
+
+    await db.emailEvent.create({
+      data: {
+        emailId: email.id,
+        status: "SUPPRESSED",
+        data: {
+          error: "Contact email is suppressed. No email sent.",
+        },
+      },
+    });
+
+    return;
+  }
+
+  // Log if any CC/BCC emails were filtered out
+  if (ccEmails.length > filteredCcEmails.length) {
+    logger.info(
+      {
+        originalCc: ccEmails,
+        filteredCc: filteredCcEmails,
+        campaignId: emailConfig.campaignId,
+        teamId: emailConfig.teamId,
+      },
+      "Some CC recipients were suppressed and filtered out from campaign email."
+    );
+  }
+
+  if (bccEmails.length > filteredBccEmails.length) {
+    logger.info(
+      {
+        originalBcc: bccEmails,
+        filteredBcc: filteredBccEmails,
+        campaignId: emailConfig.campaignId,
+        teamId: emailConfig.teamId,
+      },
+      "Some BCC recipients were suppressed and filtered out from campaign email."
+    );
+  }
+
+  // Create email with filtered recipients
   const email = await db.email.create({
     data: {
-      to: [contact.email],
+      to: filteredToEmails,
       replyTo: emailConfig.replyTo,
-      cc: emailConfig.cc,
-      bcc: emailConfig.bcc,
+      cc: filteredCcEmails.length > 0 ? filteredCcEmails : undefined,
+      bcc: filteredBccEmails.length > 0 ? filteredBccEmails : undefined,
       from: emailConfig.from,
       subject: emailConfig.subject,
       html,

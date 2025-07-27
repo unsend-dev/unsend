@@ -158,7 +158,7 @@ export default function SuppressionList() {
           <TableBody>
             {suppressionsQuery.isLoading ? (
               <TableRow className="h-32">
-                <TableCell colSpan={5} className="text-center py-4">
+                <TableCell colSpan={4} className="text-center py-4">
                   <Spinner
                     className="w-6 h-6 mx-auto"
                     innerSvgClass="stroke-primary"
@@ -167,7 +167,7 @@ export default function SuppressionList() {
               </TableRow>
             ) : suppressionsQuery.data?.suppressions.length === 0 ? (
               <TableRow className="h-32">
-                <TableCell colSpan={5} className="text-center py-4">
+                <TableCell colSpan={4} className="text-center py-4">
                   No suppressed emails found
                 </TableCell>
               </TableRow>

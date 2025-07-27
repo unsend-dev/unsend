@@ -84,11 +84,9 @@ export const suppressionRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return SuppressionService.addMultipleSuppressions(
-        input.emails.map((email) => ({
-          email,
-          teamId: ctx.team.id,
-          reason: input.reason,
-        }))
+        ctx.team.id,
+        input.emails,
+        input.reason
       );
     }),
 
