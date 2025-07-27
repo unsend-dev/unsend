@@ -554,7 +554,7 @@ export async function sendBulkEmails(
 
   if (filteredEmailContents.length === 0) {
     // Return only suppressed emails if no valid emails to send
-    return suppressedEmails;
+    return suppressedEmails.map((item) => item.email);
   }
 
   // Group emails by domain to minimize domain validations
