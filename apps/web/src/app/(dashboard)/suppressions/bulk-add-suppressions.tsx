@@ -39,6 +39,7 @@ export default function BulkAddSuppressionsDialog({
   );
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const utils = api.useUtils();
 
@@ -79,9 +80,12 @@ export default function BulkAddSuppressionsDialog({
     return emailList.filter((email) => emailRegex.test(email));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const processFile = (file: File) => {
+    // Validate file type
+    if (!file.name.endsWith(".txt") && !file.name.endsWith(".csv")) {
+      setError("Please upload a .txt or .csv file");
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -89,6 +93,36 @@ export default function BulkAddSuppressionsDialog({
       setEmails(text);
     };
     reader.readAsText(file);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0]) {
+      processFile(files[0]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,7 +217,16 @@ export default function BulkAddSuppressionsDialog({
             <TabsContent value="file" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="file">Upload File</Label>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+                    isDragOver
+                      ? "border-primary bg-primary/5"
+                      : "border-muted-foreground/25"
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   <input
                     id="file"
                     type="file"
@@ -193,7 +236,11 @@ export default function BulkAddSuppressionsDialog({
                     disabled={processing}
                   />
                   <div className="text-center">
-                    <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <Upload
+                      className={`mx-auto h-12 w-12 ${
+                        isDragOver ? "text-primary" : "text-muted-foreground"
+                      }`}
+                    />
                     <div className="mt-2">
                       <Button
                         type="button"
@@ -205,7 +252,9 @@ export default function BulkAddSuppressionsDialog({
                       </Button>
                     </div>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      Upload a .txt or .csv file with email addresses
+                      {isDragOver
+                        ? "Drop your file here"
+                        : "Upload a .txt or .csv file with email addresses or drag and drop here"}
                     </p>
                   </div>
                 </div>

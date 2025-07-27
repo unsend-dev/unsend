@@ -2,31 +2,20 @@
 
 import {
   BookUser,
-  Calendar,
   Code,
   Cog,
   Globe,
-  Home,
-  Inbox,
-  LayoutDashboard,
   LayoutTemplate,
-  LogOut,
   Mail,
-  Search,
   Server,
-  Settings,
   Volume2,
   BookOpenText,
   ChartColumnBig,
-  ChartArea,
-  BellIcon,
-  CreditCardIcon,
   LogOutIcon,
   MoreVerticalIcon,
-  UserCircleIcon,
   UsersIcon,
   GaugeIcon,
-  Ban,
+  UserRoundX,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -80,7 +69,7 @@ const generalItems = [
   {
     title: "Suppressions",
     url: "/suppressions",
-    icon: Ban,
+    icon: UserRoundX,
   },
 ];
 

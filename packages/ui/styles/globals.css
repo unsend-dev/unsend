@@ -55,6 +55,14 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 240 11% 88%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Status Colors */
+    --green: 109 58% 40%;
+    --red: 347 87% 44%;
+    --blue: 197 97% 46%;
+    --purple: 266 85% 58%;
+    --yellow: 35 77% 49%;
+    --gray: 220 9% 46%;
   }
 
   .dark {
@@ -106,6 +114,14 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 21% 15%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Status Colors - Dark Mode */
+    --green: 115 54% 76%;
+    --red: 343 81% 75%;
+    --blue: 212 96% 78%;
+    --purple: 267 84% 81%;
+    --yellow: 41 86% 83%;
+    --gray: 218 11% 65%;
   }
 }
 

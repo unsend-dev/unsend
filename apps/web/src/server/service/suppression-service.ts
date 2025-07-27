@@ -15,7 +15,7 @@ export type GetSuppressionListParams = {
   page?: number;
   limit?: number;
   search?: string;
-  reason?: SuppressionReason;
+  reason?: SuppressionReason | null;
   sortBy?: "email" | "reason" | "createdAt";
   sortOrder?: "asc" | "desc";
 };

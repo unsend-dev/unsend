@@ -65,6 +65,24 @@ const config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        green: {
+          DEFAULT: "hsl(var(--green))",
+        },
+        red: {
+          DEFAULT: "hsl(var(--red))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+        },
+        purple: {
+          DEFAULT: "hsl(var(--purple))",
+        },
+        yellow: {
+          DEFAULT: "hsl(var(--yellow))",
+        },
+        gray: {
+          DEFAULT: "hsl(var(--gray))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

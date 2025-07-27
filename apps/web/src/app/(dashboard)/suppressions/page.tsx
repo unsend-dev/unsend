@@ -13,15 +13,10 @@ export default function SuppressionsPage() {
   const [showBulkAddDialog, setShowBulkAddDialog] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="font-semibold text-2xl">Suppression List</h1>
-          <p className="text-muted-foreground">
-            Manage email addresses that are blocked from receiving emails
-          </p>
-        </div>
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="font-bold text-lg">Suppression List</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setShowBulkAddDialog(true)}>
             <Upload className="h-4 w-4 mr-2" />

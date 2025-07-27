@@ -6,7 +6,6 @@ import { useUrlState } from "~/hooks/useUrlState";
 import { useDebouncedCallback } from "use-debounce";
 import { SuppressionReason } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
-import { Badge } from "@unsend/ui/src/badge";
 import { Button } from "@unsend/ui/src/button";
 import { Input } from "@unsend/ui/src/input";
 import {
@@ -24,15 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from "@unsend/ui/src/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@unsend/ui/src/card";
-import { Trash2, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, Download } from "lucide-react";
 import RemoveSuppressionDialog from "./remove-suppression";
-
-const reasonColors = {
-  HARD_BOUNCE: "destructive",
-  COMPLAINT: "secondary",
-  MANUAL: "default",
-} as const;
+import Spinner from "@unsend/ui/src/spinner";
 
 const reasonLabels = {
   HARD_BOUNCE: "Hard Bounce",
@@ -84,13 +77,14 @@ export default function SuppressionList() {
   };
 
   const handleExport = async () => {
-    await exportQuery.refetch();
-    if (exportQuery.data) {
+    const resp = await exportQuery.refetch();
+
+    if (resp.data) {
       const csv = [
-        "Email,Reason,Source,Created At",
-        ...exportQuery.data.map(
+        "Email,Reason,Created At",
+        ...resp.data.map(
           (suppression) =>
-            `${suppression.email},${suppression.reason},${suppression.source || ""},${suppression.createdAt}`
+            `${suppression.email},${suppression.reason},${suppression.createdAt}`
         ),
       ].join("\n");
 
@@ -117,23 +111,11 @@ export default function SuppressionList() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Suppressed Emails</CardTitle>
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            disabled={exportQuery.isFetching}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
+    <div className="mt-10 flex flex-col gap-4">
+      {/* Header and Export */}
+      <div className="flex justify-between items-center">
         {/* Filters */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4">
           <Input
             placeholder="Search by email address..."
             className="max-w-sm"
@@ -151,122 +133,103 @@ export default function SuppressionList() {
               <SelectItem value="MANUAL">Manual</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div>{" "}
+        <Button
+          variant="outline"
+          onClick={handleExport}
+          disabled={exportQuery.isFetching}
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Export
+        </Button>
+      </div>
 
-        {/* Table */}
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead>Added</TableHead>
-                <TableHead className="w-[70px]">Actions</TableHead>
+      {/* Table */}
+      <div className="flex flex-col rounded-xl border shadow">
+        <Table className="">
+          <TableHeader className="">
+            <TableRow className=" bg-muted/30">
+              <TableHead className="rounded-tl-xl">Email</TableHead>
+              <TableHead>Reason</TableHead>
+              <TableHead>Added</TableHead>
+              <TableHead className="rounded-tr-xl">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {suppressionsQuery.isLoading ? (
+              <TableRow className="h-32">
+                <TableCell colSpan={5} className="text-center py-4">
+                  <Spinner
+                    className="w-6 h-6 mx-auto"
+                    innerSvgClass="stroke-primary"
+                  />
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {suppressionsQuery.isLoading ? (
-                [...Array(5)].map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <div className="h-4 bg-muted animate-pulse rounded w-48" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 bg-muted animate-pulse rounded w-20" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 bg-muted animate-pulse rounded w-16" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 bg-muted animate-pulse rounded w-24" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="h-4 bg-muted animate-pulse rounded w-8" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : suppressionsQuery.data?.suppressions.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <div className="text-muted-foreground">
-                      No suppressed emails found
+            ) : suppressionsQuery.data?.suppressions.length === 0 ? (
+              <TableRow className="h-32">
+                <TableCell colSpan={5} className="text-center py-4">
+                  No suppressed emails found
+                </TableCell>
+              </TableRow>
+            ) : (
+              suppressionsQuery.data?.suppressions.map((suppression) => (
+                <TableRow key={suppression.id}>
+                  <TableCell className="font-medium">
+                    {suppression.email}
+                  </TableCell>
+                  <TableCell>
+                    <div
+                      className={`text-center w-[130px] rounded capitalize py-1 text-xs ${
+                        suppression.reason === "HARD_BOUNCE"
+                          ? "bg-red/15 text-red border border-red/20"
+                          : suppression.reason === "COMPLAINT"
+                            ? "bg-yellow/15 text-yellow border border-yellow/20"
+                            : "bg-blue/15 text-blue border border-blue/20"
+                      }`}
+                    >
+                      {reasonLabels[suppression.reason]}
                     </div>
                   </TableCell>
-                </TableRow>
-              ) : (
-                suppressionsQuery.data?.suppressions.map((suppression) => (
-                  <TableRow key={suppression.id}>
-                    <TableCell className="font-medium">
-                      {suppression.email}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={reasonColors[suppression.reason]}>
-                        {reasonLabels[suppression.reason]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {suppression.source ? (
-                        <span className="text-xs font-mono">
-                          {suppression.source.slice(0, 8)}...
-                        </span>
-                      ) : (
-                        "-"
-                      )}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(suppression.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemove(suppression.email)}
-                        disabled={removeMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
 
-        {/* Pagination */}
-        {suppressionsQuery.data?.pagination && (
-          <div className="flex items-center justify-between pt-4">
-            <div className="text-sm text-muted-foreground">
-              Page {suppressionsQuery.data.pagination.page} of{" "}
-              {suppressionsQuery.data.pagination.totalPages} (
-              {suppressionsQuery.data.pagination.totalCount} total)
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(String(parseInt(page || "1") - 1))}
-                disabled={!suppressionsQuery.data.pagination.hasPrev}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(String(parseInt(page || "1") + 1))}
-                disabled={!suppressionsQuery.data.pagination.hasNext}
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
+                  <TableCell className="text-muted-foreground">
+                    {formatDistanceToNow(new Date(suppression.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemove(suppression.email)}
+                      disabled={removeMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex gap-4 justify-end">
+        <Button
+          size="sm"
+          onClick={() => setPage(String(parseInt(page || "1") - 1))}
+          disabled={parseInt(page || "1") === 1}
+        >
+          Previous
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => setPage(String(parseInt(page || "1") + 1))}
+          disabled={!suppressionsQuery.data?.pagination?.hasNext}
+        >
+          Next
+        </Button>
+      </div>
 
       <RemoveSuppressionDialog
         email={emailToRemove}
@@ -275,6 +238,6 @@ export default function SuppressionList() {
         onConfirm={confirmRemove}
         isLoading={removeMutation.isPending}
       />
-    </Card>
+    </div>
   );
 }
