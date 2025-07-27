@@ -116,6 +116,7 @@ model Team {
   dailyEmailUsages DailyEmailUsage[]
   subscription     Subscription[]
   invites          TeamInvite[]
+  SuppressionList  SuppressionList[]
 }
 
 model TeamInvite {
@@ -222,6 +223,7 @@ enum EmailStatus {
   COMPLAINED
   FAILED
   CANCELLED
+  SUPPRESSED
 }
 
 model Email {
@@ -281,6 +283,12 @@ enum UnsubscribeReason {
   BOUNCED
   COMPLAINED
   UNSUBSCRIBED
+}
+
+enum SuppressionReason {
+  HARD_BOUNCE
+  COMPLAINT
+  MANUAL
 }
 
 model Contact {
@@ -386,4 +394,18 @@ model CumulatedMetrics {
   complained  BigInt @default(0)
 
   @@id([teamId, domainId])
+}
+
+model SuppressionList {
+  id        String            @id @default(cuid())
+  email     String // The suppressed email address
+  teamId    Int // Team that owns this suppression
+  reason    SuppressionReason // Why it was suppressed
+  source    String? // Source email ID that triggered suppression
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, email])
 }
