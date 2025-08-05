@@ -10,7 +10,7 @@ import {
   Server,
   Volume2,
   BookOpenText,
-  ChartColumnBig,
+  BarChart3,
   LogOutIcon,
   MoreVerticalIcon,
   UsersIcon,
@@ -54,7 +54,7 @@ const generalItems = [
   {
     title: "Analytics",
     url: "/dashboard",
-    icon: ChartColumnBig,
+    icon: BarChart3,
   },
   {
     title: "Emails",
@@ -244,7 +244,10 @@ export function AppSidebar() {
         </SidebarGroupContent>
         <NavUser
           user={{
-            name: session?.user.name || "",
+            name:
+              session?.user.name ||
+              session?.user.email?.split("@")[0] ||
+              "User",
             email: session?.user.email || "",
             avatar: session?.user.image || "",
           }}
@@ -282,12 +285,12 @@ export function NavUser({
                   />
                 ) : null}
                 <AvatarFallback className="rounded-lg capitalize">
-                  {user.name?.charAt(0) ?? user.email?.charAt(0) ?? ""}
+                  {user.name?.charAt(0) ?? user.email?.charAt(0) ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {user.name ?? user.email ?? ""}
+                  {user.name ?? user.email ?? "User"}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
                   {user.name ? user.email : ""}
@@ -311,12 +314,12 @@ export function NavUser({
                     />
                   ) : null}
                   <AvatarFallback className="rounded-lg capitalize">
-                    {user.name?.charAt(0) ?? user.email?.charAt(0) ?? ""}
+                    {user.name?.charAt(0) ?? user.email?.charAt(0) ?? "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user.name ?? user.email ?? ""}
+                    {user.name ?? user.email ?? "User"}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
                     {user.name ? user.email : ""}
