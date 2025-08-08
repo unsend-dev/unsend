@@ -124,6 +124,7 @@ export async function sendRawEmail({
   isBulk,
   inReplyToMessageId,
   emailId,
+  sesTenantId,
 }: Partial<EmailContent> & {
   region: string;
   configurationSetName: string;
@@ -187,6 +188,7 @@ export async function sendRawEmail({
       },
     },
     ConfigurationSetName: configurationSetName,
+    TenantName: sesTenantId ? sesTenantId : undefined,
   });
 
   try {

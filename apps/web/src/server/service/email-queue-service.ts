@@ -309,6 +309,9 @@ async function executeEmail(job: QueueEmailJob) {
 
   const email = await db.email.findUnique({
     where: { id: job.data.emailId },
+    include: {
+      team: true,
+    },
   });
 
   const domain = email?.domainId
@@ -382,6 +385,7 @@ async function executeEmail(job: QueueEmailJob) {
       isBulk,
       inReplyToMessageId,
       emailId: email.id,
+      sesTenantId: email.team.sesTenantId,
     });
 
     logger.info(

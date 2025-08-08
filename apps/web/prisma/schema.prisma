@@ -106,6 +106,7 @@ model Team {
   isActive         Boolean           @default(true)
   apiRateLimit     Int               @default(2)
   billingEmail     String?
+  sesTenantId      String?
   teamUsers        TeamUser[]
   domains          Domain[]
   apiKeys          ApiKey[]
