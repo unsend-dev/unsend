@@ -310,7 +310,11 @@ async function executeEmail(job: QueueEmailJob) {
   const email = await db.email.findUnique({
     where: { id: job.data.emailId },
     include: {
-      team: true,
+      team: {
+        select: {
+          sesTenantId: true,
+        },
+      },
     },
   });
 
