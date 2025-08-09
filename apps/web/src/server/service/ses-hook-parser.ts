@@ -82,6 +82,7 @@ export async function parseSesHook(data: SesEvent) {
     return false;
   }
 
+  // Early return for DELIVERY_DELAYED duplicates to avoid unnecessary DB queries
   if (
     email.latestStatus === mailStatus &&
     mailStatus === EmailStatus.DELIVERY_DELAYED
@@ -89,18 +90,50 @@ export async function parseSesHook(data: SesEvent) {
     return true;
   }
 
-  // Update the latest status and to avoid race conditions
-  await db.$executeRaw`
-      UPDATE "Email"
-      SET "latestStatus" = CASE
-        WHEN ${mailStatus}::text::\"EmailStatus\" > "latestStatus" OR "latestStatus" IS NULL OR "latestStatus" = 'SCHEDULED'::\"EmailStatus\"
-        THEN ${mailStatus}::text::\"EmailStatus\"
-        ELSE "latestStatus"
-      END
-      WHERE id = ${email.id}
-    `;
+  // Use a transaction to prevent race conditions and ensure atomicity
+  const result = await db.$transaction(async (tx) => {
+    // Check for existing event within the transaction to prevent race conditions
+    const existingEvent = await tx.emailEvent.findFirst({
+      where: {
+        emailId: email.id,
+        status: mailStatus,
+      },
+    });
 
-  // Update daily email usage statistics
+    // If event already exists, don't process it again
+    if (existingEvent) {
+      return { isNewEvent: false, existingEvent };
+    }
+
+    // Create the email event first to claim this event and prevent duplicates
+    const newEvent = await tx.emailEvent.create({
+      data: {
+        emailId: email.id,
+        status: mailStatus,
+        data: mailData as any,
+      },
+    });
+
+    // Update the latest status
+    await tx.$executeRaw`
+        UPDATE "Email"
+        SET "latestStatus" = CASE
+          WHEN ${mailStatus}::text::\"EmailStatus\" > "latestStatus" OR "latestStatus" IS NULL OR "latestStatus" = 'SCHEDULED'::\"EmailStatus\"
+          THEN ${mailStatus}::text::\"EmailStatus\"
+          ELSE "latestStatus"
+        END
+        WHERE id = ${email.id}
+      `;
+
+    return { isNewEvent: true, newEvent };
+  });
+
+  // If this is not a new event, return early
+  if (!result.isNewEvent) {
+    return true;
+  }
+
+  // Update daily email usage statistics only for new events
   const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
 
   const isHardBounced =
@@ -227,30 +260,14 @@ export async function parseSesHook(data: SesEvent) {
         mailData: data,
       });
 
-      const mailEvent = await db.emailEvent.findFirst({
-        where: {
-          emailId: email.id,
-          status: mailStatus,
-        },
-      });
-
-      if (!mailEvent) {
-        await updateCampaignAnalytics(
-          email.campaignId,
-          mailStatus,
-          isHardBounced
-        );
-      }
+      // Update campaign analytics only for new events
+      await updateCampaignAnalytics(
+        email.campaignId,
+        mailStatus,
+        isHardBounced
+      );
     }
   }
-
-  await db.emailEvent.create({
-    data: {
-      emailId: email.id,
-      status: mailStatus,
-      data: mailData as any,
-    },
-  });
 
   return true;
 }
