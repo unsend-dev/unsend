@@ -331,6 +331,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
         data: {
           error: "Contact email is suppressed. No email sent.",
         },
+        teamId: emailConfig.teamId,
       },
     });
 

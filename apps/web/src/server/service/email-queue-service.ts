@@ -403,6 +403,7 @@ async function executeEmail(job: QueueEmailJob) {
         data: {
           error: error.toString(),
         },
+        teamId: email.teamId,
       },
     });
     await db.email.update({
