@@ -36,7 +36,12 @@ function createDomain(app: PublicAPIApp) {
   app.openapi(route, async (c) => {
     const team = c.var.team;
     const body = c.req.valid("json");
-    const response = await createDomainService(team.id, body.name, body.region);
+    const response = await createDomainService(
+      team.id,
+      body.name,
+      body.region,
+      team.sesTenantId ?? undefined
+    );
 
     return c.json(response);
   });

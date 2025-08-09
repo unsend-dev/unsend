@@ -57,7 +57,8 @@ export async function validateDomainFromEmail(email: string, teamId: number) {
 export async function createDomain(
   teamId: number,
   name: string,
-  region: string
+  region: string,
+  sesTenantId?: string
 ) {
   const domainStr = tldts.getDomain(name);
 
@@ -74,7 +75,7 @@ export async function createDomain(
   }
 
   const subdomain = tldts.getSubdomain(name);
-  const publicKey = await ses.addDomain(name, region);
+  const publicKey = await ses.addDomain(name, region, sesTenantId);
 
   const domain = await db.domain.create({
     data: {
@@ -83,6 +84,7 @@ export async function createDomain(
       teamId,
       subdomain,
       region,
+      sesTenantId,
     },
   });
 
@@ -165,7 +167,11 @@ export async function deleteDomain(id: number) {
     throw new Error("Domain not found");
   }
 
-  const deleted = await ses.deleteDomain(domain.name, domain.region);
+  const deleted = await ses.deleteDomain(
+    domain.name,
+    domain.region,
+    domain.sesTenantId ?? undefined
+  );
 
   if (!deleted) {
     throw new Error("Error in deleting domain");

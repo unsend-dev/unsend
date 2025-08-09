@@ -13,6 +13,7 @@ export type EmailContent = {
   unsubUrl?: string;
   scheduledAt?: string;
   inReplyToId?: string | null;
+  sesTenantId?: string | null;
 };
 
 export type EmailAttachment = {

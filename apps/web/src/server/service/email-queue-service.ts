@@ -382,6 +382,7 @@ async function executeEmail(job: QueueEmailJob) {
       isBulk,
       inReplyToMessageId,
       emailId: email.id,
+      sesTenantId: domain?.sesTenantId,
     });
 
     logger.info(

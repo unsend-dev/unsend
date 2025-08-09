@@ -106,6 +106,7 @@ model Team {
   isActive         Boolean           @default(true)
   apiRateLimit     Int               @default(2)
   billingEmail     String?
+  sesTenantId      String?
   teamUsers        TeamUser[]
   domains          Domain[]
   apiKeys          ApiKey[]
@@ -184,6 +185,7 @@ model Domain {
   dmarcAdded    Boolean      @default(false)
   errorMessage  String?
   subdomain     String?
+  sesTenantId   String?
   isVerifying   Boolean      @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
