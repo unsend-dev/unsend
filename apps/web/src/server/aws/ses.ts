@@ -150,7 +150,17 @@ export async function deleteDomain(
         ResourceArn: await getIdentityArn(domain, region),
       });
 
-    await sesClient.send(tenantResourceAssociationCommand);
+    const tenantResourceAssociationResponse = await sesClient.send(
+      tenantResourceAssociationCommand
+    );
+
+    if (tenantResourceAssociationResponse.$metadata.httpStatusCode !== 200) {
+      logger.error(
+        { tenantResourceAssociationResponse },
+        "Failed to delete tenant resource association"
+      );
+      throw new Error("Failed to delete tenant resource association");
+    }
   }
 
   const command = new DeleteEmailIdentityCommand({
