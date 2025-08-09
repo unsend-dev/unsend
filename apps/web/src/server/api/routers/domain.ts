@@ -25,7 +25,12 @@ export const domainRouter = createTRPCRouter({
   createDomain: teamProcedure
     .input(z.object({ name: z.string(), region: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return createDomain(ctx.team.id, input.name, input.region);
+      return createDomain(
+        ctx.team.id,
+        input.name,
+        input.region,
+        ctx.team.sesTenantId ?? undefined
+      );
     }),
 
   startVerification: domainProcedure.mutation(async ({ ctx, input }) => {

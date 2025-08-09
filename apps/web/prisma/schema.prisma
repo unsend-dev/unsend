@@ -185,6 +185,7 @@ model Domain {
   dmarcAdded    Boolean      @default(false)
   errorMessage  String?
   subdomain     String?
+  sesTenantId   String?
   isVerifying   Boolean      @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
