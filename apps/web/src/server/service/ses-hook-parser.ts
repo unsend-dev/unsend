@@ -249,6 +249,7 @@ export async function parseSesHook(data: SesEvent) {
       emailId: email.id,
       status: mailStatus,
       data: mailData as any,
+      teamId: email.teamId,
     },
   });
 
