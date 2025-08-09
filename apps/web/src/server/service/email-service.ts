@@ -132,6 +132,7 @@ export async function sendEmail(
         data: {
           error: "All TO recipients are suppressed. No emails to send.",
         },
+        teamId,
       },
     });
 
@@ -260,6 +261,7 @@ export async function sendEmail(
         data: {
           error: error.toString(),
         },
+        teamId,
       },
     });
     await db.email.update({
@@ -327,6 +329,7 @@ export async function cancelEmail(emailId: string) {
     data: {
       emailId,
       status: "CANCELLED",
+      teamId: email.teamId,
     },
   });
 }
@@ -543,6 +546,7 @@ export async function sendBulkEmails(
         data: {
           error: "All TO recipients are suppressed. No emails to send.",
         },
+        teamId,
       },
     });
 
@@ -733,6 +737,7 @@ export async function sendBulkEmails(
             data: {
               error: error.toString(),
             },
+            teamId: email.email.teamId,
           },
         });
         await db.email.update({
