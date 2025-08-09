@@ -118,7 +118,6 @@ model Team {
   subscription     Subscription[]
   invites          TeamInvite[]
   suppressionList  SuppressionList[]
-  emailEvents      EmailEvent[]
 }
 
 model TeamInvite {
@@ -262,10 +261,9 @@ model EmailEvent {
   emailId   String
   status    EmailStatus
   data      Json?
-  teamId    Int
+  teamId    Int?
   createdAt DateTime    @default(now())
   email     Email       @relation(fields: [emailId], references: [id], onDelete: Cascade)
-  team      Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([emailId])
   @@index([teamId])
