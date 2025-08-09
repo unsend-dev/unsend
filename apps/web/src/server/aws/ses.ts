@@ -29,6 +29,10 @@ async function getAccountId(region: string) {
 
   const stsClient = new STSClient({
     region: region,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY,
+      secretAccessKey: env.AWS_SECRET_KEY,
+    },
   });
   const command = new GetCallerIdentityCommand({});
   const response = await stsClient.send(command);
