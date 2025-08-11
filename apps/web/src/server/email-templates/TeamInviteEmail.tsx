@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Text, Hr } from "jsx-email";
+import { Container, Text } from "jsx-email";
 import { render } from "jsx-email";
 import { EmailLayout } from "./components/EmailLayout";
 import { EmailHeader } from "./components/EmailHeader";
@@ -28,7 +28,7 @@ export function TeamInviteEmail({
         title="You're invited!" 
       />
       
-      <Container style={{ padding: "40px" }}>
+      <Container style={{ padding: "20px 0" }}>
         <Text
           style={{
             fontSize: "16px",
@@ -60,12 +60,6 @@ export function TeamInviteEmail({
             Accept invitation
           </EmailButton>
         </Container>
-
-        <Hr style={{ 
-          border: "none", 
-          borderTop: "1px solid #e5e7eb", 
-          margin: "32px 0" 
-        }} />
 
         <Text
           style={{

@@ -13,8 +13,7 @@ export function EmailFooter({
   return (
     <Container
       style={{
-        padding: "20px 40px 40px 40px",
-        borderTop: "1px solid #e5e7eb",
+        padding: "20px 0",
         backgroundColor: "#ffffff",
       }}
     >
@@ -22,7 +21,7 @@ export function EmailFooter({
         style={{
           fontSize: "14px",
           color: "#6b7280",
-          textAlign: "center" as const,
+          textAlign: "left" as const,
           margin: "0",
           lineHeight: "1.5",
         }}
