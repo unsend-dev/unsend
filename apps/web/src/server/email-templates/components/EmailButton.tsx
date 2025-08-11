@@ -25,7 +25,7 @@ export function EmailButton({
         padding: "12px 24px",
         textDecoration: "none",
         display: "inline-block",
-        textAlign: "center" as const,
+        textAlign: "left" as const,
         minWidth: "120px",
         boxSizing: "border-box" as const,
       }}

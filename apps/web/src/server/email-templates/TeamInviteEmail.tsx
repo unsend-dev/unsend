@@ -55,7 +55,7 @@ export function TeamInviteEmail({
           )}.
         </Text>
 
-        <Container style={{ margin: "0 0 32px 0" }}>
+        <Container style={{ margin: "0 0 32px 0", textAlign: "left" as const }}>
           <EmailButton href={inviteUrl}>
             Accept invitation
           </EmailButton>
