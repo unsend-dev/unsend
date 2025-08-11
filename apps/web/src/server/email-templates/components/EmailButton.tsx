@@ -13,7 +13,7 @@ export function EmailButton({
   variant = "primary" 
 }: EmailButtonProps) {
   return (
-    <Link
+    <a
       href={href}
       style={{
         backgroundColor: "#000000",
@@ -25,12 +25,14 @@ export function EmailButton({
         padding: "12px 24px",
         textDecoration: "none",
         display: "inline-block",
-        textAlign: "left" as const,
+        textAlign: "center" as const,
         minWidth: "120px",
         boxSizing: "border-box" as const,
+        float: "left" as const,
+        clear: "both" as const,
       }}
     >
       {children}
-    </Link>
+    </a>
   );
 }
