@@ -28,13 +28,14 @@ export function TeamInviteEmail({
         title="You're invited!" 
       />
       
-      <Container style={{ padding: "20px 0" }}>
+      <Container style={{ padding: "20px 0", textAlign: "left" as const }}>
         <Text
           style={{
             fontSize: "16px",
             color: "#374151",
             margin: "0 0 24px 0",
             lineHeight: "1.6",
+            textAlign: "left" as const,
           }}
         >
           Hi there,
@@ -46,6 +47,7 @@ export function TeamInviteEmail({
             color: "#374151",
             margin: "0 0 32px 0",
             lineHeight: "1.6",
+            textAlign: "left" as const,
           }}
         >
           {inviterName ? `${inviterName} has` : "You have been"} invited you to join{" "}
@@ -67,6 +69,7 @@ export function TeamInviteEmail({
             color: "#6b7280",
             margin: "0",
             lineHeight: "1.5",
+            textAlign: "left" as const,
           }}
         >
           If you weren't expecting this invitation or don't want to join this team, you can safely ignore this email.

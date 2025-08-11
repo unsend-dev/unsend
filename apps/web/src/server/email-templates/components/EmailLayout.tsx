@@ -65,8 +65,8 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
           className="email-container"
           style={{
             maxWidth: "600px",
-            margin: "0 auto",
             backgroundColor: "#ffffff",
+            textAlign: "left" as const,
           }}
         >
           {children}

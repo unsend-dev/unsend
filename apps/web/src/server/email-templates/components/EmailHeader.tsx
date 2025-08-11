@@ -21,7 +21,7 @@ export function EmailHeader({ logoUrl, title }: EmailHeaderProps) {
           style={{
             width: "48px",
             height: "48px",
-            margin: "0 auto 16px auto",
+            margin: "0 0 16px 0",
             display: "block",
           }}
         />
@@ -34,6 +34,7 @@ export function EmailHeader({ logoUrl, title }: EmailHeaderProps) {
             color: "#111827",
             margin: "0",
             lineHeight: "1.3",
+            textAlign: "left" as const,
           }}
         >
           {title}
