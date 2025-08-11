@@ -54,6 +54,7 @@ export function OtpEmail({
             backgroundColor: "#f8f9fa",
             padding: "16px",
             margin: "0 0 32px 0",
+            textAlign: "left" as const,
           }}
         >
           <Text
@@ -64,13 +65,14 @@ export function OtpEmail({
               letterSpacing: "4px",
               margin: "0",
               fontFamily: "monospace",
+              textAlign: "left" as const,
             }}
           >
             {otpCode}
           </Text>
         </Container>
 
-        <Container style={{ margin: "0 0 32px 0" }}>
+        <Container style={{ margin: "0 0 32px 0", textAlign: "left" as const }}>
           <EmailButton href={loginUrl}>
             Sign in with one click
           </EmailButton>
