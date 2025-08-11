@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Text, Hr } from "jsx-email";
+import { Container, Text } from "jsx-email";
 import { render } from "jsx-email";
 import { EmailLayout } from "./components/EmailLayout";
 import { EmailHeader } from "./components/EmailHeader";
@@ -26,7 +26,7 @@ export function OtpEmail({
         title="Sign in to your account" 
       />
       
-      <Container style={{ padding: "40px" }}>
+      <Container style={{ padding: "20px 0" }}>
         <Text
           style={{
             fontSize: "16px",
@@ -52,19 +52,16 @@ export function OtpEmail({
         <Container
           style={{
             backgroundColor: "#f8f9fa",
-            borderRadius: "4px",
-            padding: "24px",
-            textAlign: "center" as const,
+            padding: "16px",
             margin: "0 0 32px 0",
-            border: "1px solid #e5e7eb",
           }}
         >
           <Text
             style={{
-              fontSize: "32px",
+              fontSize: "24px",
               fontWeight: "700",
               color: "#000000",
-              letterSpacing: "8px",
+              letterSpacing: "4px",
               margin: "0",
               fontFamily: "monospace",
             }}
@@ -78,12 +75,6 @@ export function OtpEmail({
             Sign in with one click
           </EmailButton>
         </Container>
-
-        <Hr style={{ 
-          border: "none", 
-          borderTop: "1px solid #e5e7eb", 
-          margin: "32px 0" 
-        }} />
 
         <Text
           style={{

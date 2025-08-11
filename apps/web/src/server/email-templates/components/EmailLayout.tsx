@@ -60,16 +60,13 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
         <meta content="light" name="supported-color-schemes" />
       </Head>
       {preview && <Preview>{preview}</Preview>}
-      <Body style={{ backgroundColor: "#ffffff", padding: "40px 20px" }}>
+      <Body style={{ backgroundColor: "#ffffff", padding: "20px" }}>
         <Container
           className="email-container"
           style={{
             maxWidth: "600px",
             margin: "0 auto",
             backgroundColor: "#ffffff",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            overflow: "hidden",
           }}
         >
           {children}
