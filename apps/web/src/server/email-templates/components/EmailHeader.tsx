@@ -11,8 +11,8 @@ export function EmailHeader({ logoUrl, title }: EmailHeaderProps) {
     <Container
       style={{
         padding: "40px 40px 20px 40px",
-        borderBottom: "1px solid #f3f4f6",
-        textAlign: "center" as const,
+        borderBottom: "1px solid #e5e7eb",
+        textAlign: "left" as const,
       }}
     >
       {logoUrl && (
