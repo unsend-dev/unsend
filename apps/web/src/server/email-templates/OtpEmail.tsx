@@ -26,13 +26,14 @@ export function OtpEmail({
         title="Sign in to your account" 
       />
       
-      <Container style={{ padding: "20px 0" }}>
+      <Container style={{ padding: "20px 0", textAlign: "left" as const }}>
         <Text
           style={{
             fontSize: "16px",
             color: "#374151",
             margin: "0 0 24px 0",
             lineHeight: "1.6",
+            textAlign: "left" as const,
           }}
         >
           Hi there,
@@ -44,6 +45,7 @@ export function OtpEmail({
             color: "#374151",
             margin: "0 0 32px 0",
             lineHeight: "1.6",
+            textAlign: "left" as const,
           }}
         >
           Use the verification code below to sign in to your {hostName} account:
@@ -84,6 +86,7 @@ export function OtpEmail({
             color: "#6b7280",
             margin: "0",
             lineHeight: "1.5",
+            textAlign: "left" as const,
           }}
         >
           If you didn't request this email, you can safely ignore it. The verification code will expire automatically.
