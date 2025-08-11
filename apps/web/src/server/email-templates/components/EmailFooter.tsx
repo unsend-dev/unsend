@@ -14,8 +14,8 @@ export function EmailFooter({
     <Container
       style={{
         padding: "20px 40px 40px 40px",
-        borderTop: "1px solid #f3f4f6",
-        backgroundColor: "#f9fafb",
+        borderTop: "1px solid #e5e7eb",
+        backgroundColor: "#ffffff",
       }}
     >
       <Text
@@ -31,8 +31,8 @@ export function EmailFooter({
         <a
           href={supportUrl}
           style={{
-            color: "#3b82f6",
-            textDecoration: "none",
+            color: "#000000",
+            textDecoration: "underline",
           }}
         >
           contact our support team

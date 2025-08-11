@@ -12,16 +12,14 @@ export function EmailButton({
   children, 
   variant = "primary" 
 }: EmailButtonProps) {
-  const isPrimary = variant === "primary";
-  
   return (
     <Link
       href={href}
       style={{
-        backgroundColor: isPrimary ? "#3b82f6" : "transparent",
-        color: isPrimary ? "#ffffff" : "#3b82f6",
-        border: isPrimary ? "none" : "2px solid #3b82f6",
-        borderRadius: "8px",
+        backgroundColor: "#000000",
+        color: "#ffffff",
+        border: "1px solid #000000",
+        borderRadius: "4px",
         fontSize: "16px",
         fontWeight: "500",
         padding: "12px 24px",

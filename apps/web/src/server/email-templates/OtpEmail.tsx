@@ -51,8 +51,8 @@ export function OtpEmail({
 
         <Container
           style={{
-            backgroundColor: "#f3f4f6",
-            borderRadius: "8px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "4px",
             padding: "24px",
             textAlign: "center" as const,
             margin: "0 0 32px 0",
@@ -63,7 +63,7 @@ export function OtpEmail({
             style={{
               fontSize: "32px",
               fontWeight: "700",
-              color: "#111827",
+              color: "#000000",
               letterSpacing: "8px",
               margin: "0",
               fontFamily: "monospace",
@@ -71,18 +71,9 @@ export function OtpEmail({
           >
             {otpCode}
           </Text>
-          <Text
-            style={{
-              fontSize: "14px",
-              color: "#6b7280",
-              margin: "8px 0 0 0",
-            }}
-          >
-            This code will expire in 10 minutes
-          </Text>
         </Container>
 
-        <Container style={{ textAlign: "center" as const, margin: "0 0 32px 0" }}>
+        <Container style={{ margin: "0 0 32px 0" }}>
           <EmailButton href={loginUrl}>
             Sign in with one click
           </EmailButton>
