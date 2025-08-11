@@ -36,6 +36,7 @@
     "@trpc/server": "^11.1.1",
     "@unsend/email-editor": "workspace:*",
     "@unsend/ui": "workspace:*",
+    "jsx-email": "^2.7.1",
     "bullmq": "^5.51.1",
     "chrono-node": "^2.8.0",
     "date-fns": "^4.1.0",
