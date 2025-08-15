@@ -38,6 +38,12 @@ export async function parseSesHook(data: SesEvent) {
 
   const mailData = getEmailData(data);
 
+  logger.setBindings({
+    sesEmailId,
+  });
+
+  logger.info({ mailStatus }, "Parsing ses hook");
+
   let email = await db.email.findUnique({
     where: {
       sesEmailId,
@@ -100,6 +106,8 @@ export async function parseSesHook(data: SesEvent) {
       WHERE id = ${email.id}
     `;
 
+  logger.info("Latest status updated");
+
   // Update daily email usage statistics
   const today = new Date().toISOString().split("T")[0] as string; // Format: YYYY-MM-DD
 
@@ -109,6 +117,8 @@ export async function parseSesHook(data: SesEvent) {
 
   // Add emails to suppression list for hard bounces and complaints
   if (isHardBounced || mailStatus === EmailStatus.COMPLAINED) {
+    logger.info("Adding emails to suppression list");
+
     const recipientEmails = Array.isArray(email.to) ? email.to : [email.to];
 
     try {
@@ -156,6 +166,7 @@ export async function parseSesHook(data: SesEvent) {
       "SENT",
     ].includes(mailStatus)
   ) {
+    logger.info("Updating daily email usage");
     const updateField = mailStatus.toLowerCase();
 
     await db.dailyEmailUsage.upsert({
@@ -193,6 +204,7 @@ export async function parseSesHook(data: SesEvent) {
       updateField === "complained" ||
       updateField === "delivered"
     ) {
+      logger.info("Updating cumulated metrics");
       await db.cumulatedMetrics.upsert({
         where: {
           teamId_domainId: {
@@ -244,6 +256,8 @@ export async function parseSesHook(data: SesEvent) {
     }
   }
 
+  logger.info("Creating email event");
+
   await db.emailEvent.create({
     data: {
       emailId: email.id,
@@ -252,6 +266,8 @@ export async function parseSesHook(data: SesEvent) {
       teamId: email.teamId,
     },
   });
+
+  logger.info("Email event created");
 
   return true;
 }
@@ -383,7 +399,12 @@ export class SesHookParser {
   );
 
   private static async execute(event: SesEvent) {
-    await parseSesHook(event);
+    try {
+      await parseSesHook(event);
+    } catch (error) {
+      logger.error({ error }, "Error parsing ses hook");
+      throw error;
+    }
   }
 
   static async queue(data: { event: SesEvent; messageId: string }) {
