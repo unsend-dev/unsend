@@ -4,27 +4,13 @@ import { logger } from "~/server/logger/log";
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse the request body to check for List-Unsubscribe=One-Click
-    const formData = await request.formData();
-    const listUnsubscribe = formData.get("List-Unsubscribe");
-
-    // Verify this is a one-click unsubscribe request
-    if (listUnsubscribe !== "One-Click") {
-      return NextResponse.json(
-        { error: "Invalid unsubscribe request" },
-        { status: 400 }
-      );
-    }
-
-    // Extract id and hash from URL search parameters
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
     const hash = url.searchParams.get("hash");
 
     if (!id || !hash) {
       logger.warn(
-        { id, hash, url: request.url },
-        "One-click unsubscribe: Missing id or hash"
+        `One-click unsubscribe: Missing id or hash id: ${id} hash: ${hash} url: ${request.url}`
       );
       return NextResponse.json(
         { error: "Invalid unsubscribe link" },
@@ -42,10 +28,9 @@ export async function POST(request: NextRequest) {
 
     // Return success response for email clients
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: "Successfully unsubscribed",
-        contact: contact.email 
       },
       { status: 200 }
     );
