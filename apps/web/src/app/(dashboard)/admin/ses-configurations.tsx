@@ -24,6 +24,7 @@ export default function SesConfigurations() {
           <TableHeader className="">
             <TableRow className=" bg-muted/30">
               <TableHead className="rounded-tl-xl">Region</TableHead>
+              <TableHead>Prefix Key</TableHead>
               <TableHead>Callback URL</TableHead>
               <TableHead>Callback status</TableHead>
               <TableHead>Created at</TableHead>
@@ -52,6 +53,7 @@ export default function SesConfigurations() {
               sesSettingsQuery.data?.map((sesSetting) => (
                 <TableRow key={sesSetting.id}>
                   <TableCell>{sesSetting.region}</TableCell>
+                  <TableCell>{sesSetting.idPrefix}</TableCell>
                   <TableCell>
                     <div className="w-[200px] overflow-hidden text-ellipsis">
                       <TextWithCopyButton
