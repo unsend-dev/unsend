@@ -5,6 +5,7 @@ import { db } from "./db";
 import { getDomains } from "./service/domain-service";
 import { sendEmail } from "./service/email-service";
 import { logger } from "./logger/log";
+import { renderOtpEmail, renderTeamInviteEmail } from "./email-templates";
 
 let unsend: Unsend | undefined;
 
@@ -28,8 +29,16 @@ export async function sendSignUpEmail(
   }
 
   const subject = "Sign in to Unsend";
+  
+  // Use jsx-email template for beautiful HTML
+  const html = await renderOtpEmail({
+    otpCode: token.toUpperCase(),
+    loginUrl: url,
+    hostName: host,
+  });
+  
+  // Fallback text version
   const text = `Hey,\n\nYou can sign in to Unsend by clicking the below URL:\n${url}\n\nYou can also use this OTP: ${token}\n\nThanks,\nUnsend Team`;
-  const html = `<p>Hey,</p> <p>You can sign in to Unsend by clicking the below URL:</p><p><a href="${url}">Sign in to ${host}</a></p><p>You can also use this OTP: <b>${token}</b></p<br /><br /><p>Thanks,</p><p>Unsend Team</p>`;
 
   await sendMail(email, subject, text, html);
 }
@@ -47,8 +56,15 @@ export async function sendTeamInviteEmail(
   }
 
   const subject = "You have been invited to join a team";
+  
+  // Use jsx-email template for beautiful HTML
+  const html = await renderTeamInviteEmail({
+    teamName,
+    inviteUrl: url,
+  });
+  
+  // Fallback text version
   const text = `Hey,\n\nYou have been invited to join the team ${teamName} on Unsend.\n\nYou can accept the invitation by clicking the below URL:\n${url}\n\nThanks,\nUnsend Team`;
-  const html = `<p>Hey,</p> <p>You have been invited to join the team <b>${teamName}</b> on Unsend.</p><p>You can accept the invitation by clicking the below URL:</p><p><a href="${url}">Accept invitation</a></p><br /><br /><p>Thanks,</p><p>Unsend Team</p>`;
 
   await sendMail(email, subject, text, html);
 }
