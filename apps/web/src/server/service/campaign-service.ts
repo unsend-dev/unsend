@@ -99,6 +99,16 @@ export function createUnsubUrl(contactId: string, campaignId: string) {
   return `${env.NEXTAUTH_URL}/unsubscribe?id=${unsubId}&hash=${unsubHash}`;
 }
 
+export function createOneClickUnsubUrl(contactId: string, campaignId: string) {
+  const unsubId = `${contactId}-${campaignId}`;
+
+  const unsubHash = createHash("sha256")
+    .update(`${unsubId}-${env.NEXTAUTH_SECRET}`)
+    .digest("hex");
+
+  return `${env.NEXTAUTH_URL}/api/unsubscribe-oneclick?id=${unsubId}&hash=${unsubHash}`;
+}
+
 export async function unsubscribeContactFromLink(id: string, hash: string) {
   const [contactId, campaignId] = id.split("-");
 
@@ -253,6 +263,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
   const renderer = new EmailRenderer(jsonContent);
 
   const unsubscribeUrl = createUnsubUrl(contact.id, emailConfig.campaignId);
+  const oneClickUnsubUrl = createOneClickUnsubUrl(contact.id, emailConfig.campaignId);
 
   // Check for suppressed emails before processing
   const toEmails = [contact.email];
@@ -387,7 +398,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
     emailConfig.teamId,
     emailConfig.region,
     false,
-    unsubscribeUrl
+    oneClickUnsubUrl
   );
 }
 
