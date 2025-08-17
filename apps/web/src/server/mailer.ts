@@ -55,7 +55,7 @@ export async function sendTeamInviteEmail(
     return;
   }
 
-  const subject = "You have been invited to join a team";
+  const subject = "You have been invited to join Unsend";
 
   // Use jsx-email template for beautiful HTML
   const html = await renderTeamInviteEmail({
