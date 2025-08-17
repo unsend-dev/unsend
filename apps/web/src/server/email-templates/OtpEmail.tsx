@@ -13,19 +13,16 @@ interface OtpEmailProps {
   logoUrl?: string;
 }
 
-export function OtpEmail({ 
-  otpCode, 
-  loginUrl, 
+export function OtpEmail({
+  otpCode,
+  loginUrl,
   hostName = "Unsend",
-  logoUrl 
+  logoUrl,
 }: OtpEmailProps) {
   return (
     <EmailLayout preview={`Your verification code: ${otpCode}`}>
-      <EmailHeader 
-        logoUrl={logoUrl}
-        title="Sign in to your account" 
-      />
-      
+      <EmailHeader logoUrl={logoUrl} title="Sign in to your account" />
+
       <Container style={{ padding: "20px 0", textAlign: "left" as const }}>
         <Text
           style={{
@@ -38,7 +35,7 @@ export function OtpEmail({
         >
           Hi there,
         </Text>
-        
+
         <Text
           style={{
             fontSize: "16px",
@@ -48,7 +45,7 @@ export function OtpEmail({
             textAlign: "left" as const,
           }}
         >
-          Use the verification code below to sign in to your {hostName} account:
+          Use the verification code below to sign in to your Unsend account:
         </Text>
 
         <Container
@@ -75,9 +72,7 @@ export function OtpEmail({
         </Container>
 
         <Container style={{ margin: "0 0 32px 0", textAlign: "left" as const }}>
-          <EmailButton href={loginUrl}>
-            Sign in with one click
-          </EmailButton>
+          <EmailButton href={loginUrl}>Sign in with one click</EmailButton>
         </Container>
 
         <Text
@@ -89,7 +84,8 @@ export function OtpEmail({
             textAlign: "left" as const,
           }}
         >
-          If you didn't request this email, you can safely ignore it. The verification code will expire automatically.
+          If you didn't request this email, you can safely ignore it. The
+          verification code will expire automatically.
         </Text>
       </Container>
 

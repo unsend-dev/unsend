@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { renderOtpEmail, renderTeamInviteEmail } from "~/server/email-templates";
+import {
+  renderOtpEmail,
+  renderTeamInviteEmail,
+} from "~/server/email-templates";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "otp";
+
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
 
   try {
     let html: string;
