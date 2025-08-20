@@ -58,7 +58,7 @@ export async function createDomain(
   teamId: number,
   name: string,
   region: string,
-  sesTenantId?: string
+  sesTenantId?: string,
 ) {
   const domainStr = tldts.getDomain(name);
 
@@ -105,7 +105,7 @@ export async function getDomain(id: number) {
   if (domain.isVerifying) {
     const domainIdentity = await ses.getDomainIdentity(
       domain.name,
-      domain.region
+      domain.region,
     );
 
     const dkimStatus = domainIdentity.DkimAttributes?.Status;
@@ -114,7 +114,7 @@ export async function getDomain(id: number) {
     const verificationStatus = domainIdentity.VerificationStatus;
     const lastCheckedTime =
       domainIdentity.VerificationInfo?.LastCheckedTimestamp;
-    const _dmarcRecord = await getDmarcRecord(domain.name);
+    const _dmarcRecord = await getDmarcRecord(tldts.getDomain(domain.name)!);
     const dmarcRecord = _dmarcRecord?.[0]?.[0];
 
     domain = await db.domain.update({
@@ -150,7 +150,7 @@ export async function getDomain(id: number) {
 
 export async function updateDomain(
   id: number,
-  data: { clickTracking?: boolean; openTracking?: boolean }
+  data: { clickTracking?: boolean; openTracking?: boolean },
 ) {
   return db.domain.update({
     where: { id },
@@ -170,7 +170,7 @@ export async function deleteDomain(id: number) {
   const deleted = await ses.deleteDomain(
     domain.name,
     domain.region,
-    domain.sesTenantId ?? undefined
+    domain.sesTenantId ?? undefined,
   );
 
   if (!deleted) {
