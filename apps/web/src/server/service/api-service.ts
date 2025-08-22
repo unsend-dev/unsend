@@ -9,10 +9,12 @@ export async function addApiKey({
   name,
   permission,
   teamId,
+  domainId,
 }: {
   name: string;
   permission: ApiPermission;
   teamId: number;
+  domainId?: number;
 }) {
   try {
     const clientId = smallNanoid(10);
@@ -26,6 +28,7 @@ export async function addApiKey({
         name,
         permission: permission,
         teamId,
+        domainId,
         tokenHash: hashedToken,
         partialToken: `${apiKey.slice(0, 6)}...${apiKey.slice(-3)}`,
         clientId,
@@ -44,6 +47,9 @@ export async function getTeamAndApiKey(apiKey: string) {
   const apiKeyRow = await db.apiKey.findUnique({
     where: {
       clientId,
+    },
+    include: {
+      domain: true,
     },
   });
 

@@ -10,13 +10,18 @@ import { addApiKey, deleteApiKey } from "~/server/service/api-service";
 export const apiRouter = createTRPCRouter({
   createToken: teamProcedure
     .input(
-      z.object({ name: z.string(), permission: z.enum(["FULL", "SENDING"]) })
+      z.object({ 
+        name: z.string(), 
+        permission: z.enum(["FULL", "SENDING"]),
+        domainId: z.number().optional()
+      })
     )
     .mutation(async ({ ctx, input }) => {
       return addApiKey({
         name: input.name,
         permission: input.permission,
         teamId: ctx.team.id,
+        domainId: input.domainId,
       });
     }),
 
@@ -32,6 +37,12 @@ export const apiRouter = createTRPCRouter({
         partialToken: true,
         lastUsed: true,
         createdAt: true,
+        domainId: true,
+        domain: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
