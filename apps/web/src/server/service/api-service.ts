@@ -49,7 +49,9 @@ export async function getTeamAndApiKey(apiKey: string) {
       clientId,
     },
     include: {
-      domain: true,
+      domain: {
+        select: { id: true, name: true },
+      },
     },
   });
 

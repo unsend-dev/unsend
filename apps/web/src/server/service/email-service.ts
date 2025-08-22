@@ -70,7 +70,7 @@ export async function sendEmail(
   let subject = subjectFromApiCall;
   let html = htmlFromApiCall;
 
-  let domain;
+  let domain: Awaited<ReturnType<typeof validateDomainFromEmail>>;
   
   // If this is an API call with an API key, validate domain access
   if (apiKeyId) {

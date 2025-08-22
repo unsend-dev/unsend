@@ -54,11 +54,13 @@ export default function ApiList() {
                   <TableCell>{apiKey.partialToken}</TableCell>
                   <TableCell>{apiKey.permission}</TableCell>
                   <TableCell>
-                    {apiKey.domainId ? apiKey.domain?.name : "All Domains"}
+                    {apiKey.domainId
+                      ? apiKey.domain?.name ?? "Domain removed"
+                      : "All domains"}
                   </TableCell>
                   <TableCell>
                     {apiKey.lastUsed
-                      ? formatDistanceToNow(apiKey.lastUsed)
+                      ? formatDistanceToNow(apiKey.lastUsed, { addSuffix: true })
                       : "Never"}
                   </TableCell>
                   <TableCell>

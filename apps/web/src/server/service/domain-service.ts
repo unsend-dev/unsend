@@ -34,7 +34,7 @@ export async function validateDomainFromEmail(email: string, teamId: number) {
     });
   }
 
-  const domain = await db.domain.findUnique({
+  const domain = await db.domain.findFirst({
     where: { name: fromDomain, teamId },
   });
 
