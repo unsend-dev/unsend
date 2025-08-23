@@ -205,6 +205,7 @@ export async function parseSesHook(data: SesEvent) {
       updateField === "delivered"
     ) {
       logger.info("Updating cumulated metrics");
+      const cumulatedField = isHardBounced ? "hardBounced" : updateField;
       await db.cumulatedMetrics.upsert({
         where: {
           teamId_domainId: {
@@ -213,14 +214,14 @@ export async function parseSesHook(data: SesEvent) {
           },
         },
         update: {
-          [updateField]: {
+          [cumulatedField]: {
             increment: BigInt(1),
           },
         },
         create: {
           teamId: email.teamId,
           domainId: email.domainId ?? 0,
-          [updateField]: BigInt(1),
+          [cumulatedField]: BigInt(1),
         },
       });
     }
