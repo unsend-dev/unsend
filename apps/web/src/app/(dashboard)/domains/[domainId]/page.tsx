@@ -42,7 +42,7 @@ export default function DomainItemPage({
     {
       refetchInterval: (q) => (q?.state.data?.isVerifying ? 10000 : false),
       refetchIntervalInBackground: true,
-    }
+    },
   );
 
   const verifyQuery = api.domain.startVerification.useMutation();
@@ -54,7 +54,7 @@ export default function DomainItemPage({
         onSettled: () => {
           domainQuery.refetch();
         },
-      }
+      },
     );
   };
 
@@ -194,11 +194,9 @@ export default function DomainItemPage({
                   <TableCell>
                     <div className="flex gap-2 items-center">
                       <span className="text-sm text-muted-foreground">
-                        (optional)
+                        (recommended)
                       </span>
-                      <TextWithCopyButton
-                        value={`_dmarc.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
-                      />
+                      <TextWithCopyButton value="_dmarc" />
                     </div>
                   </TableCell>
                   <TableCell className="">
@@ -234,7 +232,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
   const utils = api.useUtils();
 
   const [clickTracking, setClickTracking] = React.useState(
-    domain.clickTracking
+    domain.clickTracking,
   );
   const [openTracking, setOpenTracking] = React.useState(domain.openTracking);
 
@@ -247,7 +245,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Click tracking updated");
         },
-      }
+      },
     );
   }
 
@@ -260,7 +258,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Open tracking updated");
         },
-      }
+      },
     );
   }
   return (
