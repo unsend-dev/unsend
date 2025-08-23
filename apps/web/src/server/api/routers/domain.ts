@@ -34,10 +34,27 @@ export const domainRouter = createTRPCRouter({
     }),
 
   startVerification: domainProcedure.mutation(async ({ ctx, input }) => {
-    await ctx.db.domain.update({
-      where: { id: input.id },
-      data: { isVerifying: true },
-    });
+    try {
+      const domain = await ctx.db.domain.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!domain) {
+        throw new Error("Domain not found");
+      }
+
+      await ctx.db.domain.update({
+        where: { id: input.id },
+        data: { 
+          isVerifying: true,
+          status: "PENDING"
+        },
+      });
+
+      return { success: true, message: "Domain verification started successfully" };
+    } catch (error) {
+      throw new Error(`Failed to start verification: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }),
 
   domains: teamProcedure.query(async ({ ctx }) => {
