@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@unsend/ui/src/table";
 import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
-import React, { use } from "react";
+import React, { use, useEffect, useRef } from "react";
 import { Switch } from "@unsend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
@@ -46,11 +46,38 @@ export default function DomainItemPage({
   );
 
   const verifyQuery = api.domain.startVerification.useMutation();
+  const previousStatusRef = useRef(domainQuery.data?.status);
+
+  // Track verification completion
+  useEffect(() => {
+    const currentStatus = domainQuery.data?.status;
+    const previousStatus = previousStatusRef.current;
+    
+    // If we went from PENDING/FAILED to SUCCESS, show success message
+    if (previousStatus && previousStatus !== DomainStatus.SUCCESS && currentStatus === DomainStatus.SUCCESS) {
+      toast.success("Domain verified successfully! 🎉");
+    }
+    
+    // If we went from PENDING to FAILED, show error message
+    if (previousStatus === DomainStatus.PENDING && currentStatus === DomainStatus.FAILED) {
+      toast.error("Domain verification failed. Please check your DNS records and try again.");
+    }
+    
+    // Update the ref for next comparison
+    previousStatusRef.current = currentStatus;
+  }, [domainQuery.data?.status]);
 
   const handleVerify = () => {
+    toast.info("Starting domain verification...");
     verifyQuery.mutate(
       { id: Number(domainId) },
       {
+        onSuccess: () => {
+          toast.success("Verification started successfully");
+        },
+        onError: (error) => {
+          toast.error(`Verification failed: ${error.message}`);
+        },
         onSettled: () => {
           domainQuery.refetch();
         },
@@ -95,12 +122,22 @@ export default function DomainItemPage({
             </div>
             <div className="flex gap-4">
               <div>
-                <Button variant="outline" onClick={handleVerify}>
-                  {domainQuery.data?.isVerifying
-                    ? "Verifying..."
-                    : domainQuery.data?.status === DomainStatus.SUCCESS
-                      ? "Verify again"
-                      : "Verify domain"}
+                <Button 
+                  variant="outline" 
+                  onClick={handleVerify}
+                  isLoading={verifyQuery.isPending || domainQuery.data?.isVerifying}
+                  showSpinner={true}
+                  disabled={verifyQuery.isPending}
+                >
+                  {verifyQuery.isPending
+                    ? "Starting verification..."
+                    : domainQuery.data?.isVerifying
+                      ? "Checking DNS records..."
+                      : domainQuery.data?.status === DomainStatus.SUCCESS
+                        ? "Verified ✓ - Check again"
+                        : domainQuery.data?.status === DomainStatus.FAILED
+                          ? "Verification failed - Retry"
+                          : "Verify domain"}
                 </Button>
               </div>
               {domainQuery.data ? (
@@ -108,6 +145,44 @@ export default function DomainItemPage({
               ) : null}
             </div>
           </div>
+
+          {/* Verification Status Section */}
+          {(domainQuery.data?.isVerifying || verifyQuery.isPending || domainQuery.data?.status === DomainStatus.FAILED) && (
+            <div className="border rounded-lg p-4 shadow bg-muted/30">
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0">
+                  {(domainQuery.data?.isVerifying || verifyQuery.isPending) && (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  )}
+                  {domainQuery.data?.status === DomainStatus.FAILED && (
+                    <div className="h-4 w-4 rounded-full bg-red-500 flex items-center justify-center">
+                      <span className="text-white text-xs">✕</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-grow">
+                  <p className="font-medium">
+                    {verifyQuery.isPending 
+                      ? "Initializing verification process..."
+                      : domainQuery.data?.isVerifying 
+                        ? "Verifying DNS records..."
+                        : domainQuery.data?.status === DomainStatus.FAILED
+                          ? "Verification failed"
+                          : "Checking domain status..."}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {verifyQuery.isPending 
+                      ? "Please wait while we start the verification process."
+                      : domainQuery.data?.isVerifying 
+                        ? "This process may take a few minutes. DNS records are being checked automatically."
+                        : domainQuery.data?.status === DomainStatus.FAILED
+                          ? "Please check your DNS records and try again."
+                          : "Monitoring domain verification status..."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className=" border rounded-lg p-4 shadow">
             <p className="font-semibold text-xl">DNS records</p>
