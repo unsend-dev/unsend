@@ -211,7 +211,7 @@ model ApiKey {
   lastUsed     DateTime?
   teamId       Int
   team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  domain       Domain?       @relation(fields: [domainId], references: [id], onDelete: SetNull)
+  domain       Domain?       @relation(fields: [domainId], references: [id], onDelete: Cascade)
 }
 
 enum EmailStatus {
