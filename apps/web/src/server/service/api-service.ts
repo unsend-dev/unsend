@@ -17,6 +17,23 @@ export async function addApiKey({
   domainId?: number;
 }) {
   try {
+    // Validate domain ownership if domainId is provided
+    if (domainId !== undefined) {
+      const domain = await db.domain.findUnique({
+        where: { id: domainId },
+        select: { id: true, teamId: true, status: true },
+      });
+      
+      if (!domain || domain.teamId !== teamId) {
+        throw new Error("DOMAIN_NOT_OWNED");
+      }
+      
+      // Only allow verified domains to be scoped
+      if (domain.status !== "SUCCESS") {
+        throw new Error("DOMAIN_NOT_VERIFIED");
+      }
+    }
+
     const clientId = smallNanoid(10);
     const token = randomBytes(16).toString("hex");
     const hashedToken = await createSecureHash(token);
