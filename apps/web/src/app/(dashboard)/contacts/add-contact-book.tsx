@@ -26,6 +26,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@unsend/ui/src/form";
+import { useUpgradeModalStore } from "~/store/upgradeModalStore";
+import { LimitReason } from "~/lib/constants/plans";
 
 const contactBookSchema = z.object({
   name: z.string({ required_error: "Name is required" }).min(1, {
@@ -38,6 +40,11 @@ export default function AddContactBook() {
   const createContactBookMutation =
     api.contacts.createContactBook.useMutation();
 
+  const limitsQuery = api.limits.get.useQuery({
+    type: LimitReason.CONTACT_BOOK,
+  });
+  const { openModal } = useUpgradeModalStore((s) => s.action);
+
   const utils = api.useUtils();
 
   const contactBookForm = useForm<z.infer<typeof contactBookSchema>>({
@@ -48,6 +55,11 @@ export default function AddContactBook() {
   });
 
   function handleSave(values: z.infer<typeof contactBookSchema>) {
+    if (limitsQuery.data?.isLimitReached) {
+      openModal(limitsQuery.data.reason);
+      return;
+    }
+
     createContactBookMutation.mutate(
       {
         name: values.name,
@@ -59,14 +71,23 @@ export default function AddContactBook() {
           setOpen(false);
           toast.success("Contact book created successfully");
         },
-      }
+      },
     );
+  }
+
+  function onOpenChange(_open: boolean) {
+    if (_open && limitsQuery.data?.isLimitReached) {
+      openModal(limitsQuery.data.reason);
+      return;
+    }
+
+    setOpen(_open);
   }
 
   return (
     <Dialog
       open={open}
-      onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
+      onOpenChange={(_open) => (_open !== open ? onOpenChange(_open) : null)}
     >
       <DialogTrigger asChild>
         <Button>
@@ -108,7 +129,9 @@ export default function AddContactBook() {
                 <Button
                   className=" w-[100px]"
                   type="submit"
-                  disabled={createContactBookMutation.isPending}
+                  disabled={
+                    createContactBookMutation.isPending || limitsQuery.isLoading
+                  }
                 >
                   {createContactBookMutation.isPending
                     ? "Creating..."
