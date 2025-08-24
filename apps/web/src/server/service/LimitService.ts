@@ -2,6 +2,11 @@ import { PLAN_LIMITS } from "~/lib/constants/plans";
 import { db } from "../db";
 import { getThisMonthUsage } from "~/lib/usage";
 
+function isLimitExceeded(current: number, limit: number): boolean {
+  if (limit === -1) return false; // unlimited
+  return current >= limit;
+}
+
 export class LimitService {
   static async checkDomainLimit(teamId: number): Promise<{
     isLimitReached: boolean;
@@ -23,17 +28,18 @@ export class LimitService {
       throw new Error("Team not found");
     }
 
-    if (team._count.domains >= PLAN_LIMITS[team.plan].domains) {
+    const limit = PLAN_LIMITS[team.plan].domains;
+    if (isLimitExceeded(team._count.domains, limit)) {
       return {
         isLimitReached: true,
-        limit: PLAN_LIMITS[team.plan].domains,
+        limit,
         reason: "Domain limit reached",
       };
     }
 
     return {
       isLimitReached: false,
-      limit: PLAN_LIMITS[team.plan].domains,
+      limit,
     };
   }
 
@@ -57,17 +63,18 @@ export class LimitService {
       throw new Error("Team not found");
     }
 
-    if (team._count.contactBooks >= PLAN_LIMITS[team.plan].contactBooks) {
+    const limit = PLAN_LIMITS[team.plan].contactBooks;
+    if (isLimitExceeded(team._count.contactBooks, limit)) {
       return {
         isLimitReached: true,
-        limit: PLAN_LIMITS[team.plan].contactBooks,
+        limit,
         reason: "Contact book limit reached",
       };
     }
 
     return {
       isLimitReached: false,
-      limit: PLAN_LIMITS[team.plan].contactBooks,
+      limit,
     };
   }
 
@@ -87,17 +94,18 @@ export class LimitService {
       throw new Error("Team not found");
     }
 
-    if (team.teamUsers.length >= PLAN_LIMITS[team.plan].teamMembers) {
+    const limit = PLAN_LIMITS[team.plan].teamMembers;
+    if (isLimitExceeded(team.teamUsers.length, limit)) {
       return {
         isLimitReached: true,
-        limit: PLAN_LIMITS[team.plan].teamMembers,
+        limit,
         reason: "Team member limit reached",
       };
     }
 
     return {
       isLimitReached: false,
-      limit: PLAN_LIMITS[team.plan].teamMembers,
+      limit,
     };
   }
 
@@ -114,27 +122,31 @@ export class LimitService {
       throw new Error("Team not found");
     }
 
+    // FREE plan has hard limits; paid plans are unlimited (-1)
     if (team.plan === "FREE") {
       const usage = await getThisMonthUsage(teamId);
 
       const monthlyUsage = usage.month.reduce(
         (acc, curr) => acc + curr.sent,
-        0
+        0,
       );
       const dailyUsage = usage.day.reduce((acc, curr) => acc + curr.sent, 0);
 
-      if (monthlyUsage >= PLAN_LIMITS[team.plan].emailsPerMonth) {
+      const monthlyLimit = PLAN_LIMITS[team.plan].emailsPerMonth;
+      const dailyLimit = PLAN_LIMITS[team.plan].emailsPerDay;
+
+      if (isLimitExceeded(monthlyUsage, monthlyLimit)) {
         return {
           isLimitReached: true,
-          limit: PLAN_LIMITS[team.plan].emailsPerMonth,
+          limit: monthlyLimit,
           reason: `Email limit reached, you have used ${monthlyUsage} emails this month.`,
         };
       }
 
-      if (dailyUsage >= PLAN_LIMITS[team.plan].emailsPerDay) {
+      if (isLimitExceeded(dailyUsage, dailyLimit)) {
         return {
           isLimitReached: true,
-          limit: PLAN_LIMITS[team.plan].emailsPerDay,
+          limit: dailyLimit,
           reason: `Email limit reached, you have used ${dailyUsage} emails today.`,
         };
       }

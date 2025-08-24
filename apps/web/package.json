@@ -36,7 +36,6 @@
     "@trpc/server": "^11.1.1",
     "@unsend/email-editor": "workspace:*",
     "@unsend/ui": "workspace:*",
-    "jsx-email": "^2.7.1",
     "bullmq": "^5.51.1",
     "chrono-node": "^2.8.0",
     "date-fns": "^4.1.0",
@@ -45,6 +44,7 @@
     "hono": "^4.7.7",
     "html-to-text": "^9.0.5",
     "ioredis": "^5.6.1",
+    "jsx-email": "^2.7.1",
     "lucide-react": "^0.503.0",
     "mime-types": "^3.0.1",
     "nanoid": "^5.1.5",
@@ -67,7 +67,8 @@
     "ua-parser-js": "^2.0.3",
     "unsend": "workspace:*",
     "use-debounce": "^10.0.4",
-    "zod": "^3.24.3"
+    "zod": "^3.24.3",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.3.1",

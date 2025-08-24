@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@unsend/ui/src/select";
 import { toast } from "@unsend/ui/src/toaster";
+import { useUpgradeModalStore } from "~/store/upgradeModalStore";
 
 const domainSchema = z.object({
   region: z.string({ required_error: "Region is required" }).min(1, {
@@ -49,6 +50,9 @@ export default function AddDomain() {
   const [open, setOpen] = useState(false);
 
   const regionQuery = api.domain.getAvailableRegions.useQuery();
+  const limitsQuery = api.limits.get.useQuery({ type: "DOMAIN" });
+
+  const { openModal } = useUpgradeModalStore((s) => s.action);
 
   const addDomainMutation = api.domain.createDomain.useMutation();
 
@@ -70,6 +74,11 @@ export default function AddDomain() {
         message: "Invalid domain",
       });
 
+      return;
+    }
+
+    if (limitsQuery.data?.isLimitReached) {
+      openModal(limitsQuery.data.reason);
       return;
     }
 
@@ -171,7 +180,9 @@ export default function AddDomain() {
                 <Button
                   className=" w-[100px]"
                   type="submit"
-                  disabled={addDomainMutation.isPending}
+                  disabled={
+                    addDomainMutation.isPending || limitsQuery.isLoading
+                  }
                 >
                   {addDomainMutation.isPending ? "Adding..." : "Add"}
                 </Button>
