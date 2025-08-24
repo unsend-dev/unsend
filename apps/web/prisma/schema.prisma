@@ -96,28 +96,37 @@ enum Plan {
   BASIC
 }
 
+enum SendingDisabledReason {
+  FREE_LIMIT_REACHED
+  BILLING_ISSUE
+  SPAM
+}
+
 model Team {
-  id               Int               @id @default(autoincrement())
-  name             String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  plan             Plan              @default(FREE)
-  stripeCustomerId String?           @unique
-  isActive         Boolean           @default(true)
-  apiRateLimit     Int               @default(2)
-  billingEmail     String?
-  sesTenantId      String?
-  teamUsers        TeamUser[]
-  domains          Domain[]
-  apiKeys          ApiKey[]
-  emails           Email[]
-  contactBooks     ContactBook[]
-  campaigns        Campaign[]
-  templates        Template[]
-  dailyEmailUsages DailyEmailUsage[]
-  subscription     Subscription[]
-  invites          TeamInvite[]
-  suppressionList  SuppressionList[]
+  id                    Int                    @id @default(autoincrement())
+  name                  String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  plan                  Plan                   @default(FREE)
+  stripeCustomerId      String?                @unique
+  isActive              Boolean                @default(true)
+  apiRateLimit          Int                    @default(2)
+  billingEmail          String?
+  sesTenantId           String?
+  sendingDisabled       Boolean                @default(false)
+  sendingDisabledAt     DateTime?
+  sendingDisabledReason SendingDisabledReason?
+  teamUsers             TeamUser[]
+  domains               Domain[]
+  apiKeys               ApiKey[]
+  emails                Email[]
+  contactBooks          ContactBook[]
+  campaigns             Campaign[]
+  templates             Template[]
+  dailyEmailUsages      DailyEmailUsage[]
+  subscription          Subscription[]
+  invites               TeamInvite[]
+  suppressionList       SuppressionList[]
 }
 
 model TeamInvite {

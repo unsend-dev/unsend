@@ -6,6 +6,7 @@ import { db } from "~/server/db";
 import { SesSettingsService } from "./ses-settings-service";
 import { UnsendApiError } from "../public-api/api-error";
 import { logger } from "../logger/log";
+import { LimitService } from "./LimitService";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 
@@ -58,7 +59,7 @@ export async function createDomain(
   teamId: number,
   name: string,
   region: string,
-  sesTenantId?: string,
+  sesTenantId?: string
 ) {
   const domainStr = tldts.getDomain(name);
 
@@ -72,6 +73,16 @@ export async function createDomain(
 
   if (!setting) {
     throw new Error("Ses setting not found");
+  }
+
+  const { isLimitReached, reason } =
+    await LimitService.checkDomainLimit(teamId);
+
+  if (isLimitReached) {
+    throw new UnsendApiError({
+      code: "FORBIDDEN",
+      message: reason ?? "Domain limit reached",
+    });
   }
 
   const subdomain = tldts.getSubdomain(name);
@@ -105,7 +116,7 @@ export async function getDomain(id: number) {
   if (domain.isVerifying) {
     const domainIdentity = await ses.getDomainIdentity(
       domain.name,
-      domain.region,
+      domain.region
     );
 
     const dkimStatus = domainIdentity.DkimAttributes?.Status;
@@ -150,7 +161,7 @@ export async function getDomain(id: number) {
 
 export async function updateDomain(
   id: number,
-  data: { clickTracking?: boolean; openTracking?: boolean },
+  data: { clickTracking?: boolean; openTracking?: boolean }
 ) {
   return db.domain.update({
     where: { id },
@@ -170,7 +181,7 @@ export async function deleteDomain(id: number) {
   const deleted = await ses.deleteDomain(
     domain.name,
     domain.region,
-    domain.sesTenantId ?? undefined,
+    domain.sesTenantId ?? undefined
   );
 
   if (!deleted) {

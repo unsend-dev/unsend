@@ -6,6 +6,7 @@ import Spinner from "@unsend/ui/src/spinner";
 import { useTeam } from "~/providers/team-context";
 import { Badge } from "@unsend/ui/src/badge";
 import { format } from "date-fns";
+
 export const PlanDetails = () => {
   const subscriptionQuery = api.billing.getSubscriptionDetails.useQuery();
   const { currentTeam } = useTeam();
