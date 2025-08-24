@@ -1,30 +1,24 @@
 import { z } from "zod";
 import { createTRPCRouter, teamProcedure } from "~/server/api/trpc";
-import { LimitService } from "~/server/service/LimitService";
-
-const LimitTypeEnum = z.enum([
-  "CONTACT_BOOK",
-  "DOMAIN",
-  "TEAM_MEMBER",
-  "EMAIL",
-]);
+import { LimitService } from "~/server/service/limit-service";
+import { LimitReason } from "~/lib/constants/plans";
 
 export const limitsRouter = createTRPCRouter({
   get: teamProcedure
     .input(
       z.object({
-        type: LimitTypeEnum,
+        type: z.nativeEnum(LimitReason),
       }),
     )
     .query(async ({ ctx, input }) => {
       switch (input.type) {
-        case "CONTACT_BOOK":
+        case LimitReason.CONTACT_BOOK:
           return LimitService.checkContactBookLimit(ctx.team.id);
-        case "DOMAIN":
+        case LimitReason.DOMAIN:
           return LimitService.checkDomainLimit(ctx.team.id);
-        case "TEAM_MEMBER":
+        case LimitReason.TEAM_MEMBER:
           return LimitService.checkTeamMemberLimit(ctx.team.id);
-        case "EMAIL":
+        case LimitReason.EMAIL:
           return LimitService.checkEmailLimit(ctx.team.id);
         default:
           // exhaustive guard

@@ -10,6 +10,7 @@ import {
 import { CheckCircle2 } from "lucide-react";
 import { useUpgradeModalStore } from "~/store/upgradeModalStore";
 import { PLAN_PERKS } from "~/lib/constants/payments";
+import { LimitReason } from "~/lib/constants/plans";
 import { UpgradeButton } from "./UpgradeButton";
 
 export const UpgradeModal = () => {
@@ -27,9 +28,21 @@ export const UpgradeModal = () => {
         <DialogHeader>
           <DialogTitle>Upgrade to Basic Plan</DialogTitle>
           <DialogDescription>
-            {reason
-              ? `${reason} Upgrade to unlock this feature and more.`
-              : "Unlock more features with our Basic plan."}
+            {(() => {
+              const messages: Record<LimitReason, string> = {
+                [LimitReason.DOMAIN]:
+                  "You've reached the domain limit for your current plan.",
+                [LimitReason.CONTACT_BOOK]:
+                  "You've reached the contact book limit for your current plan.",
+                [LimitReason.TEAM_MEMBER]:
+                  "You've reached the team member limit for your current plan.",
+                [LimitReason.EMAIL]:
+                  "You've reached the email sending limit for your current plan.",
+              };
+              return reason
+                ? `${messages[reason] ?? ""} Upgrade to unlock this feature and more.`
+                : "Unlock more features with our Basic plan.";
+            })()}
           </DialogDescription>
         </DialogHeader>
 

@@ -36,6 +36,7 @@ import {
 } from "@unsend/ui/src/select";
 import { toast } from "@unsend/ui/src/toaster";
 import { useUpgradeModalStore } from "~/store/upgradeModalStore";
+import { LimitReason } from "~/lib/constants/plans";
 
 const domainSchema = z.object({
   region: z.string({ required_error: "Region is required" }).min(1, {
@@ -50,7 +51,7 @@ export default function AddDomain() {
   const [open, setOpen] = useState(false);
 
   const regionQuery = api.domain.getAvailableRegions.useQuery();
-  const limitsQuery = api.limits.get.useQuery({ type: "DOMAIN" });
+  const limitsQuery = api.limits.get.useQuery({ type: LimitReason.DOMAIN });
 
   const { openModal } = useUpgradeModalStore((s) => s.action);
 
@@ -100,10 +101,19 @@ export default function AddDomain() {
     );
   }
 
+  function onOpenChange(_open: boolean) {
+    if (_open && limitsQuery.data?.isLimitReached) {
+      openModal(limitsQuery.data.reason);
+      return;
+    }
+
+    setOpen(_open);
+  }
+
   return (
     <Dialog
       open={open}
-      onOpenChange={(_open) => (_open !== open ? setOpen(_open) : null)}
+      onOpenChange={(_open) => (_open !== open ? onOpenChange(_open) : null)}
     >
       <DialogTrigger asChild>
         <Button>

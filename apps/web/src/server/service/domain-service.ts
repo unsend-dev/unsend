@@ -6,7 +6,7 @@ import { db } from "~/server/db";
 import { SesSettingsService } from "./ses-settings-service";
 import { UnsendApiError } from "../public-api/api-error";
 import { logger } from "../logger/log";
-import { LimitService } from "./LimitService";
+import { LimitService } from "./limit-service";
 
 const dnsResolveTxt = util.promisify(dns.resolveTxt);
 

@@ -4,7 +4,7 @@ import { db } from "~/server/db";
 import { sendTeamInviteEmail } from "~/server/mailer";
 import { logger } from "~/server/logger/log";
 import type { Team, TeamInvite } from "@prisma/client";
-import { LimitService } from "./LimitService";
+import { LimitService } from "./limit-service";
 import { UnsendApiError } from "../public-api/api-error";
 
 export class TeamService {

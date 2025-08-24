@@ -1,6 +1,6 @@
 import { CampaignStatus, type ContactBook } from "@prisma/client";
 import { db } from "../db";
-import { LimitService } from "./LimitService";
+import { LimitService } from "./limit-service";
 import { UnsendApiError } from "../public-api/api-error";
 
 export async function getContactBooks(teamId: number, search?: string) {

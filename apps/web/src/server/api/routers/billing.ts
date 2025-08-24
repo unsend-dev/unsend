@@ -2,7 +2,7 @@ import { DailyEmailUsage, EmailUsageType, Subscription } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { format, sub } from "date-fns";
 import { z } from "zod";
-import { getThisMonthUsage } from "~/lib/usage";
+import { getThisMonthUsage } from "~/server/service/usage-service";
 
 import {
   apiKeyProcedure,

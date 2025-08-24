@@ -1,6 +1,6 @@
-import { PLAN_LIMITS } from "~/lib/constants/plans";
+import { PLAN_LIMITS, LimitReason } from "~/lib/constants/plans";
 import { db } from "../db";
-import { getThisMonthUsage } from "~/lib/usage";
+import { getThisMonthUsage } from "./usage-service";
 
 function isLimitExceeded(current: number, limit: number): boolean {
   if (limit === -1) return false; // unlimited
@@ -11,7 +11,7 @@ export class LimitService {
   static async checkDomainLimit(teamId: number): Promise<{
     isLimitReached: boolean;
     limit: number;
-    reason?: string;
+    reason?: LimitReason;
   }> {
     const team = await db.team.findUnique({
       where: { id: teamId },
@@ -33,7 +33,7 @@ export class LimitService {
       return {
         isLimitReached: true,
         limit,
-        reason: "Domain limit reached",
+        reason: LimitReason.DOMAIN,
       };
     }
 
@@ -46,7 +46,7 @@ export class LimitService {
   static async checkContactBookLimit(teamId: number): Promise<{
     isLimitReached: boolean;
     limit: number;
-    reason?: string;
+    reason?: LimitReason;
   }> {
     const team = await db.team.findUnique({
       where: { id: teamId },
@@ -68,7 +68,7 @@ export class LimitService {
       return {
         isLimitReached: true,
         limit,
-        reason: "Contact book limit reached",
+        reason: LimitReason.CONTACT_BOOK,
       };
     }
 
@@ -81,7 +81,7 @@ export class LimitService {
   static async checkTeamMemberLimit(teamId: number): Promise<{
     isLimitReached: boolean;
     limit: number;
-    reason?: string;
+    reason?: LimitReason;
   }> {
     const team = await db.team.findUnique({
       where: { id: teamId },
@@ -99,7 +99,7 @@ export class LimitService {
       return {
         isLimitReached: true,
         limit,
-        reason: "Team member limit reached",
+        reason: LimitReason.TEAM_MEMBER,
       };
     }
 
@@ -112,7 +112,7 @@ export class LimitService {
   static async checkEmailLimit(teamId: number): Promise<{
     isLimitReached: boolean;
     limit: number;
-    reason?: string;
+    reason?: LimitReason;
   }> {
     const team = await db.team.findUnique({
       where: { id: teamId },
@@ -139,7 +139,7 @@ export class LimitService {
         return {
           isLimitReached: true,
           limit: monthlyLimit,
-          reason: `Email limit reached, you have used ${monthlyUsage} emails this month.`,
+          reason: LimitReason.EMAIL,
         };
       }
 
@@ -147,7 +147,7 @@ export class LimitService {
         return {
           isLimitReached: true,
           limit: dailyLimit,
-          reason: `Email limit reached, you have used ${dailyUsage} emails today.`,
+          reason: LimitReason.EMAIL,
         };
       }
     }

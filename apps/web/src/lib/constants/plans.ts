@@ -1,5 +1,12 @@
 import { Plan } from "@prisma/client";
 
+export enum LimitReason {
+  DOMAIN = "DOMAIN",
+  CONTACT_BOOK = "CONTACT_BOOK",
+  TEAM_MEMBER = "TEAM_MEMBER",
+  EMAIL = "EMAIL",
+}
+
 export const PLAN_LIMITS: Record<
   Plan,
   {
