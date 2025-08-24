@@ -57,6 +57,10 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     line_items: [
       {
         price: env.STRIPE_BASIC_PRICE_ID,
+        quantity: 1,
+      },
+      {
+        price: env.STRIPE_BASIC_USAGE_PRICE_ID,
       },
     ],
     success_url: `${env.NEXTAUTH_URL}/payments?success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -70,8 +74,11 @@ export async function createCheckoutSessionForTeam(teamId: number) {
   return session;
 }
 
-function getPlanFromPriceId(priceId: string) {
-  if (priceId === env.STRIPE_BASIC_PRICE_ID) {
+function getPlanFromPriceIds(priceIds: string[]) {
+  if (
+    env.STRIPE_BASIC_PRICE_ID &&
+    priceIds.includes(env.STRIPE_BASIC_PRICE_ID)
+  ) {
     return "BASIC";
   }
 
@@ -129,16 +136,21 @@ export async function syncStripeData(customerId: string) {
     return;
   }
 
+  const priceIds = subscription.items.data
+    .map((item) => item.price?.id)
+    .filter((id): id is string => Boolean(id));
+
   await db.subscription.upsert({
     where: { id: subscription.id },
     update: {
       status: subscription.status,
       priceId: subscription.items.data[0]?.price?.id || "",
+      priceIds: priceIds,
       currentPeriodEnd: new Date(
-        subscription.items.data[0]?.current_period_end * 1000
+        subscription.items.data[0]?.current_period_end * 1000,
       ),
       currentPeriodStart: new Date(
-        subscription.items.data[0]?.current_period_start * 1000
+        subscription.items.data[0]?.current_period_start * 1000,
       ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)
@@ -150,11 +162,12 @@ export async function syncStripeData(customerId: string) {
       id: subscription.id,
       status: subscription.status,
       priceId: subscription.items.data[0]?.price?.id || "",
+      priceIds: priceIds,
       currentPeriodEnd: new Date(
-        subscription.items.data[0]?.current_period_end * 1000
+        subscription.items.data[0]?.current_period_end * 1000,
       ),
       currentPeriodStart: new Date(
-        subscription.items.data[0]?.current_period_start * 1000
+        subscription.items.data[0]?.current_period_start * 1000,
       ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)
@@ -167,7 +180,7 @@ export async function syncStripeData(customerId: string) {
   await db.team.update({
     where: { id: team.id },
     data: {
-      plan: getPlanFromPriceId(subscription.items.data[0]?.price?.id || ""),
+      plan: getPlanFromPriceIds(priceIds),
       isActive: subscription.status === "active",
     },
   });
