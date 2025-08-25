@@ -179,8 +179,8 @@ function PaidPlanUsage({
             <div className="">
               <div className="text-2xl font-mono">
                 {planCreditCost < totalCost
-                  ? `$${totalCost.toFixed(2)}`
-                  : `$${planCreditCost.toFixed(2)}`}
+                  ? `$${(totalCost - planCreditCost).toFixed(2)}`
+                  : `$${(0.0).toFixed(2)}`}
               </div>
             </div>
           </div>
