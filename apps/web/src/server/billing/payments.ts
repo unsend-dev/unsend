@@ -47,7 +47,11 @@ export async function createCheckoutSessionForTeam(teamId: number) {
     customerId = customer.id;
   }
 
-  if (!env.STRIPE_BASIC_PRICE_ID || !customerId) {
+  if (
+    !env.STRIPE_BASIC_PRICE_ID ||
+    !env.STRIPE_BASIC_USAGE_PRICE_ID ||
+    !customerId
+  ) {
     throw new Error("Stripe prices are not set");
   }
 
@@ -76,8 +80,10 @@ export async function createCheckoutSessionForTeam(teamId: number) {
 
 function getPlanFromPriceIds(priceIds: string[]) {
   if (
-    env.STRIPE_BASIC_PRICE_ID &&
-    priceIds.includes(env.STRIPE_BASIC_PRICE_ID)
+    (env.STRIPE_BASIC_PRICE_ID &&
+      priceIds.includes(env.STRIPE_BASIC_PRICE_ID)) ||
+    (env.STRIPE_LEGACY_BASIC_PRICE_ID &&
+      priceIds.includes(env.STRIPE_LEGACY_BASIC_PRICE_ID))
   ) {
     return "BASIC";
   }
@@ -147,10 +153,10 @@ export async function syncStripeData(customerId: string) {
       priceId: subscription.items.data[0]?.price?.id || "",
       priceIds: priceIds,
       currentPeriodEnd: new Date(
-        subscription.items.data[0]?.current_period_end * 1000,
+        subscription.items.data[0]?.current_period_end * 1000
       ),
       currentPeriodStart: new Date(
-        subscription.items.data[0]?.current_period_start * 1000,
+        subscription.items.data[0]?.current_period_start * 1000
       ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)
@@ -164,10 +170,10 @@ export async function syncStripeData(customerId: string) {
       priceId: subscription.items.data[0]?.price?.id || "",
       priceIds: priceIds,
       currentPeriodEnd: new Date(
-        subscription.items.data[0]?.current_period_end * 1000,
+        subscription.items.data[0]?.current_period_end * 1000
       ),
       currentPeriodStart: new Date(
-        subscription.items.data[0]?.current_period_start * 1000,
+        subscription.items.data[0]?.current_period_start * 1000
       ),
       cancelAtPeriodEnd: subscription.cancel_at
         ? new Date(subscription.cancel_at * 1000)

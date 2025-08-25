@@ -96,12 +96,6 @@ enum Plan {
   BASIC
 }
 
-enum SendingDisabledReason {
-  FREE_LIMIT_REACHED
-  BILLING_ISSUE
-  SPAM
-}
-
 model Team {
   id               Int               @id @default(autoincrement())
   name             String
