@@ -26,6 +26,7 @@ import { BuiltInProviderType } from "next-auth/providers/index";
 import Spinner from "@unsend/ui/src/spinner";
 import Link from "next/link";
 import { useTheme } from "@unsend/ui";
+import { useSearchParams as useNextSearchParams } from "next/navigation";
 
 const emailSchema = z.object({
   email: z
@@ -93,9 +94,10 @@ export default function LoginPage({
     const email = emailForm.getValues().email;
     console.log("email", email);
 
+    const finalCallbackUrl = inviteId ? `/join-team?inviteId=${inviteId}` : `${callbackUrl}/dashboard`;
     window.location.href = `/api/auth/callback/email?email=${encodeURIComponent(
       email.toLowerCase()
-    )}&token=${values.otp.toLowerCase()}${callbackUrl ? `&callbackUrl=${callbackUrl}/dashboard` : ""}`;
+    )}&token=${values.otp.toLowerCase()}&callbackUrl=${encodeURIComponent(finalCallbackUrl)}`;
   }
 
   const emailProvider = providers?.find(
@@ -104,10 +106,14 @@ export default function LoginPage({
 
   const [submittedProvider, setSubmittedProvider] =
     useState<LiteralUnion<BuiltInProviderType> | null>(null);
+  
+  const searchParams = useNextSearchParams();
+  const inviteId = searchParams.get("inviteId");
 
   const handleSubmit = (provider: LiteralUnion<BuiltInProviderType>) => {
     setSubmittedProvider(provider);
-    signIn(provider);
+    const callbackUrl = inviteId ? `/join-team?inviteId=${inviteId}` : "/dashboard";
+    signIn(provider, { callbackUrl });
   };
 
   const { resolvedTheme } = useTheme();

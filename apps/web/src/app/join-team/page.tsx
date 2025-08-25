@@ -4,11 +4,16 @@ import Spinner from "@unsend/ui/src/spinner";
 import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
 
-export default async function CreateTeam() {
+export default async function CreateTeam({
+  searchParams,
+}: {
+  searchParams: { inviteId?: string };
+}) {
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect("/login");
+    const inviteId = searchParams?.inviteId;
+    redirect(`/login${inviteId ? `?inviteId=${inviteId}` : ""}`);
   }
 
   return (
