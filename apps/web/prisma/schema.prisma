@@ -138,6 +138,7 @@ model Subscription {
   teamId             Int
   status             String
   priceId            String
+  priceIds           String[]
   currentPeriodEnd   DateTime?
   currentPeriodStart DateTime?
   cancelAtPeriodEnd  DateTime?
