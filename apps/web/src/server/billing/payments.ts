@@ -186,7 +186,10 @@ export async function syncStripeData(customerId: string) {
   await db.team.update({
     where: { id: team.id },
     data: {
-      plan: getPlanFromPriceIds(priceIds),
+      plan:
+        subscription.status === "canceled"
+          ? "FREE"
+          : getPlanFromPriceIds(priceIds),
       isActive: subscription.status === "active",
     },
   });
