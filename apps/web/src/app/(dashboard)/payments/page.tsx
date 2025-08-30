@@ -37,7 +37,7 @@ function VerifySuccess() {
     return (
       <div>
         <div className="flex gap-2 items-center">
-          <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+          <CheckCircle2 className="h-4 w-4 text-green flex-shrink-0" />
           <p>Your account has been upgraded to the paid plan.</p>
         </div>
         <Link href="/settings/billing" className="mt-8">

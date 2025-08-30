@@ -62,7 +62,7 @@ export const DeleteApiKey: React.FC<{
           setOpen(false);
           toast.success(`API key deleted`);
         },
-      }
+      },
     );
   }
 
@@ -75,7 +75,7 @@ export const DeleteApiKey: React.FC<{
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          <Trash2 className="h-4 w-4 text-red-600/80" />
+          <Trash2 className="h-4 w-4 text-red/80" />
         </Button>
       </DialogTrigger>
       <DialogContent>

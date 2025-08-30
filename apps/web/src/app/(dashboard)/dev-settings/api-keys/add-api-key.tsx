@@ -62,7 +62,7 @@ export default function AddApiKey() {
           setApiKey(data);
           apiKeyForm.reset();
         },
-      }
+      },
     );
   }
 
@@ -132,7 +132,7 @@ export default function AddApiKey() {
                 onClick={handleCopy}
               >
                 {isCopied ? (
-                  <CheckIcon className="h-4 w-4 text-green-500" />
+                  <CheckIcon className="h-4 w-4 text-green" />
                 ) : (
                   <ClipboardCopy className="h-4 w-4" />
                 )}

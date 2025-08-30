@@ -152,13 +152,13 @@ export default function ContactList({
                     </TableCell>
                     <TableCell>
                       {contact.subscribed ? (
-                        <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border border-green-500/25 dark:border-green-700/25">
+                        <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-green/15 text-green border border-green/25">
                           Subscribed
                         </div>
                       ) : (
                         <Tooltip>
                           <TooltipTrigger>
-                            <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-red-500/10 text-red-600 dark:text-red-700/90 border border-red-600/10">
+                            <div className="text-center w-[130px] rounded capitalize py-1 text-xs bg-red/10 text-red border border-red/10">
                               Unsubscribed
                             </div>
                           </TooltipTrigger>
@@ -166,7 +166,7 @@ export default function ContactList({
                             <p>
                               {getUnsubscribeReason(
                                 contact.unsubscribeReason ??
-                                  UnsubscribeReason.UNSUBSCRIBED
+                                  UnsubscribeReason.UNSUBSCRIBED,
                               )}
                             </p>
                           </TooltipContent>

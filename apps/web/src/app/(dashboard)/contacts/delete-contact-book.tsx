@@ -46,7 +46,7 @@ export const DeleteContactBook: React.FC<{
   });
 
   async function onContactBookDelete(
-    values: z.infer<typeof contactBookSchema>
+    values: z.infer<typeof contactBookSchema>,
   ) {
     if (values.name !== contactBook.name) {
       contactBookForm.setError("name", {
@@ -65,7 +65,7 @@ export const DeleteContactBook: React.FC<{
           setOpen(false);
           toast.success(`Contact book deleted`);
         },
-      }
+      },
     );
   }
 
@@ -78,7 +78,7 @@ export const DeleteContactBook: React.FC<{
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent ">
-          <Trash2 className="h-[18px] w-[18px] text-red-600/80 hover:text-red-600/70" />
+          <Trash2 className="h-[18px] w-[18px] text-red/80 hover:text-red/70" />
         </Button>
       </DialogTrigger>
       <DialogContent>

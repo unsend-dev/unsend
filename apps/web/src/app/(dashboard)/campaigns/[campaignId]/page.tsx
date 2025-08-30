@@ -146,35 +146,35 @@ export default function CampaignDetailsPage({
 }
 
 const CampaignStatusBadge: React.FC<{ status: string }> = ({ status }) => {
-  let outsideColor = "bg-gray-600";
-  let insideColor = "bg-gray-600/50";
+  let outsideColor = "bg-gray";
+  let insideColor = "bg-gray/50";
 
   switch (status) {
     case "delivered":
-      outsideColor = "bg-emerald-500/30";
-      insideColor = "bg-emerald-500";
+      outsideColor = "bg-green/30";
+      insideColor = "bg-green";
       break;
     case "bounced":
     case "unsubscribed":
-      outsideColor = "bg-red-500/30";
-      insideColor = "bg-red-500";
+      outsideColor = "bg-red/30";
+      insideColor = "bg-red";
       break;
     case "clicked":
-      outsideColor = "bg-cyan-500/30";
-      insideColor = "bg-cyan-500";
+      outsideColor = "bg-blue/30";
+      insideColor = "bg-blue";
       break;
     case "opened":
-      outsideColor = "bg-indigo-500/30";
-      insideColor = "bg-indigo-500";
+      outsideColor = "bg-purple/30";
+      insideColor = "bg-purple";
       break;
 
     case "complained":
-      outsideColor = "bg-yellow-500/30";
-      insideColor = "bg-yellow-500";
+      outsideColor = "bg-yellow/30";
+      insideColor = "bg-yellow";
       break;
     default:
-      outsideColor = "bg-gray-600/40";
-      insideColor = "bg-gray-600";
+      outsideColor = "bg-gray/40";
+      insideColor = "bg-gray";
   }
 
   return (
