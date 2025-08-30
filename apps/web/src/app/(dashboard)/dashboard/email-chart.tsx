@@ -15,7 +15,6 @@ import { EmailStatus } from "@prisma/client";
 import { api } from "~/trpc/react";
 import Spinner from "@unsend/ui/src/spinner";
 import { useTheme } from "@unsend/ui";
-import { EMAIL_COLORS } from "~/lib/constants/colors";
 import { useColors } from "./hooks/useColors";
 
 interface EmailChartProps {
@@ -127,7 +126,10 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                       </p>
                       {data.delivered ? (
                         <div className="flex gap-2 items-center">
-                          <div className="w-2.5 h-2.5 bg-[#40a02bcc] dark:bg-[#a6e3a1] rounded-[2px]"></div>
+                          <div
+                            className="w-2.5 h-2.5 rounded-[2px]"
+                            style={{ backgroundColor: currentColors.delivered }}
+                          ></div>
                           <p className="text-xs text-muted-foreground w-[70px]">
                             Delivered
                           </p>
@@ -136,7 +138,10 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                       ) : null}
                       {data.bounced ? (
                         <div className="flex gap-2 items-center">
-                          <div className="w-2.5 h-2.5 bg-[#d20f39cc] dark:bg-[#f38ba8] rounded-[2px]"></div>
+                          <div
+                            className="w-2.5 h-2.5 rounded-[2px]"
+                            style={{ backgroundColor: currentColors.bounced }}
+                          ></div>
                           <p className="text-xs text-muted-foreground w-[70px]">
                             Bounced
                           </p>
@@ -145,7 +150,12 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                       ) : null}
                       {data.complained ? (
                         <div className="flex gap-2 items-center">
-                          <div className="w-2.5 h-2.5 bg-[#df8e1dcc] dark:bg-[#F9E2AF] rounded-[2px]"></div>
+                          <div
+                            className="w-2.5 h-2.5 rounded-[2px]"
+                            style={{
+                              backgroundColor: currentColors.complained,
+                            }}
+                          ></div>
                           <p className="text-xs text-muted-foreground w-[70px]">
                             Complained
                           </p>
@@ -154,7 +164,10 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                       ) : null}
                       {data.opened ? (
                         <div className="flex gap-2 items-center">
-                          <div className="w-2.5 h-2.5 bg-[#8839efcc] dark:bg-[#cba6f7] rounded-[2px]"></div>
+                          <div
+                            className="w-2.5 h-2.5 rounded-[2px]"
+                            style={{ backgroundColor: currentColors.opened }}
+                          ></div>
                           <p className="text-xs text-muted-foreground w-[70px]">
                             Opened
                           </p>
@@ -163,7 +176,10 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                       ) : null}
                       {data.clicked ? (
                         <div className="flex gap-2 items-center">
-                          <div className="w-2.5 h-2.5 bg-[#04a5e5cc] dark:bg-[#93c5fd] rounded-[2px]"></div>
+                          <div
+                            className="w-2.5 h-2.5 rounded-[2px]"
+                            style={{ backgroundColor: currentColors.clicked }}
+                          ></div>
                           <p className="text-xs text-muted-foreground w-[70px]">
                             Clicked
                           </p>
@@ -236,16 +252,34 @@ const EmailChartItem: React.FC<DashboardItemCardProps> = ({
   count,
   percentage,
 }) => {
-  const color = EMAIL_COLORS[status];
+  const currentColors = useColors();
+
+  const getColorForStatus = (status: EmailStatus | "total"): string => {
+    switch (status) {
+      case "DELIVERED":
+        return currentColors.delivered;
+      case "BOUNCED":
+        return currentColors.bounced;
+      case "COMPLAINED":
+        return currentColors.complained;
+      case "OPENED":
+        return currentColors.opened;
+      case "CLICKED":
+        return currentColors.clicked;
+      case "total":
+      default:
+        return "#6b7280"; // gray-500 for total and other statuses
+    }
+  };
 
   return (
     <div className="flex gap-3 items-stretch font-mono">
-      {/* <div className={`${color} w-0.5  rounded-full`}></div> */}
-
       <div>
         <div className=" flex  items-center gap-2">
-          <div className={`${color} w-2.5 h-2.5 rounded-[3px]`}></div>
-          {/* <div className={`${color} w-0.5  rounded-full`}></div> */}
+          <div
+            className="w-2.5 h-2.5 rounded-[3px]"
+            style={{ backgroundColor: getColorForStatus(status) }}
+          ></div>
 
           <div className="text-xs uppercase text-muted-foreground ">
             {status.toLowerCase()}

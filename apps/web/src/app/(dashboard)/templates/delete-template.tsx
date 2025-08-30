@@ -62,7 +62,7 @@ export const DeleteTemplate: React.FC<{
           setOpen(false);
           toast.success(`Template deleted`);
         },
-      }
+      },
     );
   }
 
@@ -75,7 +75,7 @@ export const DeleteTemplate: React.FC<{
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
-          <Trash2 className="h-[18px] w-[18px] text-red-600/80" />
+          <Trash2 className="h-[18px] w-[18px] text-red/80" />
         </Button>
       </DialogTrigger>
       <DialogContent>

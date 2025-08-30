@@ -46,12 +46,12 @@ import { SheetTitle, SheetDescription } from "@unsend/ui/src/sheet";
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
-  { ssr: false }
+  { ssr: false },
 );
 
 const DynamicSheetContentWithNoSSR = dynamic(
   () => import("@unsend/ui/src/sheet").then((mod) => mod.SheetContent),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function EmailsList() {
@@ -231,7 +231,7 @@ export default function EmailsList() {
                             Scheduled at{" "}
                             {formatDate(
                               email.scheduledAt,
-                              "MMM dd'th', hh:mm a"
+                              "MMM dd'th', hh:mm a",
                             )}
                           </TooltipContent>
                         </Tooltip>
@@ -247,7 +247,7 @@ export default function EmailsList() {
                     {email.latestStatus !== "SCHEDULED"
                       ? formatDate(
                           email.scheduledAt ?? email.createdAt,
-                          "MMM do, hh:mm a"
+                          "MMM do, hh:mm a",
                         )
                       : "--"}
                   </TableCell>
@@ -301,39 +301,39 @@ const EmailIcon: React.FC<{ status: EmailStatus }> = ({ status }) => {
     case "SENT":
       return (
         // <div className="border border-gray-400/60 p-2 rounded-lg bg-gray-400/10">
-        <Mail className="w-6 h-6 text-gray-500 " />
+        <Mail className="w-6 h-6 text-gray" />
         // </div>
       );
     case "DELIVERED":
       return (
         // <div className="border border-emerald-600/60 p-2 rounded-lg bg-emerald-500/10">
-        <MailCheck className="w-6 h-6 text-emerald-800" />
+        <MailCheck className="w-6 h-6 text-green" />
         // </div>
       );
     case "BOUNCED":
     case "FAILED":
       return (
         // <div className="border border-red-600/60 p-2 rounded-lg bg-red-500/10">
-        <MailX className="w-6 h-6 text-red-900" />
+        <MailX className="w-6 h-6 text-red" />
         // </div>
       );
     case "CLICKED":
       return (
         // <div className="border border-cyan-600/60 p-2 rounded-lg bg-cyan-500/10">
-        <MailSearch className="w-6 h-6 text-cyan-700" />
+        <MailSearch className="w-6 h-6 text-blue" />
         // </div>
       );
     case "OPENED":
       return (
         // <div className="border border-indigo-600/60 p-2 rounded-lg bg-indigo-500/10">
-        <MailOpen className="w-6 h-6 text-indigo-700" />
+        <MailOpen className="w-6 h-6 text-purple" />
         // </div>
       );
     case "DELIVERY_DELAYED":
     case "COMPLAINED":
       return (
         // <div className="border border-yellow-600/60 p-2 rounded-lg bg-yellow-500/10">
-        <MailWarning className="w-6 h-6 text-yellow-700" />
+        <MailWarning className="w-6 h-6 text-yellow" />
         // </div>
       );
     default:

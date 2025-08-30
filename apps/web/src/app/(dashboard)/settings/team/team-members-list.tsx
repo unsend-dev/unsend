@@ -67,7 +67,7 @@ export default function TeamMembersList() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-center w-[100px] rounded capitalize py-1 text-xs bg-green-500/15 dark:bg-green-600/10 text-green-700 dark:text-green-600/90 border border-green-500/25 dark:border-green-700/25">
+                    <div className="text-center w-[100px] rounded capitalize py-1 text-xs bg-green/15 text-green border border-green/25">
                       Active
                     </div>
                   </TableCell>
@@ -122,7 +122,7 @@ export default function TeamMembersList() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-center w-[100px] rounded capitalize py-1 text-xs bg-yellow-500/15 dark:bg-yellow-600/10 text-yellow-700 dark:text-yellow-600/90 border border-yellow-500/25 dark:border-yellow-700/25">
+                      <div className="text-center w-[100px] rounded capitalize py-1 text-xs bg-yellow/15 text-yellow border border-yellow/25">
                         Pending
                       </div>
                     </TableCell>

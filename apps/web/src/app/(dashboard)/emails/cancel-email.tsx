@@ -64,7 +64,7 @@ export const CancelEmail: React.FC<{
         onError: (e) => {
           toast.error(`Error cancelling email: ${e.message}`);
         },
-      }
+      },
     );
   }
 
@@ -77,7 +77,7 @@ export const CancelEmail: React.FC<{
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          <Trash2 className="h-4 w-4 text-red-500" />
+          <Trash2 className="h-4 w-4 text-red" />
         </Button>
       </DialogTrigger>
       <DialogContent>

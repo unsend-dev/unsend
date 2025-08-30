@@ -36,7 +36,7 @@ export const DeleteTeamInvite: React.FC<{
         onError: async (error) => {
           toast.error(error.message);
         },
-      }
+      },
     );
   }
 
@@ -47,7 +47,7 @@ export const DeleteTeamInvite: React.FC<{
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          <Trash2 className="h-4 w-4 text-red-600/80" />
+          <Trash2 className="h-4 w-4 text-red/80" />
         </Button>
       </DialogTrigger>
       <DialogContent>

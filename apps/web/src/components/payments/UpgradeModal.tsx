@@ -52,7 +52,7 @@ export const UpgradeModal = () => {
             <ul className="space-y-2">
               {basicPlanPerks.map((perk, index) => (
                 <li key={index} className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-4 w-4 text-green flex-shrink-0 mt-0.5" />
                   <span className="text-sm">{perk}</span>
                 </li>
               ))}
