@@ -12,11 +12,15 @@ services:
       # Uncomment this if you have SSL certificates. port 465 and 2465 will be using SSL
       # UNSEND_API_KEY_PATH: "/certs/server.key"
       # UNSEND_API_CERT_PATH: "/certs/server.crt"
+      # UNSEND_SNI_CERTS: >
+      #   {"mail.example.com":{"key":"/certs/example.key","cert":"/certs/example.crt"}}
     # If you have SSL certificates, mount them here (read-only recommended)
 
     # volumes:
     #   - ./certs/server.key:/certs/server.key:ro
     #   - ./certs/server.crt:/certs/server.crt:ro
+    #   - ./certs/example.key:/certs/example.key:ro
+    #   - ./certs/example.crt:/certs/example.crt:ro
 
     # Expose the SMTP ports
     ports:

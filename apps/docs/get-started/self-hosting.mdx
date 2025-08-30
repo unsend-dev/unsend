@@ -123,10 +123,12 @@ Once you logged in to unsend, it will prompt you add ses configuration.
 The SMTP proxy server is an optional component that allows applications to send emails through Unsend using standard SMTP protocol instead of the REST API. This is useful for legacy applications, email clients, or any software that needs to send emails via SMTP.
 
 <Tip>
-The complete source code for the SMTP proxy server is available at: [unsend-dev/unsend/tree/main/apps/smtp-server](https://github.com/unsend-dev/unsend/tree/main/apps/smtp-server)
+  The complete source code for the SMTP proxy server is available at:
+  [unsend-dev/unsend/tree/main/apps/smtp-server](https://github.com/unsend-dev/unsend/tree/main/apps/smtp-server)
 </Tip>
 
 ### When to use the SMTP proxy:
+
 - **Legacy applications** that only support SMTP
 - **Email clients** like Thunderbird, Outlook, Apple Mail
 - **Applications** that can't easily integrate with REST APIs
@@ -146,25 +148,31 @@ services:
     environment:
       SMTP_AUTH_USERNAME: "unsend" # Username for SMTP authentication
       UNSEND_BASE_URL: "https://your-unsend-instance.com" # Your Unsend instance URL
-      
+
       # Optional: SSL certificate paths for secure connections
       # UNSEND_API_KEY_PATH: "/certs/server.key"
       # UNSEND_API_CERT_PATH: "/certs/server.crt"
-    
+      # UNSEND_SNI_CERTS: >
+      #   {"mail.example.com":{"key":"/certs/example.key","cert":"/certs/example.crt"}}
+
     # Optional: Mount SSL certificates
     # volumes:
     #   - ./certs/server.key:/certs/server.key:ro
     #   - ./certs/server.crt:/certs/server.crt:ro
-    
+    #   - ./certs/example.key:/certs/example.key:ro
+    #   - ./certs/example.crt:/certs/example.crt:ro
+
     ports:
-      - "25:25"     # Standard SMTP
-      - "587:587"   # SMTP with STARTTLS
+      - "25:25" # Standard SMTP
+      - "587:587" # SMTP with STARTTLS
       - "2587:2587" # Alternative SMTP port
-      - "465:465"   # SMTP over SSL/TLS
+      - "465:465" # SMTP over SSL/TLS
       - "2465:2465" # Alternative SMTPS port
-    
+
     restart: unless-stopped
 ```
+
+`UNSEND_SNI_CERTS` accepts a JSON object mapping hostnames to key and certificate file paths for SNI-based TLS.
 
 Run the SMTP server:
 
@@ -183,11 +191,14 @@ To send emails through the proxy, configure your application with these SMTP set
 - **Encryption**: STARTTLS (ports 25, 587, 2587) or SSL/TLS (ports 465, 2465)
 
 <Tip>
-The SMTP proxy forwards all emails to your Unsend instance, so make sure your main Unsend application is running and accessible.
+  The SMTP proxy forwards all emails to your Unsend instance, so make sure your
+  main Unsend application is running and accessible.
 </Tip>
 
 <Warning>
-Ensure your firewall allows traffic on the SMTP ports you're using. For production deployments, consider using non-standard ports (2587, 2465) to avoid conflicts.
+  Ensure your firewall allows traffic on the SMTP ports you're using. For
+  production deployments, consider using non-standard ports (2587, 2465) to
+  avoid conflicts.
 </Warning>
 
 ## Next steps
@@ -201,5 +212,7 @@ You're all set up now.
 If you have any questions, please join [#self-host](https://discord.gg/gbsvjb9MqV) on discord.
 
 <Tip>
-A community member shared a short write-up on hosting Unsend with [Coolify](https://mattstein.com/thoughts/coolify-unsend/). Give it a read if you need another reference.
+  A community member shared a short write-up on hosting Unsend with
+  [Coolify](https://mattstein.com/thoughts/coolify-unsend/). Give it a read if
+  you need another reference.
 </Tip>

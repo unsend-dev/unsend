@@ -3,6 +3,7 @@ import { Readable } from "stream";
 import dotenv from "dotenv";
 import { simpleParser } from "mailparser";
 import { readFileSync } from "fs";
+import tls from "tls";
 
 dotenv.config();
 
@@ -10,6 +11,38 @@ const AUTH_USERNAME = process.env.SMTP_AUTH_USERNAME ?? "unsend";
 const UNSEND_BASE_URL = process.env.UNSEND_BASE_URL ?? "https://app.unsend.dev";
 const SSL_KEY_PATH = process.env.UNSEND_API_KEY_PATH;
 const SSL_CERT_PATH = process.env.UNSEND_API_CERT_PATH;
+const SNI_CERTS = process.env.UNSEND_SNI_CERTS;
+
+const defaultKey = SSL_KEY_PATH ? readFileSync(SSL_KEY_PATH) : undefined;
+const defaultCert = SSL_CERT_PATH ? readFileSync(SSL_CERT_PATH) : undefined;
+
+const defaultContext =
+  defaultKey && defaultCert
+    ? tls.createSecureContext({
+        key: defaultKey,
+        cert: defaultCert,
+      })
+    : undefined;
+
+let secureContexts: Record<string, tls.SecureContext> = {};
+
+if (SNI_CERTS) {
+  try {
+    const parsed: Record<string, { key: string; cert: string }> =
+      JSON.parse(SNI_CERTS);
+    secureContexts = Object.fromEntries(
+      Object.entries(parsed).map(([host, creds]) => [
+        host,
+        tls.createSecureContext({
+          key: readFileSync(creds.key),
+          cert: readFileSync(creds.cert),
+        }),
+      ]),
+    );
+  } catch (err) {
+    console.error("Failed to parse UNSEND_SNI_CERTS:", err);
+  }
+}
 
 async function sendEmailToUnsend(emailData: any, apiKey: string) {
   try {
@@ -33,10 +66,10 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
       console.error(
         "Unsend API error response: error:",
         JSON.stringify(errorData, null, 4),
-        `\nemail data: ${emailDataText}`
+        `\nemail data: ${emailDataText}`,
       );
       throw new Error(
-        `Failed to send email: ${errorData || "Unknown error from server"}`
+        `Failed to send email: ${errorData || "Unknown error from server"}`,
       );
     }
 
@@ -55,12 +88,16 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
 
 const serverOptions: SMTPServerOptions = {
   secure: false,
-  key: SSL_KEY_PATH ? readFileSync(SSL_KEY_PATH) : undefined,
-  cert: SSL_CERT_PATH ? readFileSync(SSL_CERT_PATH) : undefined,
+  key: defaultKey,
+  cert: defaultCert,
+  tls: {
+    SNICallback: (servername, cb) =>
+      cb(null, secureContexts[servername] || defaultContext),
+  },
   onData(
     stream: Readable,
     session: SMTPServerSession,
-    callback: (error?: Error) => void
+    callback: (error?: Error) => void,
   ) {
     console.log("Receiving email data..."); // Debug statement
     simpleParser(stream, (err, parsed) => {
@@ -109,14 +146,14 @@ const serverOptions: SMTPServerOptions = {
 };
 
 function startServers() {
-  if (SSL_KEY_PATH && SSL_CERT_PATH) {
+  if (defaultContext || Object.keys(secureContexts).length > 0) {
     // Implicit SSL/TLS for ports 465 and 2465
     [465, 2465].forEach((port) => {
       const server = new SMTPServer({ ...serverOptions, secure: true });
 
       server.listen(port, () => {
         console.log(
-          `Implicit SSL/TLS SMTP server is listening on port ${port}`
+          `Implicit SSL/TLS SMTP server is listening on port ${port}`,
         );
       });
 
