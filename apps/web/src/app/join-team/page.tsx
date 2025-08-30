@@ -7,12 +7,13 @@ import { redirect } from "next/navigation";
 export default async function CreateTeam({
   searchParams,
 }: {
-  searchParams: { inviteId?: string };
+  searchParams: Promise<{ inviteId?: string }>;
 }) {
   const session = await getServerAuthSession();
+  const params = await searchParams;
 
   if (!session) {
-    const inviteId = searchParams?.inviteId;
+    const inviteId = params?.inviteId;
     redirect(`/login${inviteId ? `?inviteId=${inviteId}` : ""}`);
   }
 
