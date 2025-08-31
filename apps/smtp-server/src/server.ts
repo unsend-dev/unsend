@@ -2,7 +2,7 @@ import { SMTPServer, SMTPServerOptions, SMTPServerSession } from "smtp-server";
 import { Readable } from "stream";
 import dotenv from "dotenv";
 import { simpleParser } from "mailparser";
-import { readFileSync, watch } from "fs";
+import { readFileSync, watch, FSWatcher } from "fs";
 
 dotenv.config();
 
@@ -119,6 +119,7 @@ const serverOptions: SMTPServerOptions = {
 
 function startServers() {
   const servers: SMTPServer[] = [];
+  const watchers: FSWatcher[] = [];
 
   if (SSL_KEY_PATH && SSL_CERT_PATH) {
     // Implicit SSL/TLS for ports 465 and 2465
@@ -168,9 +169,20 @@ function startServers() {
     };
 
     [SSL_KEY_PATH, SSL_CERT_PATH].forEach((file) => {
-      watch(file, { persistent: false }, reloadCertificates);
+      watchers.push(watch(file, { persistent: false }, reloadCertificates));
     });
   }
+  return { servers, watchers };
 }
 
-startServers();
+const { servers, watchers } = startServers();
+
+function shutdown() {
+  watchers.forEach((w) => w.close());
+  servers.forEach((s) => s.close());
+  process.exit(0);
+}
+
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) => {
+  process.on(signal, shutdown);
+});
