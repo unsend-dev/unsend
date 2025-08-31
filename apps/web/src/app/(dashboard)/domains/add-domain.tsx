@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@unsend/ui/src/button";
-import { Input } from "@unsend/ui/src/input";
+import { Button } from "@usesend/ui/src/button";
+import { Input } from "@usesend/ui/src/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@unsend/ui/src/dialog";
+} from "@usesend/ui/src/dialog";
 import {
   Form,
   FormControl,
@@ -17,7 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@unsend/ui/src/form";
+} from "@usesend/ui/src/form";
 
 import { api } from "~/trpc/react";
 import { useState } from "react";
@@ -33,8 +33,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@unsend/ui/src/select";
-import { toast } from "@unsend/ui/src/toaster";
+} from "@usesend/ui/src/select";
+import { toast } from "@usesend/ui/src/toaster";
 import { useUpgradeModalStore } from "~/store/upgradeModalStore";
 import { LimitReason } from "~/lib/constants/plans";
 

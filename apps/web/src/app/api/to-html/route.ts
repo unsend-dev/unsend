@@ -1,4 +1,4 @@
-import { EmailRenderer } from "@unsend/email-editor/src/renderer";
+import { EmailRenderer } from "@usesend/email-editor/src/renderer";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
           "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
         },
-      }
+      },
     );
   }
 }

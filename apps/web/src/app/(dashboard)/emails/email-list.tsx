@@ -7,7 +7,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "@unsend/ui/src/table";
+} from "@usesend/ui/src/table";
 import { api } from "~/trpc/react";
 import {
   Mail,
@@ -23,34 +23,34 @@ import { EmailStatusBadge } from "./email-status-badge";
 import EmailDetails from "./email-details";
 import dynamic from "next/dynamic";
 import { useUrlState } from "~/hooks/useUrlState";
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@unsend/ui/src/select";
-import Spinner from "@unsend/ui/src/spinner";
+} from "@usesend/ui/src/select";
+import Spinner from "@usesend/ui/src/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@unsend/ui/src/tooltip";
-import { Input } from "@unsend/ui/src/input";
+} from "@usesend/ui/src/tooltip";
+import { Input } from "@usesend/ui/src/input";
 import { DEFAULT_QUERY_LIMIT } from "~/lib/constants";
 import { useDebouncedCallback } from "use-debounce";
 import { useState } from "react";
-import { SheetTitle, SheetDescription } from "@unsend/ui/src/sheet";
+import { SheetTitle, SheetDescription } from "@usesend/ui/src/sheet";
 
 /* Stupid hydrating error. And I so stupid to understand the stupid NextJS docs */
 const DynamicSheetWithNoSSR = dynamic(
-  () => import("@unsend/ui/src/sheet").then((mod) => mod.Sheet),
+  () => import("@usesend/ui/src/sheet").then((mod) => mod.Sheet),
   { ssr: false },
 );
 
 const DynamicSheetContentWithNoSSR = dynamic(
-  () => import("@unsend/ui/src/sheet").then((mod) => mod.SheetContent),
+  () => import("@usesend/ui/src/sheet").then((mod) => mod.SheetContent),
   { ssr: false },
 );
 

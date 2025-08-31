@@ -1,19 +1,19 @@
 "use client";
 
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@unsend/ui/src/dialog";
+} from "@usesend/ui/src/dialog";
 import { api } from "~/trpc/react";
 import React, { useState } from "react";
 import { Domain } from "@prisma/client";
-import { toast } from "@unsend/ui/src/toaster";
+import { toast } from "@usesend/ui/src/toaster";
 import { SendHorizonal } from "lucide-react";
-import { Code } from "@unsend/ui/src/code";
+import { Code } from "@usesend/ui/src/code";
 import { useSession } from "next-auth/react";
 import { getSendTestEmailCode } from "~/lib/constants/example-codes";
 
@@ -129,7 +129,7 @@ export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
           toast.success(`Test email sent`);
           setOpen(false);
         },
-      }
+      },
     );
   }
 

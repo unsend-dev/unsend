@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import { PlusIcon } from "lucide-react";
 import {
   Dialog,
@@ -9,18 +9,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@unsend/ui/src/dialog";
+} from "@usesend/ui/src/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@unsend/ui/src/select";
-import { Input } from "@unsend/ui/src/input";
+} from "@usesend/ui/src/select";
+import { Input } from "@usesend/ui/src/input";
 import { useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
-import { toast } from "@unsend/ui/src/toaster";
+import { toast } from "@usesend/ui/src/toaster";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -31,7 +31,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@unsend/ui/src/form";
+} from "@usesend/ui/src/form";
 import { useTeam } from "~/providers/team-context";
 import { isCloud, isSelfHosted } from "~/utils/common";
 import { useUpgradeModalStore } from "~/store/upgradeModalStore";

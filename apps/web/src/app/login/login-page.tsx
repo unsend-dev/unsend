@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import Image from "next/image";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,18 +14,18 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@unsend/ui/src/form";
+} from "@usesend/ui/src/form";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
   REGEXP_ONLY_DIGITS_AND_CHARS,
-} from "@unsend/ui/src/input-otp";
-import { Input } from "@unsend/ui/src/input";
+} from "@usesend/ui/src/input-otp";
+import { Input } from "@usesend/ui/src/input";
 import { BuiltInProviderType } from "next-auth/providers/index";
-import Spinner from "@unsend/ui/src/spinner";
+import Spinner from "@usesend/ui/src/spinner";
 import Link from "next/link";
-import { useTheme } from "@unsend/ui";
+import { useTheme } from "@usesend/ui";
 import { useSearchParams as useNextSearchParams } from "next/navigation";
 
 const emailSchema = z.object({
@@ -94,25 +94,29 @@ export default function LoginPage({
     const email = emailForm.getValues().email;
     console.log("email", email);
 
-    const finalCallbackUrl = inviteId ? `/join-team?inviteId=${inviteId}` : `${callbackUrl}/dashboard`;
+    const finalCallbackUrl = inviteId
+      ? `/join-team?inviteId=${inviteId}`
+      : `${callbackUrl}/dashboard`;
     window.location.href = `/api/auth/callback/email?email=${encodeURIComponent(
-      email.toLowerCase()
+      email.toLowerCase(),
     )}&token=${values.otp.toLowerCase()}&callbackUrl=${encodeURIComponent(finalCallbackUrl)}`;
   }
 
   const emailProvider = providers?.find(
-    (provider) => provider.type === "email"
+    (provider) => provider.type === "email",
   );
 
   const [submittedProvider, setSubmittedProvider] =
     useState<LiteralUnion<BuiltInProviderType> | null>(null);
-  
+
   const searchParams = useNextSearchParams();
   const inviteId = searchParams.get("inviteId");
 
   const handleSubmit = (provider: LiteralUnion<BuiltInProviderType>) => {
     setSubmittedProvider(provider);
-    const callbackUrl = inviteId ? `/join-team?inviteId=${inviteId}` : "/dashboard";
+    const callbackUrl = inviteId
+      ? `/join-team?inviteId=${inviteId}`
+      : "/dashboard";
     signIn(provider, { callbackUrl });
   };
 

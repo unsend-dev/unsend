@@ -1,4 +1,4 @@
-import { useTheme } from "@unsend/ui";
+import { useTheme } from "@usesend/ui";
 import Image from "next/image";
 
 export const FullScreenLoading = () => {

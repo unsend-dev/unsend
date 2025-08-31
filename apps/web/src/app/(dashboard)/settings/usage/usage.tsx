@@ -1,8 +1,8 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { Card } from "@unsend/ui/src/card";
-import Spinner from "@unsend/ui/src/spinner";
+import { Card } from "@usesend/ui/src/card";
+import Spinner from "@usesend/ui/src/spinner";
 import { format } from "date-fns";
 import {
   getCost,
@@ -14,7 +14,7 @@ import { useTeam } from "~/providers/team-context";
 import { EmailUsageType } from "@prisma/client";
 import { PlanDetails } from "~/components/payments/PlanDetails";
 import { UpgradeButton } from "~/components/payments/UpgradeButton";
-import { Progress } from "@unsend/ui/src/progress";
+import { Progress } from "@usesend/ui/src/progress";
 
 const FREE_PLAN_LIMIT = 3000;
 

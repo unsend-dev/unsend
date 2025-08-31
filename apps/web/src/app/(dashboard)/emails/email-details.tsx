@@ -2,7 +2,7 @@
 
 import { UAParser } from "ua-parser-js";
 import { api } from "~/trpc/react";
-import { Separator } from "@unsend/ui/src/separator";
+import { Separator } from "@usesend/ui/src/separator";
 import { EmailStatusBadge, EmailStatusIcon } from "./email-status-badge";
 import { formatDate } from "date-fns";
 import { motion } from "framer-motion";

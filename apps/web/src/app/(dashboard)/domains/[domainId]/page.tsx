@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@unsend/ui/src/breadcrumb";
+} from "@usesend/ui/src/breadcrumb";
 import { DomainStatusBadge } from "../domain-badge";
 import {
   Table,
@@ -18,15 +18,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@unsend/ui/src/table";
-import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
+} from "@usesend/ui/src/table";
+import { TextWithCopyButton } from "@usesend/ui/src/text-with-copy";
 import React, { use } from "react";
-import { Switch } from "@unsend/ui/src/switch";
+import { Switch } from "@usesend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import Link from "next/link";
-import { toast } from "@unsend/ui/src/toaster";
+import { toast } from "@usesend/ui/src/toaster";
 
 export default function DomainItemPage({
   params,
@@ -42,7 +42,7 @@ export default function DomainItemPage({
     {
       refetchInterval: (q) => (q?.state.data?.isVerifying ? 10000 : false),
       refetchIntervalInBackground: true,
-    }
+    },
   );
 
   const verifyQuery = api.domain.startVerification.useMutation();
@@ -54,7 +54,7 @@ export default function DomainItemPage({
         onSettled: () => {
           domainQuery.refetch();
         },
-      }
+      },
     );
   };
 
@@ -232,7 +232,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
   const utils = api.useUtils();
 
   const [clickTracking, setClickTracking] = React.useState(
-    domain.clickTracking
+    domain.clickTracking,
   );
   const [openTracking, setOpenTracking] = React.useState(domain.openTracking);
 
@@ -245,7 +245,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Click tracking updated");
         },
-      }
+      },
     );
   }
 
@@ -258,7 +258,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Open tracking updated");
         },
-      }
+      },
     );
   }
   return (

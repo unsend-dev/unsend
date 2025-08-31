@@ -1,6 +1,6 @@
 import { Editor, Extension, Range, ReactRenderer } from "@tiptap/react";
 import Suggestion, { SuggestionOptions } from "@tiptap/suggestion";
-import { cn } from "@unsend/ui/lib/utils";
+import { cn } from "@usesend/ui/lib/utils";
 import {
   CodeIcon,
   DivideIcon,

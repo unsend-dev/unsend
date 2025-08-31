@@ -2,9 +2,9 @@ import { Plan } from "@prisma/client";
 import { PLAN_PERKS } from "~/lib/constants/payments";
 import { CheckCircle2 } from "lucide-react";
 import { api } from "~/trpc/react";
-import Spinner from "@unsend/ui/src/spinner";
+import Spinner from "@usesend/ui/src/spinner";
 import { useTeam } from "~/providers/team-context";
-import { Badge } from "@unsend/ui/src/badge";
+import { Badge } from "@usesend/ui/src/badge";
 import { format } from "date-fns";
 
 export const PlanDetails = () => {

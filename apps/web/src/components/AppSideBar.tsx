@@ -31,14 +31,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@unsend/ui/src/sidebar";
+} from "@usesend/ui/src/sidebar";
 import Link from "next/link";
 import { MiniThemeSwitcher, ThemeSwitcher } from "./theme/ThemeSwitcher";
 import { useSession } from "next-auth/react";
 import { isSelfHosted } from "~/utils/common";
 import { usePathname } from "next/navigation";
-import { Badge } from "@unsend/ui/src/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@unsend/ui/src/avatar";
+import { Badge } from "@usesend/ui/src/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@usesend/ui/src/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +47,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@unsend/ui/src/dropdown-menu";
+} from "@usesend/ui/src/dropdown-menu";
 
 // General items
 const generalItems = [

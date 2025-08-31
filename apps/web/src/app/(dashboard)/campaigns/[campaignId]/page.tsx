@@ -7,10 +7,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@unsend/ui/src/breadcrumb";
+} from "@usesend/ui/src/breadcrumb";
 import Link from "next/link";
 
-import Spinner from "@unsend/ui/src/spinner";
+import Spinner from "@usesend/ui/src/spinner";
 import { api } from "~/trpc/react";
 import { use } from "react";
 

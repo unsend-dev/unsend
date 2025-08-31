@@ -1,9 +1,9 @@
 "use client";
 
 import { AppSidebar } from "~/components/AppSideBar";
-import { SidebarInset, SidebarTrigger } from "@unsend/ui/src/sidebar";
-import { SidebarProvider } from "@unsend/ui/src/sidebar";
-import { useIsMobile } from "@unsend/ui/src/hooks/use-mobile";
+import { SidebarInset, SidebarTrigger } from "@usesend/ui/src/sidebar";
+import { SidebarProvider } from "@usesend/ui/src/sidebar";
+import { useIsMobile } from "@usesend/ui/src/hooks/use-mobile";
 import { UpgradeModal } from "~/components/payments/UpgradeModal";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

@@ -10,7 +10,7 @@ import {
 import StarterKit from "@tiptap/starter-kit";
 import React, { useRef } from "react";
 import { TextMenu } from "./menus/TextMenu";
-import { cn } from "@unsend/ui/lib/utils";
+import { cn } from "@usesend/ui/lib/utils";
 
 import { extensions } from "./extensions";
 import LinkMenu from "./menus/LinkMenu";

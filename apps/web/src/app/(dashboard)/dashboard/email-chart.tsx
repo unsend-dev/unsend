@@ -13,8 +13,8 @@ import {
 import { EmailStatusIcon } from "../emails/email-status-badge";
 import { EmailStatus } from "@prisma/client";
 import { api } from "~/trpc/react";
-import Spinner from "@unsend/ui/src/spinner";
-import { useTheme } from "@unsend/ui";
+import Spinner from "@usesend/ui/src/spinner";
+import { useTheme } from "@usesend/ui";
 import { useColors } from "./hooks/useColors";
 
 interface EmailChartProps {
