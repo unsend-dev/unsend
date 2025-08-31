@@ -86,7 +86,8 @@ export async function createDomain(
   }
 
   const subdomain = tldts.getSubdomain(name);
-  const publicKey = await ses.addDomain(name, region, sesTenantId);
+  const dkimSelector = "usesend";
+  const publicKey = await ses.addDomain(name, region, sesTenantId, dkimSelector);
 
   const domain = await db.domain.create({
     data: {
@@ -96,6 +97,7 @@ export async function createDomain(
       subdomain,
       region,
       sesTenantId,
+      dkimSelector,
     },
   });
 

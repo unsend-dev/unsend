@@ -151,7 +151,7 @@ export default function DomainItemPage({
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
                     <TextWithCopyButton
-                      value={`unsend._domainkey.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
+                      value={`${domainQuery.data?.dkimSelector ?? "unsend"}._domainkey.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">

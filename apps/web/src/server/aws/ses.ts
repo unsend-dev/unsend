@@ -86,6 +86,7 @@ export async function addDomain(
   domain: string,
   region: string,
   sesTenantId?: string,
+  dkimSelector: string = "usesend",
 ) {
   const sesClient = getSesClient(region);
 
@@ -93,7 +94,7 @@ export async function addDomain(
   const command = new CreateEmailIdentityCommand({
     EmailIdentity: domain,
     DkimSigningAttributes: {
-      DomainSigningSelector: "usesend",
+      DomainSigningSelector: dkimSelector,
       DomainSigningPrivateKey: privateKey,
     },
   });
