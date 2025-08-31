@@ -3,11 +3,11 @@ name: unsend-smtp-server
 services:
   smtp-server:
     container_name: unsend-smtp-server
-    image: unsend/smtp-proxy:latest
+    image: usesend/smtp-proxy:latest
     # Pass necessary environment variables
     environment:
-      SMTP_AUTH_USERNAME: "unsend" # can be anything, just use the same while sending emails
-      UNSEND_BASE_URL: "https://app.unsend.dev" # your self hosted unsend instance url
+      SMTP_AUTH_USERNAME: "usesend" # can be anything, just use the same while sending emails
+      UNSEND_BASE_URL: "https://app.usesend.com" # your self hosted useSend instance url
 
       # Uncomment this if you have SSL certificates. port 465 and 2465 will be using SSL
       # UNSEND_API_KEY_PATH: "/certs/server.key"
