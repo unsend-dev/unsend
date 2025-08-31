@@ -7,7 +7,7 @@ export const FullScreenLoading = () => {
     <div className="flex items-center justify-center min-h-screen">
       <Image
         src={"/logo-light.png"}
-        alt="Unsend"
+        alt="useSend"
         width={45}
         height={45}
         className="mx-auto"

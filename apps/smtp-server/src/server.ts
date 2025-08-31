@@ -7,15 +7,19 @@ import { readFileSync } from "fs";
 dotenv.config();
 
 const AUTH_USERNAME = process.env.SMTP_AUTH_USERNAME ?? "usesend";
-const UNSEND_BASE_URL =
-  process.env.UNSEND_BASE_URL ?? "https://app.usesend.com";
-const SSL_KEY_PATH = process.env.UNSEND_API_KEY_PATH;
-const SSL_CERT_PATH = process.env.UNSEND_API_CERT_PATH;
+const BASE_URL =
+  process.env.USESEND_BASE_URL ??
+  process.env.UNSEND_BASE_URL ??
+  "https://app.usesend.com";
+const SSL_KEY_PATH =
+  process.env.USESEND_API_KEY_PATH ?? process.env.UNSEND_API_KEY_PATH;
+const SSL_CERT_PATH =
+  process.env.USESEND_API_CERT_PATH ?? process.env.UNSEND_API_CERT_PATH;
 
 async function sendEmailToUseSend(emailData: any, apiKey: string) {
   try {
     const apiEndpoint = "/api/v1/emails";
-    const url = new URL(apiEndpoint, UNSEND_BASE_URL); // Combine base URL with endpoint
+    const url = new URL(apiEndpoint, BASE_URL); // Combine base URL with endpoint
     console.log("Sending email to useSend API at:", url.href); // Debug statement
 
     const emailDataText = JSON.stringify(emailData);

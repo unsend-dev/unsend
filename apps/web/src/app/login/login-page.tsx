@@ -127,17 +127,17 @@ export default function LoginPage({
       <div className="flex flex-col gap-6">
         <Image
           src={resolvedTheme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
-          alt="Unsend"
+          alt="useSend"
           width={50}
           height={50}
           className="mx-auto"
         />
         <div>
           <p className="text-2xl text-center font-semibold">
-            {isSignup ? "Create new account" : "Sign into Unsend"}
+            {isSignup ? "Create new account" : "Sign into useSend"}
           </p>
           <p className="text-center mt-2 text-sm text-muted-foreground">
-            {isSignup ? "Already have an account?" : "New to Unsend?"}
+            {isSignup ? "Already have an account?" : "New to useSend?"}
             <Link
               href={isSignup ? "/login" : "/signup"}
               className=" text-foreground hover:underline ml-1"

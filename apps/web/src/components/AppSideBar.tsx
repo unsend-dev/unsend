@@ -234,7 +234,7 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Docs">
-                <Link href="https://docs.unsend.dev" target="_blank">
+                <Link href="https://docs.usesend.com" target="_blank">
                   <BookOpenText />
                   <span>Docs</span>
                 </Link>

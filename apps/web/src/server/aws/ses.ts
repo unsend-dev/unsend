@@ -93,7 +93,7 @@ export async function addDomain(
   const command = new CreateEmailIdentityCommand({
     EmailIdentity: domain,
     DkimSigningAttributes: {
-      DomainSigningSelector: "unsend",
+      DomainSigningSelector: "usesend",
       DomainSigningPrivateKey: privateKey,
     },
   });
@@ -307,7 +307,7 @@ export async function addWebhookConfiguration(
 
   const command = new CreateConfigurationSetEventDestinationCommand({
     ConfigurationSetName: configName, // required
-    EventDestinationName: "unsend_destination", // required
+    EventDestinationName: "usesend_destination", // required
     EventDestination: {
       Enabled: true,
       MatchingEventTypes: eventTypes,

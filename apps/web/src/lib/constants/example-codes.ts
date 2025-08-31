@@ -23,7 +23,7 @@ const usesend = new UseSend("us_12345");
 
 // const usesend = new UseSend("us_12345", "https://app.usesend.com");
 
-unsend.emails.send({
+usesend.emails.send({
   to: "${to}",
   from: "${from}",
   subject: "${subject}",
@@ -63,7 +63,7 @@ response = requests.request("POST", url, json=payload, headers=headers)
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://app.unsend.dev/api/v1/emails",
+  CURLOPT_URL => "https://app.usesend.com/api/v1/emails",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -97,7 +97,7 @@ if ($err) {
 require 'uri'
 require 'json'
 
-url = URI("https://app.unsend.dev/api/v1/emails")
+url = URI("https://app.usesend.com/api/v1/emails")
 
 payload = {
   "to" => "${to}",
@@ -126,7 +126,7 @@ puts response.body
     {
       language: "curl",
       title: "cURL",
-      code: `curl -X POST https://app.unsend.dev/api/v1/emails \\
+      code: `curl -X POST https://app.usesend.com/api/v1/emails \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer us_12345" \\
 -d '{"to": "${to}", "from": "${from}", "subject": "${subject}", "text": "${body}", "html": "${bodyHtml}"}'`,

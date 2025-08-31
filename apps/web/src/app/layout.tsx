@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Unsend",
+  title: "useSend",
   description: "Open source sending infrastructure for developers",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };

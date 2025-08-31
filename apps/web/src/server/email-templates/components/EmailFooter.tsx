@@ -7,8 +7,8 @@ interface EmailFooterProps {
 }
 
 export function EmailFooter({ 
-  companyName = "Unsend", 
-  supportUrl = "https://unsend.dev" 
+  companyName = "useSend", 
+  supportUrl = "https://usesend.com" 
 }: EmailFooterProps) {
   return (
     <Container

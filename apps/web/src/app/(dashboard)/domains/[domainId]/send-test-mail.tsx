@@ -152,10 +152,10 @@ export const SendTestMail: React.FC<{ domain: Domain }> = ({ domain }) => {
           codeBlocks={getSendTestEmailCode({
             from: `hello@${domain.name}`,
             to: session?.user?.email || "",
-            subject: "Unsend test email",
-            body: "hello,\\n\\nUnsend is the best open source sending platform",
+            subject: "useSend test email",
+            body: "hello,\\n\\nuseSend is the best open source sending platform",
             bodyHtml:
-              "<p>hello,</p><p>Unsend is the best open source sending platform<p><p>check out <a href='https://unsend.dev'>unsend.dev</a>",
+              "<p>hello,</p><p>useSend is the best open source sending platform<p><p>check out <a href='https://usesend.com'>usesend.com</a>",
           })}
           codeClassName="max-w-[38rem] h-[20rem]"
         />
