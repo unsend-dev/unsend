@@ -1,5 +1,5 @@
 import { env } from "~/env";
-import { Unsend } from "unsend";
+import { UseSend } from "usesend";
 import { isSelfHosted } from "~/utils/common";
 import { db } from "./db";
 import { getDomains } from "./service/domain-service";
@@ -7,11 +7,11 @@ import { sendEmail } from "./service/email-service";
 import { logger } from "./logger/log";
 import { renderOtpEmail, renderTeamInviteEmail } from "./email-templates";
 
-let unsend: Unsend | undefined;
+let unsend: UseSend | undefined;
 
 const getClient = () => {
   if (!unsend) {
-    unsend = new Unsend(env.UNSEND_API_KEY);
+    unsend = new UseSend(env.USESEND_API_KEY ?? env.UNSEND_API_KEY);
   }
   return unsend;
 };
@@ -19,7 +19,7 @@ const getClient = () => {
 export async function sendSignUpEmail(
   email: string,
   token: string,
-  url: string
+  url: string,
 ) {
   const { host } = new URL(url);
 
@@ -46,7 +46,7 @@ export async function sendSignUpEmail(
 export async function sendTeamInviteEmail(
   email: string,
   url: string,
-  teamName: string
+  teamName: string,
 ) {
   const { host } = new URL(url);
 
@@ -73,7 +73,7 @@ async function sendMail(
   email: string,
   subject: string,
   text: string,
-  html: string
+  html: string,
 ) {
   if (isSelfHosted()) {
     logger.info("Sending email using self hosted");
@@ -123,7 +123,7 @@ async function sendMail(
     } else {
       logger.error(
         { code: resp.error?.code, message: resp.error?.message },
-        "Error sending email using unsend, so fallback to resend"
+        "Error sending email using unsend, so fallback to resend",
       );
     }
   } else {

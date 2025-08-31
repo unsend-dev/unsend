@@ -85,7 +85,7 @@ function generateKeyPair() {
 export async function addDomain(
   domain: string,
   region: string,
-  sesTenantId?: string
+  sesTenantId?: string,
 ) {
   const sesClient = getSesClient(region);
 
@@ -114,13 +114,13 @@ export async function addDomain(
       });
 
     const tenantResourceAssociationResponse = await sesClient.send(
-      tenantResourceAssociationCommand
+      tenantResourceAssociationCommand,
     );
 
     if (tenantResourceAssociationResponse.$metadata.httpStatusCode !== 200) {
       logger.error(
         { tenantResourceAssociationResponse },
-        "Failed to associate domain with tenant"
+        "Failed to associate domain with tenant",
       );
       throw new Error("Failed to associate domain with tenant");
     }
@@ -132,7 +132,7 @@ export async function addDomain(
   ) {
     logger.error(
       { response, emailIdentityResponse },
-      "Failed to create domain identity"
+      "Failed to create domain identity",
     );
     throw new Error("Failed to create domain identity");
   }
@@ -143,7 +143,7 @@ export async function addDomain(
 export async function deleteDomain(
   domain: string,
   region: string,
-  sesTenantId?: string
+  sesTenantId?: string,
 ) {
   const sesClient = getSesClient(region);
 
@@ -155,13 +155,13 @@ export async function deleteDomain(
       });
 
     const tenantResourceAssociationResponse = await sesClient.send(
-      tenantResourceAssociationCommand
+      tenantResourceAssociationCommand,
     );
 
     if (tenantResourceAssociationResponse.$metadata.httpStatusCode !== 200) {
       logger.error(
         { tenantResourceAssociationResponse },
-        "Failed to delete tenant resource association"
+        "Failed to delete tenant resource association",
       );
       throw new Error("Failed to delete tenant resource association");
     }
@@ -233,7 +233,9 @@ export async function sendRawEmail({
       bcc,
       headers: {
         "X-Entity-Ref-ID": nanoid(),
-        ...(emailId ? { "X-Unsend-Email-ID": emailId } : {}),
+        ...(emailId
+          ? { "X-Usesend-Email-ID": emailId, "X-Unsend-Email-ID": emailId }
+          : {}),
         ...(unsubUrl
           ? {
               "List-Unsubscribe": `<${unsubUrl}>`,
@@ -289,7 +291,7 @@ export async function addWebhookConfiguration(
   configName: string,
   topicArn: string,
   eventTypes: EventType[],
-  region: string
+  region: string,
 ) {
   const sesClient = getSesClient(region);
 

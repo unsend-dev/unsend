@@ -2,15 +2,15 @@ import { ErrorResponse } from "../types";
 import { Contacts } from "./contact";
 import { Emails } from "./email";
 
-const defaultBaseUrl = "https://app.unsend.dev";
+const defaultBaseUrl = "https://app.usesend.com";
 // eslint-disable-next-line turbo/no-undeclared-env-vars
-const baseUrl = `${process?.env?.UNSEND_BASE_URL ?? defaultBaseUrl}/api/v1`;
+const baseUrl = `${process?.env?.USESEND_BASE_URL ?? process?.env?.UNSEND_BASE_URL ?? defaultBaseUrl}/api/v1`;
 
 function isUNSENDErrorResponse(error: { error: ErrorResponse }) {
   return error.error.code !== undefined;
 }
 
-export class Unsend {
+export class UseSend {
   private readonly headers: Headers;
 
   // readonly domains = new Domains(this);
@@ -20,16 +20,16 @@ export class Unsend {
 
   constructor(
     readonly key?: string,
-    url?: string
+    url?: string,
   ) {
     if (!key) {
       if (typeof process !== "undefined" && process.env) {
-        this.key = process.env.UNSEND_API_KEY;
+        this.key = process.env.USESEND_API_KEY ?? process.env.UNSEND_API_KEY;
       }
 
       if (!this.key) {
         throw new Error(
-          'Missing API key. Pass it to the constructor `new Unsend("us_123")`'
+          'Missing API key. Pass it to the constructor `new UseSend("us_123")`',
         );
       }
     }
@@ -46,7 +46,7 @@ export class Unsend {
 
   async fetchRequest<T>(
     path: string,
-    options = {}
+    options = {},
   ): Promise<{ data: T | null; error: ErrorResponse | null }> {
     const response = await fetch(`${this.url}${path}`, options);
     const defaultError = {
