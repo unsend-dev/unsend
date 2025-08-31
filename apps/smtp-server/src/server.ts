@@ -2,7 +2,7 @@ import { SMTPServer, SMTPServerOptions, SMTPServerSession } from "smtp-server";
 import { Readable } from "stream";
 import dotenv from "dotenv";
 import { simpleParser } from "mailparser";
-import { readFileSync } from "fs";
+import { readFileSync, watch, FSWatcher } from "fs";
 
 dotenv.config();
 
@@ -53,10 +53,19 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
   }
 }
 
+function loadCertificates(): { key?: Buffer; cert?: Buffer } {
+  return {
+    key: SSL_KEY_PATH ? readFileSync(SSL_KEY_PATH) : undefined,
+    cert: SSL_CERT_PATH ? readFileSync(SSL_CERT_PATH) : undefined,
+  };
+}
+
+const initialCerts = loadCertificates();
+
 const serverOptions: SMTPServerOptions = {
   secure: false,
-  key: SSL_KEY_PATH ? readFileSync(SSL_KEY_PATH) : undefined,
-  cert: SSL_CERT_PATH ? readFileSync(SSL_CERT_PATH) : undefined,
+  key: initialCerts.key,
+  cert: initialCerts.cert,
   onData(
     stream: Readable,
     session: SMTPServerSession,
@@ -109,6 +118,9 @@ const serverOptions: SMTPServerOptions = {
 };
 
 function startServers() {
+  const servers: SMTPServer[] = [];
+  const watchers: FSWatcher[] = [];
+
   if (SSL_KEY_PATH && SSL_CERT_PATH) {
     // Implicit SSL/TLS for ports 465 and 2465
     [465, 2465].forEach((port) => {
@@ -123,6 +135,8 @@ function startServers() {
       server.on("error", (err) => {
         console.error(`Error occurred on port ${port}:`, err);
       });
+
+      servers.push(server);
     });
   }
 
@@ -137,7 +151,39 @@ function startServers() {
     server.on("error", (err) => {
       console.error(`Error occurred on port ${port}:`, err);
     });
+
+    servers.push(server);
   });
+
+  if (SSL_KEY_PATH && SSL_CERT_PATH) {
+    const reloadCertificates = () => {
+      try {
+        const { key, cert } = loadCertificates();
+        if (key && cert) {
+          servers.forEach((srv) => srv.updateSecureContext({ key, cert }));
+          console.log("TLS certificates reloaded");
+        }
+      } catch (err) {
+        console.error("Failed to reload TLS certificates", err);
+      }
+    };
+
+    [SSL_KEY_PATH, SSL_CERT_PATH].forEach((file) => {
+      watchers.push(watch(file, { persistent: false }, reloadCertificates));
+    });
+  }
+  return { servers, watchers };
 }
 
-startServers();
+const { servers, watchers } = startServers();
+
+function shutdown() {
+  console.log("Shutting down SMTP server...");
+  watchers.forEach((w) => w.close());
+  servers.forEach((s) => s.close());
+  process.exit(0);
+}
+
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) => {
+  process.on(signal, shutdown);
+});
