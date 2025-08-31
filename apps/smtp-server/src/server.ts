@@ -6,16 +6,17 @@ import { readFileSync } from "fs";
 
 dotenv.config();
 
-const AUTH_USERNAME = process.env.SMTP_AUTH_USERNAME ?? "unsend";
-const UNSEND_BASE_URL = process.env.UNSEND_BASE_URL ?? "https://app.unsend.dev";
+const AUTH_USERNAME = process.env.SMTP_AUTH_USERNAME ?? "usesend";
+const UNSEND_BASE_URL =
+  process.env.UNSEND_BASE_URL ?? "https://app.usesend.com";
 const SSL_KEY_PATH = process.env.UNSEND_API_KEY_PATH;
 const SSL_CERT_PATH = process.env.UNSEND_API_CERT_PATH;
 
-async function sendEmailToUnsend(emailData: any, apiKey: string) {
+async function sendEmailToUseSend(emailData: any, apiKey: string) {
   try {
     const apiEndpoint = "/api/v1/emails";
     const url = new URL(apiEndpoint, UNSEND_BASE_URL); // Combine base URL with endpoint
-    console.log("Sending email to Unsend API at:", url.href); // Debug statement
+    console.log("Sending email to useSend API at:", url.href); // Debug statement
 
     const emailDataText = JSON.stringify(emailData);
 
@@ -31,17 +32,17 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
     if (!response.ok) {
       const errorData = await response.text();
       console.error(
-        "Unsend API error response: error:",
+        "useSend API error response: error:",
         JSON.stringify(errorData, null, 4),
-        `\nemail data: ${emailDataText}`
+        `\nemail data: ${emailDataText}`,
       );
       throw new Error(
-        `Failed to send email: ${errorData || "Unknown error from server"}`
+        `Failed to send email: ${errorData || "Unknown error from server"}`,
       );
     }
 
     const responseData = await response.json();
-    console.log("Unsend API response:", responseData);
+    console.log("useSend API response:", responseData);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error message:", error.message);
@@ -60,7 +61,7 @@ const serverOptions: SMTPServerOptions = {
   onData(
     stream: Readable,
     session: SMTPServerSession,
-    callback: (error?: Error) => void
+    callback: (error?: Error) => void,
   ) {
     console.log("Receiving email data..."); // Debug statement
     simpleParser(stream, (err, parsed) => {
@@ -87,7 +88,7 @@ const serverOptions: SMTPServerOptions = {
         replyTo: parsed.replyTo?.text,
       };
 
-      sendEmailToUnsend(emailObject, session.user)
+      sendEmailToUseSend(emailObject, session.user)
         .then(() => callback())
         .then(() => console.log("Email sent successfully to: ", emailObject.to))
         .catch((error) => {
@@ -116,7 +117,7 @@ function startServers() {
 
       server.listen(port, () => {
         console.log(
-          `Implicit SSL/TLS SMTP server is listening on port ${port}`
+          `Implicit SSL/TLS SMTP server is listening on port ${port}`,
         );
       });
 
