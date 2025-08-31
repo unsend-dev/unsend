@@ -33,10 +33,10 @@ async function sendEmailToUnsend(emailData: any, apiKey: string) {
       console.error(
         "Unsend API error response: error:",
         JSON.stringify(errorData, null, 4),
-        `\nemail data: ${emailDataText}`,
+        `\nemail data: ${emailDataText}`
       );
       throw new Error(
-        `Failed to send email: ${errorData || "Unknown error from server"}`,
+        `Failed to send email: ${errorData || "Unknown error from server"}`
       );
     }
 
@@ -69,7 +69,7 @@ const serverOptions: SMTPServerOptions = {
   onData(
     stream: Readable,
     session: SMTPServerSession,
-    callback: (error?: Error) => void,
+    callback: (error?: Error) => void
   ) {
     console.log("Receiving email data..."); // Debug statement
     simpleParser(stream, (err, parsed) => {
@@ -128,7 +128,7 @@ function startServers() {
 
       server.listen(port, () => {
         console.log(
-          `Implicit SSL/TLS SMTP server is listening on port ${port}`,
+          `Implicit SSL/TLS SMTP server is listening on port ${port}`
         );
       });
 
@@ -178,6 +178,7 @@ function startServers() {
 const { servers, watchers } = startServers();
 
 function shutdown() {
+  console.log("Shutting down SMTP server...");
   watchers.forEach((w) => w.close());
   servers.forEach((s) => s.close());
   process.exit(0);
