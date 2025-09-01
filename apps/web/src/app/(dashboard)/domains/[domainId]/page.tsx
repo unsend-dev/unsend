@@ -27,6 +27,7 @@ import SendTestMail from "./send-test-mail";
 import { Button } from "@usesend/ui/src/button";
 import Link from "next/link";
 import { toast } from "@usesend/ui/src/toaster";
+import { H1 } from "@usesend/ui";
 
 export default function DomainItemPage({
   params,
@@ -67,7 +68,7 @@ export default function DomainItemPage({
           <div className="flex justify-between items-center">
             <div className="flex items-center  gap-4">
               {/* <div className="flex items-center gap-4">
-              <h1 className="font-medium text-2xl">{domainQuery.data?.name}</h1>
+              <H1>{domainQuery.data?.name}</H1>
             </div> */}
               <Breadcrumb>
                 <BreadcrumbList>

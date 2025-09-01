@@ -21,7 +21,7 @@ import { isLocalhost } from "~/utils/client";
 
 const FormSchema = z.object({
   region: z.string(),
-  unsendUrl: z.string().url(),
+  usesendUrl: z.string().url(),
   sendRate: z.coerce.number(),
   transactionalQuota: z.coerce.number().min(0).max(100),
 });
@@ -56,7 +56,7 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       region: "",
-      unsendUrl: "",
+      usesendUrl: "",
       sendRate: 1,
       transactionalQuota: 50,
     },
@@ -65,21 +65,29 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const localhost = isLocalhost();
 
-    if (!data.unsendUrl.startsWith("https://") && !localhost) {
-      form.setError("unsendUrl", {
+    if (!data.usesendUrl.startsWith("https://") && !localhost) {
+      form.setError("usesendUrl", {
         message: "URL must start with https://",
       });
       return;
     }
 
-    if (data.unsendUrl.includes("localhost") && !localhost) {
-      form.setError("unsendUrl", {
+    if (data.usesendUrl.includes("localhost") && !localhost) {
+      form.setError("usesendUrl", {
         message: "URL must be a valid url",
       });
       return;
     }
 
-    addSesSettings.mutate(data, {
+    // Backend still expects `unsendUrl`; map from `usesendUrl` here.
+    addSesSettings.mutate(
+      {
+        region: data.region,
+        unsendUrl: data.usesendUrl,
+        sendRate: data.sendRate,
+        transactionalQuota: data.transactionalQuota,
+      },
+      {
       onSuccess: () => {
         utils.admin.invalidate();
         onSuccess?.();
@@ -89,7 +97,8 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
           description: e.message,
         });
       },
-    });
+      }
+    );
   }
 
   const onRegionInputOutOfFocus = async () => {
@@ -134,7 +143,7 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
         />
         <FormField
           control={form.control}
-          name="unsendUrl"
+          name="usesendUrl"
           render={({ field, formState }) => (
             <FormItem>
               <FormLabel>Callback URL</FormLabel>
@@ -145,7 +154,7 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
                   {...field}
                 />
               </FormControl>
-              {formState.errors.unsendUrl ? (
+              {formState.errors.usesendUrl ? (
                 <FormMessage />
               ) : (
                 <FormDescription>

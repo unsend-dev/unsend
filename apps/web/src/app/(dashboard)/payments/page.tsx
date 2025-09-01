@@ -6,6 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { api } from "~/trpc/react";
+import { H1 } from "@usesend/ui";
 
 export default function PaymentsPage() {
   const searchParams = useSearchParams();
@@ -15,9 +16,7 @@ export default function PaymentsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-semibold mb-8">
-        Payment {success ? "Success" : canceled ? "Canceled" : "Unknown"}
-      </h1>
+      <H1>Payment {success ? "Success" : canceled ? "Canceled" : "Unknown"}</H1>
       {canceled ? (
         <Link href="/settings/billing">
           <Button>Go to billing</Button>
