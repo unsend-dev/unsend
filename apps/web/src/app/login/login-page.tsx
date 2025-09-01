@@ -98,12 +98,12 @@ export default function LoginPage({
       ? `/join-team?inviteId=${inviteId}`
       : `${callbackUrl}/dashboard`;
     window.location.href = `/api/auth/callback/email?email=${encodeURIComponent(
-      email.toLowerCase(),
+      email.toLowerCase()
     )}&token=${values.otp.toLowerCase()}&callbackUrl=${encodeURIComponent(finalCallbackUrl)}`;
   }
 
   const emailProvider = providers?.find(
-    (provider) => provider.type === "email",
+    (provider) => provider.type === "email"
   );
 
   const [submittedProvider, setSubmittedProvider] =
@@ -126,7 +126,7 @@ export default function LoginPage({
     <main className="h-screen flex justify-center items-center">
       <div className="flex flex-col gap-6">
         <Image
-          src={resolvedTheme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+          src={"/logo-squircle.png"}
           alt="useSend"
           width={50}
           height={50}

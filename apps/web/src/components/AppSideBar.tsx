@@ -125,7 +125,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarGroupLabel>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold text-foreground">
+            <span className="text-lg font-semibold text-foreground font-mono">
               useSend
             </span>
             <Badge variant="outline">Beta</Badge>
