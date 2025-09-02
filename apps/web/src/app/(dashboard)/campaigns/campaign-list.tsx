@@ -7,11 +7,11 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "@unsend/ui/src/table";
+} from "@usesend/ui/src/table";
 import { api } from "~/trpc/react";
 import { useUrlState } from "~/hooks/useUrlState";
-import { Button } from "@unsend/ui/src/button";
-import Spinner from "@unsend/ui/src/spinner";
+import { Button } from "@usesend/ui/src/button";
+import Spinner from "@usesend/ui/src/spinner";
 import { formatDistanceToNow } from "date-fns";
 import { CampaignStatus } from "@prisma/client";
 import DeleteCampaign from "./delete-campaign";
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectContent,
   SelectItem,
-} from "@unsend/ui/src/select";
+} from "@usesend/ui/src/select";
 
 export default function CampaignList() {
   const [page, setPage] = useUrlState("page", "1");

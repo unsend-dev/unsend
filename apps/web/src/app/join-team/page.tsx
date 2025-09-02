@@ -1,6 +1,6 @@
 import JoinTeam from "~/components/team/JoinTeam";
 import { Suspense } from "react";
-import Spinner from "@unsend/ui/src/spinner";
+import Spinner from "@usesend/ui/src/spinner";
 import { getServerAuthSession } from "~/server/auth";
 import { redirect } from "next/navigation";
 

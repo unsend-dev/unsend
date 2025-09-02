@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@unsend/ui/src/select";
-import Spinner from "@unsend/ui/src/spinner";
+} from "@usesend/ui/src/select";
+import Spinner from "@usesend/ui/src/spinner";
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@unsend/ui/src/table";
+} from "@usesend/ui/src/table";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useUrlState } from "~/hooks/useUrlState";
@@ -23,14 +23,14 @@ import { api } from "~/trpc/react";
 import { getGravatarUrl } from "~/utils/gravatar-utils";
 import DeleteContact from "./delete-contact";
 import EditContact from "./edit-contact";
-import { Input } from "@unsend/ui/src/input";
+import { Input } from "@usesend/ui/src/input";
 import { useDebouncedCallback } from "use-debounce";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@unsend/ui/src/tooltip";
+} from "@usesend/ui/src/tooltip";
 import { UnsubscribeReason } from "@prisma/client";
 
 function getUnsubscribeReason(reason: UnsubscribeReason) {

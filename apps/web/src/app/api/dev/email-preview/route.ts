@@ -18,13 +18,13 @@ export async function GET(request: NextRequest) {
     if (type === "otp") {
       html = await renderOtpEmail({
         otpCode: "ABC123",
-        loginUrl: "https://app.unsend.dev/login?token=abc123",
-        hostName: "Unsend",
+        loginUrl: "https://app.usesend.com/login?token=abc123",
+        hostName: "useSend",
       });
     } else if (type === "invite") {
       html = await renderTeamInviteEmail({
         teamName: "My Awesome Team",
-        inviteUrl: "https://app.unsend.dev/join-team?inviteId=123",
+        inviteUrl: "https://app.usesend.com/join-team?inviteId=123",
         inviterName: "John Doe",
         role: "admin",
       });

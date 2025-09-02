@@ -13,7 +13,7 @@ export const env = createEnv({
       .url()
       .refine(
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
-        "You forgot to change the default URL"
+        "You forgot to change the default URL",
       ),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -27,12 +27,13 @@ export const env = createEnv({
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url()
+      process.env.VERCEL ? z.string() : z.string().url(),
     ),
     GITHUB_ID: z.string().optional(),
     GITHUB_SECRET: z.string().optional(),
     AWS_ACCESS_KEY: z.string(),
     AWS_SECRET_KEY: z.string(),
+    USESEND_API_KEY: z.string().optional(),
     UNSEND_API_KEY: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
@@ -56,8 +57,8 @@ export const env = createEnv({
     STRIPE_BASIC_USAGE_PRICE_ID: z.string().optional(),
     STRIPE_LEGACY_BASIC_PRICE_ID: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
-    SMTP_HOST: z.string().default("smtp.unsend.dev"),
-    SMTP_USER: z.string().default("unsend"),
+    SMTP_HOST: z.string().default("smtp.usesend.com"),
+    SMTP_USER: z.string().default("usesend"),
   },
 
   /**
@@ -86,6 +87,7 @@ export const env = createEnv({
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
     AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
+    USESEND_API_KEY: process.env.USESEND_API_KEY,
     UNSEND_API_KEY: process.env.UNSEND_API_KEY,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

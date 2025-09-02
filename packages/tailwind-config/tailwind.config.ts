@@ -5,6 +5,30 @@ const config = {
   content: ["./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
+    fontFamily: {
+      sans: [
+        "Inter",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji",
+      ],
+      mono: [
+        "JetBrains Mono",
+        "Menlo",
+        "ui-monospace",
+        "SFMono-Regular",
+        "Menlo",
+        "Monaco",
+        "Consolas",
+        "Liberation Mono",
+        "Courier New",
+        "monospace",
+      ],
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -103,10 +127,6 @@ const config = {
         "accordion-down": "accordion-down 0.4s ease-out",
         "accordion-up": "accordion-up 0.4s ease-out",
       },
-      // fontFamily: {
-      //   sans: ["var(--font-geist-sans)"],
-      //   mono: ["var(--font-geist-mono)"],
-      // },
     },
   },
   plugins: [require("tailwindcss-animate")],

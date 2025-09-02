@@ -23,7 +23,7 @@
 ## Coding Style & Naming Conventions
 
 - TypeScript-first; 2-space indent; semicolons enabled by Prettier.
-- Linting: `@unsend/eslint-config`; run `pnpm lint` before PRs.
+- Linting: `@usesend/eslint-config`; run `pnpm lint` before PRs.
 - Formatting: Prettier 3; run `pnpm format`.
 - Files: React components PascalCase (e.g., `AppSideBar.tsx`); folders kebab/lowercase.
 - Paths (web): use alias `~/` for src imports (e.g., `import { x } from "~/utils/x"`).

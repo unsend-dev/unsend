@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@unsend/ui/src/breadcrumb";
+} from "@usesend/ui/src/breadcrumb";
 import { DomainStatusBadge } from "../domain-badge";
 import {
   Table,
@@ -18,15 +18,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@unsend/ui/src/table";
-import { TextWithCopyButton } from "@unsend/ui/src/text-with-copy";
+} from "@usesend/ui/src/table";
+import { TextWithCopyButton } from "@usesend/ui/src/text-with-copy";
 import React, { use } from "react";
-import { Switch } from "@unsend/ui/src/switch";
+import { Switch } from "@usesend/ui/src/switch";
 import DeleteDomain from "./delete-domain";
 import SendTestMail from "./send-test-mail";
-import { Button } from "@unsend/ui/src/button";
+import { Button } from "@usesend/ui/src/button";
 import Link from "next/link";
-import { toast } from "@unsend/ui/src/toaster";
+import { toast } from "@usesend/ui/src/toaster";
+import { H1 } from "@usesend/ui";
 
 export default function DomainItemPage({
   params,
@@ -42,7 +43,7 @@ export default function DomainItemPage({
     {
       refetchInterval: (q) => (q?.state.data?.isVerifying ? 10000 : false),
       refetchIntervalInBackground: true,
-    }
+    },
   );
 
   const verifyQuery = api.domain.startVerification.useMutation();
@@ -54,7 +55,7 @@ export default function DomainItemPage({
         onSettled: () => {
           domainQuery.refetch();
         },
-      }
+      },
     );
   };
 
@@ -67,7 +68,7 @@ export default function DomainItemPage({
           <div className="flex justify-between items-center">
             <div className="flex items-center  gap-4">
               {/* <div className="flex items-center gap-4">
-              <h1 className="font-medium text-2xl">{domainQuery.data?.name}</h1>
+              <H1>{domainQuery.data?.name}</H1>
             </div> */}
               <Breadcrumb>
                 <BreadcrumbList>
@@ -151,7 +152,7 @@ export default function DomainItemPage({
                   <TableCell className="">TXT</TableCell>
                   <TableCell>
                     <TextWithCopyButton
-                      value={`unsend._domainkey.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
+                      value={`${domainQuery.data?.dkimSelector ?? "unsend"}._domainkey.${domainQuery.data?.subdomain || domainQuery.data?.name}`}
                     />
                   </TableCell>
                   <TableCell className="">
@@ -232,7 +233,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
   const utils = api.useUtils();
 
   const [clickTracking, setClickTracking] = React.useState(
-    domain.clickTracking
+    domain.clickTracking,
   );
   const [openTracking, setOpenTracking] = React.useState(domain.openTracking);
 
@@ -245,7 +246,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Click tracking updated");
         },
-      }
+      },
     );
   }
 
@@ -258,7 +259,7 @@ const DomainSettings: React.FC<{ domain: Domain }> = ({ domain }) => {
           utils.domain.invalidate();
           toast.success("Open tracking updated");
         },
-      }
+      },
     );
   }
   return (

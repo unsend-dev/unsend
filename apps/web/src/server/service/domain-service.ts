@@ -41,7 +41,7 @@ export async function validateDomainFromEmail(email: string, teamId: number) {
   if (!domain) {
     throw new UnsendApiError({
       code: "BAD_REQUEST",
-      message: `Domain: ${fromDomain} of from email is wrong. Use the domain verified by unsend`,
+      message: `Domain: ${fromDomain} of from email is wrong. Use the domain verified by useSend`,
     });
   }
 
@@ -86,7 +86,8 @@ export async function createDomain(
   }
 
   const subdomain = tldts.getSubdomain(name);
-  const publicKey = await ses.addDomain(name, region, sesTenantId);
+  const dkimSelector = "usesend";
+  const publicKey = await ses.addDomain(name, region, sesTenantId, dkimSelector);
 
   const domain = await db.domain.create({
     data: {
@@ -96,6 +97,7 @@ export async function createDomain(
       subdomain,
       region,
       sesTenantId,
+      dkimSelector,
     },
   });
 

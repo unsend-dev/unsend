@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@unsend/ui/src/button";
-import { Input } from "@unsend/ui/src/input";
+import { Button } from "@usesend/ui/src/button";
+import { Input } from "@usesend/ui/src/input";
 import {
   Dialog,
   DialogContent,
@@ -9,11 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@unsend/ui/src/dialog";
+} from "@usesend/ui/src/dialog";
 import { api } from "~/trpc/react";
 import React, { useState } from "react";
 import { ApiKey } from "@prisma/client";
-import { toast } from "@unsend/ui/src/toaster";
+import { toast } from "@usesend/ui/src/toaster";
 import { Trash2 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@unsend/ui/src/form";
+} from "@usesend/ui/src/form";
 
 const apiKeySchema = z.object({
   name: z.string(),

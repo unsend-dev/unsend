@@ -7,10 +7,11 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@unsend/ui/src/breadcrumb";
+} from "@usesend/ui/src/breadcrumb";
 import Link from "next/link";
+import { H2 } from "@usesend/ui";
 
-import Spinner from "@unsend/ui/src/spinner";
+import Spinner from "@usesend/ui/src/spinner";
 import { api } from "~/trpc/react";
 import { use } from "react";
 
@@ -80,7 +81,7 @@ export default function CampaignDetailsPage({
         </BreadcrumbList>
       </Breadcrumb>
       <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-4"> Statistics</h2>
+        <H2 className="mb-4"> Statistics</H2>
         <div className="flex  gap-4">
           {statusCards.map((card) => (
             <div
@@ -110,7 +111,7 @@ export default function CampaignDetailsPage({
 
       {campaign.html && (
         <div className=" rounded-lg  mt-16">
-          <h2 className="text-xl font-semibold mb-4">Email</h2>
+          <H2 className="mb-4">Email</H2>
 
           <div className="p-2 rounded-lg border shadow  flex flex-col gap-4 w-full">
             <div className="flex flex-col gap-3 px-4 py-1">

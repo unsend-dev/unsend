@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@unsend/ui/src/tooltip";
+} from "@usesend/ui/src/tooltip";
 import {
   CheckCircle2,
   CheckCircle2Icon,

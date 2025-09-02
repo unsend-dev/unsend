@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Unsend",
+  "name": "useSend",
   "logo": {
     "dark": "/logo/Logo-wordmark-dark.png",
     "light": "/logo/Logo-wordmark.png"
@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hello@unsend.dev"
+      "url": "mailto:hey@usesend.com"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.unsend.dev"
+    "url": "https://app.usesend.com"
   },
   "tabs": [
     {
@@ -35,7 +35,7 @@
     {
       "name": "GitHub",
       "icon": "github",
-      "url": "https://github.com/unsend-dev/unsend"
+      "url": "https://github.com/usesend/usesend"
     },
     {
       "name": "Community",

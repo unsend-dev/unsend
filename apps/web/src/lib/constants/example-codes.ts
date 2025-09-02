@@ -1,4 +1,4 @@
-import { CodeBlock } from "@unsend/ui/src/code";
+import { CodeBlock } from "@usesend/ui/src/code";
 
 export const getSendTestEmailCode = ({
   from,
@@ -17,13 +17,13 @@ export const getSendTestEmailCode = ({
     {
       language: "js",
       title: "Node.js",
-      code: `import { Unsend } from "unsend";
+      code: `import { UseSend } from "usesend";
 
-const unsend = new Unsend("us_12345");
+const usesend = new UseSend("us_12345");
 
-// const unsend = new Unsend("us_12345", "https://my-unsend-instance.com");
+// const usesend = new UseSend("us_12345", "https://app.usesend.com");
 
-unsend.emails.send({
+usesend.emails.send({
   to: "${to}",
   from: "${from}",
   subject: "${subject}",
@@ -37,7 +37,7 @@ unsend.emails.send({
       title: "Python",
       code: `import requests
 
-url = "https://app.unsend.dev/api/v1/emails"
+url = "https://app.usesend.com/api/v1/emails"
       
 payload = {
     "to": "${to}",
@@ -63,7 +63,7 @@ response = requests.request("POST", url, json=payload, headers=headers)
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://app.unsend.dev/api/v1/emails",
+  CURLOPT_URL => "https://app.usesend.com/api/v1/emails",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -97,7 +97,7 @@ if ($err) {
 require 'uri'
 require 'json'
 
-url = URI("https://app.unsend.dev/api/v1/emails")
+url = URI("https://app.usesend.com/api/v1/emails")
 
 payload = {
   "to" => "${to}",
@@ -126,7 +126,7 @@ puts response.body
     {
       language: "curl",
       title: "cURL",
-      code: `curl -X POST https://app.unsend.dev/api/v1/emails \\
+      code: `curl -X POST https://app.usesend.com/api/v1/emails \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer us_12345" \\
 -d '{"to": "${to}", "from": "${from}", "subject": "${subject}", "text": "${body}", "html": "${bodyHtml}"}'`,
