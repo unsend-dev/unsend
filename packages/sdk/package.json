@@ -1,6 +1,6 @@
 {
-  "name": "usesend",
-  "version": "1.5.1",
+  "name": "usesend-js",
+  "version": "1.5.2",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
