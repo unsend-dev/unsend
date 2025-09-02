@@ -265,7 +265,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
   const unsubscribeUrl = createUnsubUrl(contact.id, emailConfig.campaignId);
   const oneClickUnsubUrl = createOneClickUnsubUrl(
     contact.id,
-    emailConfig.campaignId,
+    emailConfig.campaignId
   );
 
   // Check for suppressed emails before processing
@@ -280,18 +280,18 @@ async function processContactEmail(jobData: CampaignEmailJob) {
 
   const suppressionResults = await SuppressionService.checkMultipleEmails(
     allEmailsToCheck,
-    emailConfig.teamId,
+    emailConfig.teamId
   );
 
   // Filter each field separately
   const filteredToEmails = toEmails.filter(
-    (email) => !suppressionResults[email],
+    (email) => !suppressionResults[email]
   );
   const filteredCcEmails = ccEmails.filter(
-    (email) => !suppressionResults[email],
+    (email) => !suppressionResults[email]
   );
   const filteredBccEmails = bccEmails.filter(
-    (email) => !suppressionResults[email],
+    (email) => !suppressionResults[email]
   );
 
   // Check if the contact's email (TO recipient) is suppressed
@@ -306,6 +306,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
     },
     linkValues: {
       "{{unsend_unsubscribe_url}}": unsubscribeUrl,
+      "{{usesend_unsubscribe_url}}": unsubscribeUrl,
     },
   });
 
@@ -317,7 +318,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
         campaignId: emailConfig.campaignId,
         teamId: emailConfig.teamId,
       },
-      "Contact email is suppressed. Creating suppressed email record.",
+      "Contact email is suppressed. Creating suppressed email record."
     );
 
     const email = await db.email.create({
@@ -361,7 +362,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
         campaignId: emailConfig.campaignId,
         teamId: emailConfig.teamId,
       },
-      "Some CC recipients were suppressed and filtered out from campaign email.",
+      "Some CC recipients were suppressed and filtered out from campaign email."
     );
   }
 
@@ -373,7 +374,7 @@ async function processContactEmail(jobData: CampaignEmailJob) {
         campaignId: emailConfig.campaignId,
         teamId: emailConfig.teamId,
       },
-      "Some BCC recipients were suppressed and filtered out from campaign email.",
+      "Some BCC recipients were suppressed and filtered out from campaign email."
     );
   }
 
@@ -401,13 +402,13 @@ async function processContactEmail(jobData: CampaignEmailJob) {
     emailConfig.teamId,
     emailConfig.region,
     false,
-    oneClickUnsubUrl,
+    oneClickUnsubUrl
   );
 }
 
 export async function sendCampaignEmail(
   campaign: Campaign,
-  emailData: CampainEmail,
+  emailData: CampainEmail
 ) {
   const {
     campaignId,
@@ -445,14 +446,14 @@ export async function sendCampaignEmail(
         domainId: domain.id,
         region: domain.region,
       },
-    })),
+    }))
   );
 }
 
 export async function updateCampaignAnalytics(
   campaignId: string,
   emailStatus: EmailStatus,
-  hardBounce: boolean = false,
+  hardBounce: boolean = false
 ) {
   const campaign = await db.campaign.findUnique({
     where: { id: campaignId },
@@ -503,7 +504,7 @@ class CampaignEmailService {
     CAMPAIGN_MAIL_PROCESSING_QUEUE,
     {
       connection: getRedis(),
-    },
+    }
   );
 
   // TODO: Add team context to job data when queueing
@@ -515,7 +516,7 @@ class CampaignEmailService {
     {
       connection: getRedis(),
       concurrency: CAMPAIGN_EMAIL_CONCURRENCY,
-    },
+    }
   );
 
   static async queueContact(data: CampaignEmailJob) {
@@ -525,7 +526,7 @@ class CampaignEmailService {
         ...data,
         teamId: data.emailConfig.teamId,
       },
-      DEFAULT_QUEUE_OPTIONS,
+      DEFAULT_QUEUE_OPTIONS
     );
   }
 
@@ -540,7 +541,7 @@ class CampaignEmailService {
         opts: {
           ...DEFAULT_QUEUE_OPTIONS,
         },
-      })),
+      }))
     );
   }
 }

@@ -39,9 +39,7 @@ import { useUpgradeModalStore } from "~/store/upgradeModalStore";
 import { LimitReason } from "~/lib/constants/plans";
 
 const domainSchema = z.object({
-  region: z.string({ required_error: "Region is required" }).min(1, {
-    message: "Region is required",
-  }),
+  region: z.string().optional(),
   domain: z.string({ required_error: "Domain is required" }).min(1, {
     message: "Domain is required",
   }),
@@ -83,6 +81,13 @@ export default function AddDomain() {
       return;
     }
 
+    if (!values.region && !singleRegion) {
+      domainForm.setError("region", {
+        message: "Region is required",
+      });
+      return;
+    }
+
     if (limitsQuery.data?.isLimitReached) {
       openModal(limitsQuery.data.reason);
       return;
@@ -91,7 +96,7 @@ export default function AddDomain() {
     addDomainMutation.mutate(
       {
         name: values.domain,
-        region: singleRegion ?? values.region,
+        region: singleRegion ?? values.region ?? "",
       },
       {
         onSuccess: async (data) => {
