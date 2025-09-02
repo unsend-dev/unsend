@@ -20,7 +20,7 @@ import {
 } from "@usesend/ui/src/form";
 
 import { api } from "~/trpc/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as tldts from "tldts";
@@ -68,6 +68,11 @@ export default function AddDomain() {
   const utils = api.useUtils();
   const router = useRouter();
 
+  const singleRegion =
+    regionQuery.data?.length === 1 ? regionQuery.data[0] : undefined;
+
+  const showRegionSelect = (regionQuery.data?.length ?? 0) > 1;
+
   async function onDomainAdd(values: z.infer<typeof domainSchema>) {
     const domain = tldts.getDomain(values.domain);
     if (!domain) {
@@ -86,7 +91,7 @@ export default function AddDomain() {
     addDomainMutation.mutate(
       {
         name: values.domain,
-        region: values.region,
+        region: singleRegion ?? values.region,
       },
       {
         onSuccess: async (data) => {
@@ -151,40 +156,43 @@ export default function AddDomain() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={domainForm.control}
-                name="region"
-                render={({ field, formState }) => (
-                  <FormItem>
-                    <FormLabel>Region</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={regionQuery.isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select region" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {regionQuery.data?.map((region) => (
-                          <SelectItem value={region} key={region}>
-                            {region}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {formState.errors.region ? (
-                      <FormMessage />
-                    ) : (
-                      <FormDescription>
-                        Select the region from where the email is sent{" "}
-                      </FormDescription>
-                    )}
-                  </FormItem>
-                )}
-              />
+
+              {showRegionSelect && (
+                <FormField
+                  control={domainForm.control}
+                  name="region"
+                  render={({ field, formState }) => (
+                    <FormItem>
+                      <FormLabel>Region</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={regionQuery.isLoading}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select region" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {regionQuery.data?.map((region) => (
+                            <SelectItem value={region} key={region}>
+                              {region}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {formState.errors.region ? (
+                        <FormMessage />
+                      ) : (
+                        <FormDescription>
+                          Select the region from where the email is sent{" "}
+                        </FormDescription>
+                      )}
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <div className="flex justify-end">
                 <Button

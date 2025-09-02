@@ -79,25 +79,24 @@ export const AddSesSettingsForm: React.FC<SesSettingsProps> = ({
       return;
     }
 
-    // Backend still expects `unsendUrl`; map from `usesendUrl` here.
     addSesSettings.mutate(
       {
         region: data.region,
-        unsendUrl: data.usesendUrl,
+        usesendUrl: data.usesendUrl,
         sendRate: data.sendRate,
         transactionalQuota: data.transactionalQuota,
       },
       {
-      onSuccess: () => {
-        utils.admin.invalidate();
-        onSuccess?.();
+        onSuccess: () => {
+          utils.admin.invalidate();
+          onSuccess?.();
+        },
+        onError: (e) => {
+          toast.error("Failed to create", {
+            description: e.message,
+          });
+        },
       },
-      onError: (e) => {
-        toast.error("Failed to create", {
-          description: e.message,
-        });
-      },
-      }
     );
   }
 
