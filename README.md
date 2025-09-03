@@ -1,5 +1,5 @@
 <p align="center">
-  <img style="width: 200px;height: 200px; margin: auto;" src="https://github.com/usesend/usesend/assets/24666922/76268b21-0786-4f89-aa0f-e003fd0a6d60" alt="useSend Logo">
+  <img style="width: 200px;height: 200px; margin: auto;" src="https://usesend.com/logo-squircle.png" alt="useSend Logo">
 </p>
 
 <p align="center" style="margin-top: 20px">
