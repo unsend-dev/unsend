@@ -24,10 +24,6 @@
    <a href="https://hub.docker.com/r/usesend/usesend"><img alt="Docker Automated build" src="https://img.shields.io/docker/pulls/usesend/usesend"></a>
 </p>
 
-<div align="center">
-  <img src="https://github.com/usesend/usesend/assets/24666922/68c41a6f-8fd1-4a3e-8d9b-987dda105c22" style="width: 100%;" />
-</div>
-
 ## About this project
 
 As most of email products out there, useSend also uses Amazon SES under the hood to send emails. We provide an open and alternative way to send emails reliably and cheaply with a great dashboard. You can also use useSend manage contacts and send bulk emails(newsletter, product updates etc). We will take care of the subscriptions.
