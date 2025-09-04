@@ -55,9 +55,9 @@ function getProviders() {
         allowDangerousEmailAccountLinking: true,
         authorization: {
           params: {
-            scope: 'read:user user:email'
-          }
-        }
+            scope: "read:user user:email",
+          },
+        },
       })
     );
   }

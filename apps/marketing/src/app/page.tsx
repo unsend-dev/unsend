@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { GitHubStarsButton } from "~/components/GitHubStarsButton";
 import { Button } from "@usesend/ui/src/button";
+import { FeatureCard } from "~/components/FeatureCard";
+import { FeatureCardPlain } from "~/components/FeatureCardPlain";
 
 const REPO = "unsend-dev/unsend";
 const REPO_URL = `https://github.com/${REPO}`;
@@ -269,61 +271,71 @@ function TrustedBy() {
 }
 
 function Features() {
-  const items = [
+  // Top: 2 cards (with image area) — Analytics, Editor
+  const top = [
     {
-      title: "SMTP relay & REST API",
-      desc: "Send reliably via SMTP or HTTP with API keys and per‑environment configs.",
-      icon: MailIcon,
+      key: "feature-analytics",
+      title: "Analytics",
+      content:
+        "Track deliveries, opens, clicks, bounces and unsubscribes in real time with a simple, searchable log. Filter by domain, status, api key and more and export them. Track which campaigns perform best.",
+      imageSrc: "", // add an image like "/analytics.png"
     },
     {
-      title: "Visual editor & templates",
-      desc: "Build beautiful emails with a drag‑drop editor and shareable templates.",
-      icon: LayoutIcon,
+      key: "feature-editor",
+      title: "Marketing Email Editor",
+      content:
+        "Design beautiful campaigns without code using a visual, notion like WYSIWYG editor that works in major email clients. Reuse templates and brand styles, and personalize with variables.",
+      imageSrc: "", // add an image like "/editor.png"
+    },
+  ];
+
+  // Bottom: 3 cards (no images) — Contact Management, Suppression List, SMTP Relay Service
+  const bottom = [
+    {
+      key: "feature-contacts",
+      title: "Contact Management",
+      content:
+        "Manage contacts, lists, and consent in one place. Import and export easily, keep per-list subscription status. Contacts are automatically updated from bounces and complaints.",
     },
     {
-      title: "Events & analytics",
-      desc: "Track deliveries, opens, clicks, bounces, and webhooks in one place.",
-      icon: BarChartIcon,
+      key: "feature-suppression",
+      title: "Suppression List",
+      content:
+        "Prevent accidental sends. Automatically populated from bounces and complaints, and manage via import/export or API. Works with transactional and marketing emails.",
     },
     {
-      title: "Self‑host or cloud",
-      desc: "Run locally with Docker or deploy anywhere. Keep control of your data.",
-      icon: ServerIcon,
-    },
-    {
-      title: "TypeScript SDK",
-      desc: "Great DX with a typed client. Send from Node, Edge, or serverless.",
-      icon: CodeIcon,
-    },
-    {
-      title: "Open source",
-      desc: "MIT licensed, community‑driven. Extend features to fit your stack.",
-      icon: OpenSourceIcon,
+      key: "feature-smtp",
+      title: "SMTP Relay Service",
+      content:
+        "Drop-in SMTP relay that works with any app or framework. Do not get vendor lock-in. Comes in handy with services like Supabase",
     },
   ];
 
   return (
     <section id="features" className="py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-6">
-        <SectionHeading
-          center
-          eyebrow="Features"
-          title="Everything you need to send and scale"
-          subtitle="Replace a patchwork of tools with one platform that handles sending, templates, and observability."
-        />
+        <div className="text-center">
+          <div className="mb-2 text-sm uppercase tracking-wider text-primary">
+            Features
+          </div>
+        </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-xl border border-border bg-card p-5 hover:bg-accent/30 transition-colors"
-            >
-              <div className="mb-3 text-blue">
-                <f.icon className="h-6 w-6" />
-              </div>
-              <h3 className="text-base font-medium">{f.title}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
-            </div>
+        {/* Top row: 2 side-by-side cards with images */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {top.map((f) => (
+            <FeatureCard
+              key={f.key}
+              title={f.title}
+              content={f.content}
+              imageSrc={f.imageSrc}
+            />
+          ))}
+        </div>
+
+        {/* Bottom row: 3 cards without images */}
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {bottom.map((f) => (
+            <FeatureCardPlain key={f.key} title={f.title} content={f.content} />
           ))}
         </div>
       </div>
@@ -345,17 +357,20 @@ await unsend.emails.send({
 });`;
 
   return (
-    <section className="py-16 sm:py-20 bg-muted/30 border-y border-border">
+    <section className="py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-6">
-        <SectionHeading
-          center
-          eyebrow="Developer‑first"
-          title="Ship email flows in minutes"
-          subtitle="Typed SDKs and simple APIs, so you can focus on product—not plumbing."
-        />
+        <div className="text-center">
+          <div className="mb-2 text-sm uppercase tracking-wider text-primary">
+            Developers
+          </div>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
+            Typed SDKs and simple APIs, so you can focus on product not
+            plumbing.
+          </p>
+        </div>
 
-        <div className="mt-8 rounded-xl border border-border bg-card overflow-hidden">
-          <div className="px-4 py-2 text-xs text-muted-foreground border-b border-border">
+        <div className="mt-8 overflow-hidden">
+          <div className="px-4 py-2 text-xs text-muted-foreground">
             TypeScript
           </div>
           <pre className="p-4 text-sm overflow-auto">

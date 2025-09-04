@@ -53,9 +53,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="bg-sidebar-background">
+    <html lang="en" suppressHydrationWarning className=" bg-background">
       <body
-        className={`font-mono ${inter.variable} ${jetbrainsMono.variable} bg-sidebar-background`}
+        className={`font-mono ${inter.variable} ${jetbrainsMono.variable} bg-background`}
       >
         {/* System theme with isolated storage to avoid stale overrides */}
         <ThemeProvider
