@@ -107,6 +107,9 @@ const config = {
         gray: {
           DEFAULT: "hsl(var(--gray))",
         },
+        "primary-light": {
+          DEFAULT: "hsl(var(--primary-light))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
