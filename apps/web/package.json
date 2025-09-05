@@ -65,7 +65,7 @@
     "superjson": "^2.2.2",
     "tldts": "^7.0.4",
     "ua-parser-js": "^2.0.3",
-    "usesend": "workspace:*",
+    "usesend-js": "workspace:*",
     "use-debounce": "^10.0.4",
     "zod": "^3.24.3",
     "zustand": "^5.0.8"

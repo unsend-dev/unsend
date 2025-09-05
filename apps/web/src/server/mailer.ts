@@ -1,5 +1,5 @@
 import { env } from "~/env";
-import { UseSend } from "usesend";
+import { UseSend } from "usesend-js";
 import { isSelfHosted } from "~/utils/common";
 import { db } from "./db";
 import { getDomains } from "./service/domain-service";
