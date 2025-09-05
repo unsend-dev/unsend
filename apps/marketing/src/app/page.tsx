@@ -13,7 +13,7 @@ const APP_URL = "https://app.usesend.com";
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-sidebar-background text-foreground">
+    <main className="min-h-screen  text-foreground bg-background">
       <TopNav />
       <Hero />
       <TrustedBy />
@@ -288,16 +288,16 @@ function Features() {
 }
 
 function CodeExample() {
-  const code = `import { Unsend } from "@unsend/sdk";
+  const code = `import { UseSend } from "usesend-js";
 
-const unsend = new Unsend({ apiKey: process.env.UNSEND_API_KEY! });
+const usesend = new UseSend("us_12345");
 
-await unsend.emails.send({
-  from: "hi@example.com",
-  to: "you@company.com",
-  subject: "Welcome to useSend",
-  template: "welcome", // or html/text
-  data: { name: "Ada" },
+usesend.emails.send({
+  to: "hello@acme.com",
+  from: "hello@company.com",
+  subject: "useSend email",
+  html: "<p>useSend is the best open source product to send emails</p>",
+  text: "useSend is the best open source product to send emails",
 });`;
 
   return (
@@ -314,12 +314,12 @@ await unsend.emails.send({
         </div>
 
         <div className="mt-8 overflow-hidden">
-          <div className=" py-2 text-xs text-muted-foreground">TypeScript</div>
+          <div className=" py-2 text-xs text-muted-foreground">JavaScript</div>
           <div className="rounded-[18px] bg-primary/20 p-1">
             <div className="rounded-[14px] bg-primary/20 p-0.5 shadow-sm">
               <div className="bg-background rounded-xl overflow-hidden">
                 <CodeBlock
-                  lang="typescript"
+                  lang="javascript"
                   children={code}
                   className="p-4 rounded-[10px]"
                 />
