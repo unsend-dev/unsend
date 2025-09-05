@@ -4,6 +4,7 @@ import { GitHubStarsButton } from "~/components/GitHubStarsButton";
 import { Button } from "@usesend/ui/src/button";
 import { FeatureCard } from "~/components/FeatureCard";
 import { FeatureCardPlain } from "~/components/FeatureCardPlain";
+import { CodeBlock } from "@usesend/ui/src/code-block";
 
 const REPO = "unsend-dev/unsend";
 const REPO_URL = `https://github.com/${REPO}`;
@@ -79,27 +80,29 @@ function Hero() {
         </p>
 
         <div className=" mt-32 mx-auto max-w-5xl">
-          <div className="rounded-2xl bg-primary/30 p-1 sm:p-1 border-2 border-primary/30 shadow-sm">
-            <Image
-              src="/hero-light.png"
-              alt="useSend product hero"
-              width={3456}
-              height={1914}
-              className="w-full h-auto rounded-xl block dark:hidden"
-              sizes="(min-width: 1024px) 900px, 100vw"
-              loading="eager"
-              priority={false}
-            />
-            <Image
-              src="/hero-dark.png"
-              alt="useSend product hero"
-              width={3456}
-              height={1914}
-              className="w-full h-auto rounded-xl hidden dark:block"
-              sizes="(min-width: 1024px) 900px, 100vw"
-              loading="eager"
-              priority={false}
-            />
+          <div className="rounded-[18px] bg-primary/10 p-1 sm:p-1 ">
+            <div className="rounded-2xl bg-primary/20 p-1 sm:p-1 ">
+              <Image
+                src="/hero-light.png"
+                alt="useSend product hero"
+                width={3456}
+                height={1914}
+                className="w-full h-auto rounded-xl block dark:hidden"
+                sizes="(min-width: 1024px) 900px, 100vw"
+                loading="eager"
+                priority={false}
+              />
+              <Image
+                src="/hero-dark.png"
+                alt="useSend product hero"
+                width={3456}
+                height={1914}
+                className="w-full h-auto rounded-xl hidden dark:block"
+                sizes="(min-width: 1024px) 900px, 100vw"
+                loading="eager"
+                priority={false}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -194,7 +197,7 @@ function TrustedBy() {
     <section className="py-10 sm:py-20 ">
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center tracking-wider text-muted-foreground">
-          <span className="">Builders and open source teams like </span>
+          <span className="">Builders and open source teams love </span>
           <span className="text-primary font-bold">useSend</span>
         </div>
 
@@ -370,23 +373,28 @@ await unsend.emails.send({
         </div>
 
         <div className="mt-8 overflow-hidden">
-          <div className="px-4 py-2 text-xs text-muted-foreground">
-            TypeScript
+          <div className=" py-2 text-xs text-muted-foreground">TypeScript</div>
+          <div className="rounded-[18px] bg-primary/20 p-1">
+            <div className="rounded-[14px] bg-primary/20 p-0.5 shadow-sm">
+              <div className="bg-background rounded-xl overflow-hidden">
+                <CodeBlock
+                  lang="typescript"
+                  children={code}
+                  className="p-4 rounded-[10px]"
+                />
+              </div>
+            </div>
           </div>
-          <pre className="p-4 text-sm overflow-auto">
-            <code>{code}</code>
-          </pre>
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-3">
           <Button size="lg" className="px-6">
-            <a href={GET_STARTED_URL} target="_blank" rel="noopener noreferrer">
-              Read the Getting Started guide
-            </a>
-          </Button>
-          <Button variant="outline" size="lg" className="px-5">
-            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
-              Explore the repository
+            <a
+              href="https://docs.usesend.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Read the docs
             </a>
           </Button>
         </div>
