@@ -62,7 +62,7 @@ function Hero() {
           <div className="rounded-[18px] bg-primary/10 p-1 sm:p-1 ">
             <div className="rounded-2xl bg-primary/20 p-1 sm:p-1 ">
               <Image
-                src="/hero-light.png"
+                src="/hero-light.webp"
                 alt="useSend product hero"
                 width={3456}
                 height={1914}
@@ -72,7 +72,7 @@ function Hero() {
                 priority={false}
               />
               <Image
-                src="/hero-dark.png"
+                src="/hero-dark.webp"
                 alt="useSend product hero"
                 width={3456}
                 height={1914}
@@ -223,14 +223,16 @@ function Features() {
       title: "Analytics",
       content:
         "Track deliveries, opens, clicks, bounces and unsubscribes in real time with a simple, searchable log. Filter by domain, status, api key and export them. Track which campaigns perform best.",
-      imageSrc: "", // add an image like "/analytics.png"
+      imageLightSrc: "/emails-search-light.webp",
+      imageDarkSrc: "/emails-search-dark.webp",
     },
     {
       key: "feature-editor",
       title: "Marketing Email Editor",
       content:
         "Design beautiful campaigns without code using a visual, notion like WYSIWYG editor that works in major email clients. Reuse templates and brand styles, and personalize with variables.",
-      imageSrc: "", // add an image like "/editor.png"
+      imageLightSrc: "/editor-light.webp",
+      imageDarkSrc: "/editor-dark.webp",
     },
   ];
 
@@ -272,7 +274,8 @@ function Features() {
               key={f.key}
               title={f.title}
               content={f.content}
-              imageSrc={f.imageSrc}
+              imageLightSrc={f.imageLightSrc}
+              imageDarkSrc={f.imageDarkSrc}
             />
           ))}
         </div>

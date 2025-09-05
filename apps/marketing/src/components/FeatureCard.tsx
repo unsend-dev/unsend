@@ -2,21 +2,47 @@
 
 import Image from "next/image";
 
+type FeatureCardProps = {
+  title?: string;
+  content?: string;
+  imageLightSrc?: string;
+  imageDarkSrc?: string;
+  /**
+   * Deprecated: prefer imageLightSrc and imageDarkSrc
+   */
+  imageSrc?: string;
+};
+
 export function FeatureCard({
   title,
   content,
+  imageLightSrc,
+  imageDarkSrc,
   imageSrc,
-}: {
-  title?: string;
-  content?: string;
-  imageSrc?: string;
-}) {
+}: FeatureCardProps) {
   return (
     <div className="rounded-[18px] bg-primary/20 p-1 ">
       <div className="h-full rounded-[14px] bg-primary/20 p-0.5   shadow-sm">
         <div className="bg-background rounded-xl h-full flex flex-col">
           <div className="relative w-full aspect-[16/9] rounded-t-xl">
-            {imageSrc ? (
+            {imageLightSrc || imageDarkSrc ? (
+              <>
+                <Image
+                  src={(imageLightSrc || imageDarkSrc)!}
+                  alt={title || "Feature image"}
+                  fill
+                  className="object-cover dark:hidden rounded-t-xl"
+                  priority={false}
+                />
+                <Image
+                  src={(imageDarkSrc || imageLightSrc)!}
+                  alt={title || "Feature image"}
+                  fill
+                  className="object-cover hidden dark:block rounded-t-xl"
+                  priority={false}
+                />
+              </>
+            ) : imageSrc ? (
               <Image
                 src={imageSrc}
                 alt={title || "Feature image"}
