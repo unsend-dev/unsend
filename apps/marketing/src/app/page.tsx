@@ -5,6 +5,7 @@ import { Button } from "@usesend/ui/src/button";
 import { TopNav } from "~/components/TopNav";
 import { FeatureCard } from "~/components/FeatureCard";
 import { FeatureCardPlain } from "~/components/FeatureCardPlain";
+import { PricingCalculator } from "~/components/PricingCalculator";
 import { CodeBlock } from "@usesend/ui/src/code-block";
 
 const REPO = "unsend-dev/unsend";
@@ -370,7 +371,7 @@ function Pricing() {
             PRICING
           </div>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
-            pay for what you use, not for storing contacts
+            pay for what you use, the most affordable email platform
           </p>
         </div>
 
@@ -387,6 +388,10 @@ function Pricing() {
             note="minimum usage per month"
             perks={paidPerks}
           />
+        </div>
+
+        <div className="mt-8">
+          <PricingCalculator />
         </div>
       </div>
     </section>
