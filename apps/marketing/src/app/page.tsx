@@ -486,6 +486,12 @@ function Footer() {
           <Link href="#features" className="hover:text-foreground">
             Features
           </Link>
+          <Link href="/privacy" className="hover:text-foreground">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-foreground">
+            Terms
+          </Link>
           <a
             href={REPO_URL}
             target="_blank"

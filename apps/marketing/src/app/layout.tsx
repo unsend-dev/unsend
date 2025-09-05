@@ -20,12 +20,12 @@ export const metadata: Metadata = {
   description:
     "Open source email platform for everyone: SMTP, API, editor, analytics.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
-  metadataBase: new URL("https://usesend.dev"),
+  metadataBase: new URL("https://usesend.com"),
   openGraph: {
     title: "useSend – Open source email platform",
     description:
       "Open source email platform for everyone: SMTP, API, editor, analytics.",
-    url: "https://usesend.dev",
+    url: "https://usesend.com",
     siteName: "useSend",
     images: [
       {

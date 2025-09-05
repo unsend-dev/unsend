@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@usesend/ui/src/button";
 
@@ -11,18 +12,21 @@ const APP_URL = "https://app.usesend.com";
 
 export function TopNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const pricingHref = isHome ? "#pricing" : "/#pricing";
 
   return (
     <header className="py-4 border-b border-border sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-sidebar-background/80">
       <div className="mx-auto max-w-6xl px-6 flex items-center justify-between gap-4 text-sm">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 group">
           <Image src="/logo-squircle.png" alt="useSend" width={24} height={24} />
-          <span className="text-primary font-mono text-[16px]">useSend</span>
-        </div>
+          <span className="text-primary font-mono text-[16px] group-hover:opacity-90">useSend</span>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-4 text-muted-foreground">
-          <Link href="#pricing" className="hover:text-foreground">
+          <Link href={pricingHref} className="hover:text-foreground">
             Pricing
           </Link>
           <a
@@ -68,7 +72,7 @@ export function TopNav() {
       {open ? (
         <div className="sm:hidden border-t border-border bg-sidebar-background/95 backdrop-blur">
           <div className="mx-auto max-w-6xl px-6 py-3 flex flex-col gap-2">
-            <Link href="#pricing" className="py-2 text-muted-foreground hover:text-foreground" onClick={() => setOpen(false)}>
+            <Link href={pricingHref} className="py-2 text-muted-foreground hover:text-foreground" onClick={() => setOpen(false)}>
               Pricing
             </Link>
             <a
