@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { GitHubStarsButton } from "~/components/GitHubStarsButton";
 import { Button } from "@usesend/ui/src/button";
+import { TopNav } from "~/components/TopNav";
 import { FeatureCard } from "~/components/FeatureCard";
 import { FeatureCardPlain } from "~/components/FeatureCardPlain";
 import { CodeBlock } from "@usesend/ui/src/code-block";
 
 const REPO = "unsend-dev/unsend";
 const REPO_URL = `https://github.com/${REPO}`;
-const GET_STARTED_URL = `${REPO_URL}#-getting-started`;
+const APP_URL = "https://app.usesend.com";
 
 export default function Page() {
   return (
@@ -19,55 +20,32 @@ export default function Page() {
       <Features />
       <CodeExample />
       <Pricing />
-      <FAQ />
+      <About />
       <Footer />
     </main>
   );
 }
 
-function SectionHeading({
-  eyebrow,
-  title,
-  subtitle,
-  center,
-}: {
-  eyebrow?: string;
-  title: string;
-  subtitle?: string;
-  center?: boolean;
-}) {
-  return (
-    <div className={center ? "text-center" : undefined}>
-      {eyebrow ? (
-        <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {eyebrow}
-        </div>
-      ) : null}
-      <h2 className="text-2xl sm:text-3xl font-semibold">{title}</h2>
-      {subtitle ? (
-        <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
-          {subtitle}
-        </p>
-      ) : null}
-    </div>
-  );
-}
+// (Removed unused SectionHeading component)
 
 function Hero() {
   return (
     <section>
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
         <h1 className="mt-6 text-center text-2xl sm:text-4xl font-semibold text-primary font-sans">
-          The open source email platform for product teams
+          The open source email platform for everyone
         </h1>
-        <p className="mt-4 text-center text-base sm:text-lg text-muted-foreground font-sans max-w-2xl mx-auto">
-          Send product, transactional and marketing emails. Pay only for what
-          you send and not for storing contacts. Open source and self-hostable.
+        <p className="mt-4 text-center text-base sm:text-lg  font-sans max-w-2xl mx-auto">
+          Send product, transactional and marketing emails.{" "}
+          <span className="text-primary font-normal">
+            Pay only for what you send
+          </span>{" "}
+          and not for storing contacts. Open source and self-hostable.
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Button size="lg" className="px-6">
-            <a href={GET_STARTED_URL} target="_blank" rel="noopener noreferrer">
+            <a href={APP_URL} target="_blank" rel="noopener noreferrer">
               Get started
             </a>
           </Button>
@@ -110,47 +88,7 @@ function Hero() {
   );
 }
 
-function TopNav() {
-  return (
-    <header className="py-4 border-b border-border sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-sidebar-background/80">
-      <div className="mx-auto max-w-6xl px-6 flex items-center justify-between gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/logo-squircle.png"
-            alt="useSend"
-            width={24}
-            height={24}
-          />
-          <span className="text-primary  font-mono text-[16px]">useSend</span>
-        </div>
-        <nav className="flex items-center gap-4 text-muted-foreground">
-          <Link href="#features" className="hover:text-foreground">
-            Features
-          </Link>
-          <Link href="#pricing" className="hover:text-foreground">
-            Pricing
-          </Link>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            GitHub
-          </a>
-          <a
-            href={GET_STARTED_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            Get Started
-          </a>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// TopNav moved to a dedicated client component in ~/components/TopNav
 
 function TrustedBy() {
   const featured = [
@@ -211,10 +149,10 @@ function TrustedBy() {
               key={t.author + t.company}
               className="rounded-xl border border-primary/30 p-5 h-full"
             >
-              <blockquote className="text-sm sm:text-base font-light font-sans  text-muted-foreground">
+              <blockquote className="text-sm sm:text-base font-light font-sans ">
                 {t.quote}
               </blockquote>
-              <div className="mt-3 flex items-center gap-3">
+              <div className="mt-5 flex items-center gap-3">
                 <Image
                   src={t.image}
                   alt={`${t.author} avatar`}
@@ -245,10 +183,10 @@ function TrustedBy() {
               key={t.author + t.company}
               className="rounded-xl border border-primary/30 p-5 h-full"
             >
-              <blockquote className="text-sm sm:text-base font-light font-sans leading-relaxed text-muted-foreground">
+              <blockquote className="text-sm sm:text-base font-light font-sans leading-relaxed">
                 {t.quote}
               </blockquote>
-              <div className="mt-3 flex items-center gap-3">
+              <div className="mt-5 flex items-center gap-3">
                 <Image
                   src={t.image}
                   alt={`${t.author} avatar`}
@@ -283,7 +221,7 @@ function Features() {
       key: "feature-analytics",
       title: "Analytics",
       content:
-        "Track deliveries, opens, clicks, bounces and unsubscribes in real time with a simple, searchable log. Filter by domain, status, api key and more and export them. Track which campaigns perform best.",
+        "Track deliveries, opens, clicks, bounces and unsubscribes in real time with a simple, searchable log. Filter by domain, status, api key and export them. Track which campaigns perform best.",
       imageSrc: "", // add an image like "/analytics.png"
     },
     {
@@ -416,7 +354,7 @@ function Pricing() {
   ];
 
   const paidPerks = [
-    "$10 minimum monthly spend",
+    "$10 monthly usage credits",
     "Send transactional emails at $0.0004 per email",
     "Send marketing emails at $0.001 per email",
     "Can have unlimited contact books",
@@ -446,7 +384,7 @@ function Pricing() {
           <PricingCard
             title="Paid"
             price="$10"
-            note="minimum spend per month"
+            note="minimum usage per month"
             perks={paidPerks}
           />
         </div>
@@ -495,49 +433,41 @@ function PricingCard({ title, price, note, perks }: PricingCardProps) {
   );
 }
 
-function FAQ() {
-  const faqs = [
-    {
-      q: "Is useSend really open source?",
-      a: "Yes. The core is MIT licensed. You can self‑host and modify for your needs.",
-    },
-    {
-      q: "Can I self‑host?",
-      a: "Absolutely. Use our Docker Compose to run locally or deploy to your own infra.",
-    },
-    {
-      q: "Do you support both SMTP and API?",
-      a: "Yes. Send via SMTP relay or the REST API/TypeScript SDK—whichever fits best.",
-    },
-    {
-      q: "What about analytics and webhooks?",
-      a: "Track deliveries, opens, clicks, bounces, and subscribe to events via webhooks.",
-    },
-  ];
-
+function About() {
   return (
-    <section className="py-16 sm:py-20 border-t border-border">
-      <div className="mx-auto max-w-5xl px-6">
-        <SectionHeading
-          center
-          eyebrow="FAQ"
-          title="Answers to common questions"
-        />
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {faqs.map((f) => (
-            <div
-              key={f.q}
-              className="rounded-xl border border-border bg-card p-5"
+    <section id="about" className="py-16 sm:py-20">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="text-center">
+          <div className="mb-2 text-sm uppercase tracking-wider text-primary">
+            About
+          </div>
+        </div>
+
+        <div className="mt-8 max-w-3xl mx-auto text-sm sm:text-base space-y-4">
+          <p>
+            As most of email products out there, useSend also uses Amazon SES
+            under the hood to send emails. We provide an open and alternative
+            way to send emails reliably and cheaply with a great dashboard.
+          </p>
+          <p>
+            useSend is bootstrapped and funded by the cloud offering and
+            sponsors. If you self host useSend, please consider{" "}
+            <a
+              href="https://github.com/sponsors/KMKoushik"
+              target="_blank"
+              className="text-primary-light"
             >
-              <h4 className="font-medium">{f.q}</h4>
-              <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
-            </div>
-          ))}
+              sponsoring us
+            </a>
+            .
+          </p>
         </div>
       </div>
     </section>
   );
 }
+
+// FAQ section removed per request
 
 function Footer() {
   return (
@@ -550,7 +480,7 @@ function Footer() {
             width={24}
             height={24}
           />
-          <span>useSend</span>
+          <span className="text-primary font-mono">useSend</span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="#features" className="hover:text-foreground">
@@ -565,7 +495,7 @@ function Footer() {
             GitHub
           </a>
           <a
-            href={GET_STARTED_URL}
+            href={APP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-foreground"

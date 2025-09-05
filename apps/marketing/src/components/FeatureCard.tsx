@@ -49,9 +49,7 @@ export function FeatureCard({
               {title || ""}
             </h3>
             {content ? (
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {content}
-              </p>
+              <p className="mt-2 text-sm  leading-relaxed">{content}</p>
             ) : (
               <div className="mt-2 text-sm text-muted-foreground min-h-[1.5rem]"></div>
             )}
