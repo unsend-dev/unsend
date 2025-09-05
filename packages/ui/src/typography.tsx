@@ -14,7 +14,7 @@ export const H1 = React.forwardRef<HTMLHeadingElement, TypographyProps>(
       ref={ref}
       className={cn(
         // font-mono, larger and a bit bolder
-        " font-mono text-xl font-medium",
+        " font-mono text-xl font-medium text-primary",
         className
       )}
       {...props}

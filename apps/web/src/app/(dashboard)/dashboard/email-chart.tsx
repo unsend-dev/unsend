@@ -2,6 +2,7 @@ import React from "react";
 import {
   BarChart,
   Bar,
+  Rectangle,
   XAxis,
   YAxis,
   Tooltip,
@@ -20,6 +21,37 @@ import { useColors } from "./hooks/useColors";
 interface EmailChartProps {
   days: number;
   domain: string | null;
+}
+
+const STACK_ORDER: string[] = [
+  "delivered",
+  "bounced",
+  "complained",
+  "opened",
+  "clicked",
+] as const;
+
+type StackKey = (typeof STACK_ORDER)[number];
+
+function createRoundedTopShape(currentKey: StackKey) {
+  const currentIndex = STACK_ORDER.indexOf(currentKey);
+  return (props: any) => {
+    const payload = props.payload as
+      | Partial<Record<StackKey, number>>
+      | undefined;
+    let hasAbove = false;
+    for (let i = currentIndex + 1; i < STACK_ORDER.length; i++) {
+      const key = STACK_ORDER[i];
+      const val = key ? (payload?.[key] ?? 0) : 0;
+      if (val > 0) {
+        hasAbove = true;
+        break;
+      }
+    }
+
+    const radius = hasAbove ? [0, 0, 0, 0] : [2.5, 2.5, 0, 0];
+    return <Rectangle {...props} radius={radius as any} />;
+  };
 }
 
 export default function EmailChart({ days, domain }: EmailChartProps) {
@@ -197,15 +229,32 @@ export default function EmailChart({ days, domain }: EmailChartProps) {
                 dataKey="delivered"
                 stackId="a"
                 fill={currentColors.delivered}
+                shape={createRoundedTopShape("delivered")}
               />
-              <Bar dataKey="bounced" stackId="a" fill={currentColors.bounced} />
+              <Bar
+                dataKey="bounced"
+                stackId="a"
+                fill={currentColors.bounced}
+                shape={createRoundedTopShape("bounced")}
+              />
               <Bar
                 dataKey="complained"
                 stackId="a"
                 fill={currentColors.complained}
+                shape={createRoundedTopShape("complained")}
               />
-              <Bar dataKey="opened" stackId="a" fill={currentColors.opened} />
-              <Bar dataKey="clicked" stackId="a" fill={currentColors.clicked} />
+              <Bar
+                dataKey="opened"
+                stackId="a"
+                fill={currentColors.opened}
+                shape={createRoundedTopShape("opened")}
+              />
+              <Bar
+                dataKey="clicked"
+                stackId="a"
+                fill={currentColors.clicked}
+                shape={createRoundedTopShape("clicked")}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

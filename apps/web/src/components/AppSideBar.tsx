@@ -39,6 +39,7 @@ import { isSelfHosted } from "~/utils/common";
 import { usePathname } from "next/navigation";
 import { Badge } from "@usesend/ui/src/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@usesend/ui/src/avatar";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,

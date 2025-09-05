@@ -1,42 +1,53 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Button } from "@usesend/ui/src/button";
 
 const REPO = "unsend-dev/unsend";
 const REPO_URL = `https://github.com/${REPO}`;
 const API_URL = `https://api.github.com/repos/${REPO}`;
+const REVALIDATE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
-export function GitHubStarsButton() {
-  const [stars, setStars] = useState<number | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const res = await fetch(API_URL, {
-          headers: {
-            Accept: "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-          },
-          cache: "no-store",
-        });
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!cancelled && typeof json.stargazers_count === "number") {
-          setStars(json.stargazers_count);
-        }
-      } catch (err) {
-        // ignore network errors; keep placeholder
-      }
+function formatCompact(n: number): string {
+  if (n < 1000) return n.toLocaleString();
+  const units = [
+    { v: 1_000_000_000, s: " B" },
+    { v: 1_000_000, s: " M" },
+    { v: 1_000, s: " K" },
+  ];
+  for (const u of units) {
+    if (n >= u.v) {
+      const num = n / u.v;
+      const rounded = Math.round(num * 10) / 10; // 1 decimal
+      const str = rounded.toFixed(1).replace(/\.0$/, "");
+      return str + u.s;
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }
+  return n.toLocaleString();
+}
 
-  const formatted = stars?.toLocaleString() ?? "—";
+export async function GitHubStarsButton() {
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "usesend-marketing",
+  };
+  if (process.env.GITHUB_TOKEN)
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+
+  let stars: number | null = null;
+  try {
+    const res = await fetch(API_URL, {
+      headers,
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (res.ok) {
+      const json = (await res.json()) as { stargazers_count?: number };
+      if (typeof json.stargazers_count === "number")
+        stars = json.stargazers_count;
+    }
+  } catch {
+    // ignore network errors; show placeholder
+  }
+
+  const formatted = stars == null ? "—" : formatCompact(stars);
 
   return (
     <Button variant="outline" size="lg" className="px-4 gap-2">
@@ -48,7 +59,10 @@ export function GitHubStarsButton() {
         className="flex items-center gap-2"
       >
         <GitHubIcon className="h-4 w-4" />
-        <span>Star on GitHub</span>
+        <span>GitHub</span>
+        <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground">
+          {formatted}
+        </span>
       </a>
     </Button>
   );

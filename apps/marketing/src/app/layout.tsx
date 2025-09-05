@@ -16,9 +16,35 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "useSend - Open source email platform",
-  description: "Open source email platform for everyone",
+  title: "useSend – Open source email platform",
+  description:
+    "Open source email platform for everyone: SMTP, API, editor, analytics.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  metadataBase: new URL("https://usesend.com"),
+  openGraph: {
+    title: "useSend – Open source email platform",
+    description:
+      "Open source email platform for everyone: SMTP, API, editor, analytics.",
+    url: "https://usesend.com",
+    siteName: "useSend",
+    images: [
+      {
+        url: "/logo-squircle.png",
+        width: 512,
+        height: 512,
+        alt: "useSend",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "useSend – Open source email platform",
+    description:
+      "Open source email platform for everyone: SMTP, API, editor, analytics.",
+    images: ["/logo-squircle.png"],
+  },
 };
 
 export default function RootLayout({
@@ -27,11 +53,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="bg-sidebar-background">
+    <html lang="en" suppressHydrationWarning className="scroll-smooth bg-background">
       <body
-        className={`font-sans ${inter.variable} ${jetbrainsMono.variable} bg-sidebar-background`}
+        className={`font-mono ${inter.variable} ${jetbrainsMono.variable} bg-background`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {/* System theme with isolated storage to avoid stale overrides */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          storageKey="marketing-theme"
+        >
           {children}
         </ThemeProvider>
       </body>
