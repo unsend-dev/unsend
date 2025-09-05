@@ -53,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className=" bg-background">
+    <html lang="en" suppressHydrationWarning className="scroll-smooth bg-background">
       <body
         className={`font-mono ${inter.variable} ${jetbrainsMono.variable} bg-background`}
       >

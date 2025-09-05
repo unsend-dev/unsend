@@ -18,7 +18,7 @@ export default function Page() {
       <TrustedBy />
       <Features />
       <CodeExample />
-      <CTA />
+      <Pricing />
       <FAQ />
       <Footer />
     </main>
@@ -126,6 +126,9 @@ function TopNav() {
         <nav className="flex items-center gap-4 text-muted-foreground">
           <Link href="#features" className="hover:text-foreground">
             Features
+          </Link>
+          <Link href="#pricing" className="hover:text-foreground">
+            Pricing
           </Link>
           <a
             href={REPO_URL}
@@ -308,7 +311,7 @@ function Features() {
     },
     {
       key: "feature-smtp",
-      title: "SMTP Relay Service",
+      title: "SMTP Relay",
       content:
         "Drop-in SMTP relay that works with any app or framework. Do not get vendor lock-in. Comes in handy with services like Supabase",
     },
@@ -403,30 +406,92 @@ await unsend.emails.send({
   );
 }
 
-function CTA() {
+function Pricing() {
+  const freePerks = [
+    "Send up to 3000 emails per month",
+    "Send up to 100 emails per day",
+    "Can have 1 contact book",
+    "Can have 1 domain",
+    "Can have 1 team member",
+  ];
+
+  const paidPerks = [
+    "$10 minimum monthly spend",
+    "Send transactional emails at $0.0004 per email",
+    "Send marketing emails at $0.001 per email",
+    "Can have unlimited contact books",
+    "Can have unlimited domains",
+    "Can have unlimited team members",
+  ];
+
   return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto max-w-3xl px-6">
-        <div className="rounded-2xl border border-border bg-card p-8 sm:p-10 text-center">
-          <h3 className="text-2xl font-semibold">Start sending with useSend</h3>
-          <p className="mt-2 text-muted-foreground">
-            Free and open source. Self‑host with Docker or fork and extend.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button size="lg" className="px-6">
-              <a
-                href={GET_STARTED_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get started on GitHub
-              </a>
-            </Button>
-            <GitHubStarsButton />
+    <section id="pricing" className="py-16 sm:py-20">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="text-center">
+          <div className="mb-2 text-sm uppercase tracking-wider text-primary">
+            PRICING
           </div>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
+            pay for what you use, not for storing contacts
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <PricingCard
+            title="Free"
+            price="$0"
+            note="per month"
+            perks={freePerks}
+          />
+          <PricingCard
+            title="Paid"
+            price="$10"
+            note="minimum spend per month"
+            perks={paidPerks}
+          />
         </div>
       </div>
     </section>
+  );
+}
+
+type PricingCardProps = {
+  title: string;
+  price: string;
+  note: string;
+  perks: string[];
+};
+
+function PricingCard({ title, price, note, perks }: PricingCardProps) {
+  return (
+    <div className="rounded-[18px] bg-primary/20 p-1">
+      <div className="h-full rounded-[14px] bg-primary/20 p-0.5 shadow-sm">
+        <div className="bg-background rounded-xl h-full flex flex-col p-5">
+          <h3 className=" font-medium">{title}</h3>
+          <div className="mt-2 text-4xl text-primary">{price}</div>
+          <div className="text-xs text-muted-foreground">{note}</div>
+          <ul className="mt-4 space-y-2 text-sm mb-20">
+            {perks.map((perk) => (
+              <li key={perk} className="flex items-start gap-2">
+                <CheckIcon className="w-4 h-4 mt-0.5 text-primary" />
+                <span>{perk}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-auto pt-6">
+            <Button className="">
+              <a
+                href="https://app.usesend.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Get started
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -526,114 +591,6 @@ function CheckIcon({ className = "" }: { className?: string }) {
       aria-hidden="true"
     >
       <path d="M20 6 9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function MailIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
-      <path d="m3 7 9 6 9-6" />
-    </svg>
-  );
-}
-
-function LayoutIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="3" y="4" width="18" height="16" rx="2" />
-      <path d="M12 4v16M3 9h18" />
-    </svg>
-  );
-}
-
-function BarChartIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M3 3v18h18" />
-      <rect x="7" y="10" width="3" height="7" />
-      <rect x="12" y="7" width="3" height="10" />
-      <rect x="17" y="12" width="3" height="5" />
-    </svg>
-  );
-}
-
-function ServerIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="3" y="4" width="18" height="6" rx="2" />
-      <rect x="3" y="14" width="18" height="6" rx="2" />
-      <path d="M7 7h.01M7 17h.01" />
-    </svg>
-  );
-}
-
-function CodeIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="m8 9-4 3 4 3M16 9l4 3-4 3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function OpenSourceIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className={className}
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7a5 5 0 1 0 3.535 8.535L12 12l-3.535 3.535" />
     </svg>
   );
 }
