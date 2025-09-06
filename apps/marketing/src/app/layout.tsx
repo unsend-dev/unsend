@@ -17,22 +17,21 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "useSend – Open source email platform",
-  description:
-    "Open source email platform for everyone: SMTP, API, editor, analytics.",
+  description: "Pay only for what you send, not for storing contacts",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   metadataBase: new URL("https://usesend.com"),
   openGraph: {
     title: "useSend – Open source email platform",
-    description:
-      "Open source email platform for everyone: SMTP, API, editor, analytics.",
+    description: "Pay only for what you send, not for storing contacts",
     url: "https://usesend.com",
     siteName: "useSend",
     images: [
       {
-        url: "/logo-squircle.png",
-        width: 512,
-        height: 512,
-        alt: "useSend",
+        url: "https://uploads.usesend.com/logos/og.png",
+        width: 1200,
+        height: 630,
+        alt: "useSend – Open source email platform",
+        type: "image/png",
       },
     ],
     locale: "en_US",
@@ -41,9 +40,15 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "useSend – Open source email platform",
-    description:
-      "Open source email platform for everyone: SMTP, API, editor, analytics.",
-    images: ["/logo-squircle.png"],
+    description: "Pay only for what you send, not for storing contacts",
+    images: ["https://uploads.usesend.com/logos/og.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://usesend.com",
   },
 };
 
@@ -53,7 +58,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth bg-background">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="scroll-smooth bg-background"
+    >
       <body
         className={`font-mono ${inter.variable} ${jetbrainsMono.variable} bg-background`}
       >

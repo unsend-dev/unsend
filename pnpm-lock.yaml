@@ -36,6 +36,9 @@ importers:
       '@usesend/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      iconoir-react:
+        specifier: ^7.11.0
+        version: 7.11.0(react@19.1.0)
       next:
         specifier: ^15.3.1
         version: 15.3.1(@babel/core@7.26.10)(react-dom@19.1.0)(react@19.1.0)
@@ -11744,6 +11747,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /iconoir-react@7.11.0(react@19.1.0):
+    resolution: {integrity: sha512-uvTKtnHYwbbTsmQ6HCcliYd50WK0GbjP497RwdISxKzfS01x4cK1Mn/F2mT/t2roSaJQ0I+KnHxMcyvmNMXWsQ==}
+    peerDependencies:
+      react: 18 || 19
+    dependencies:
+      react: 19.1.0
+    dev: false
 
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}

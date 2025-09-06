@@ -10,11 +10,12 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@usesend/email-editor": "workspace:*",
+    "@usesend/ui": "workspace:*",
+    "iconoir-react": "^7.11.0",
     "next": "^15.3.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "@usesend/ui": "workspace:*",
-    "@usesend/email-editor": "workspace:*"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.3.1",

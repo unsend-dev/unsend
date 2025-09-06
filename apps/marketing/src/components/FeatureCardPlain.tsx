@@ -7,6 +7,7 @@ export function FeatureCardPlain({
   title?: string;
   content?: string;
 }) {
+
   return (
     <div className="rounded-[18px] bg-primary/20 p-1">
       <div className="h-full rounded-[14px] bg-primary/20 p-0.5 shadow-sm">

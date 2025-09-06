@@ -42,8 +42,8 @@ function Slider({
   }, [dragging]);
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-40 sm:w-56 md:w-72 shrink-0">
+    <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+      <div className="w-full sm:w-56 md:w-72 shrink-0">
         <label htmlFor={id} className="text-sm font-medium block">
           {label}
         </label>
