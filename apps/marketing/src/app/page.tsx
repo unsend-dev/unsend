@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SiteFooter } from "~/components/SiteFooter";
 import { GitHubStarsButton } from "~/components/GitHubStarsButton";
 import { Button } from "@usesend/ui/src/button";
 import { TopNav } from "~/components/TopNav";
 import { FeatureCard } from "~/components/FeatureCard";
 import { FeatureCardPlain } from "~/components/FeatureCardPlain";
+import { PricingCalculator } from "~/components/PricingCalculator";
 import { CodeBlock } from "@usesend/ui/src/code-block";
 
-const REPO = "unsend-dev/unsend";
+const REPO = "usesend/usesend";
 const REPO_URL = `https://github.com/${REPO}`;
 const APP_URL = "https://app.usesend.com";
 
@@ -21,7 +23,7 @@ export default function Page() {
       <CodeExample />
       <Pricing />
       <About />
-      <Footer />
+      <SiteFooter />
     </main>
   );
 }
@@ -61,7 +63,7 @@ function Hero() {
           <div className="rounded-[18px] bg-primary/10 p-1 sm:p-1 ">
             <div className="rounded-2xl bg-primary/20 p-1 sm:p-1 ">
               <Image
-                src="/hero-light.png"
+                src="/hero-light.webp"
                 alt="useSend product hero"
                 width={3456}
                 height={1914}
@@ -71,7 +73,7 @@ function Hero() {
                 priority={false}
               />
               <Image
-                src="/hero-dark.png"
+                src="/hero-dark.webp"
                 alt="useSend product hero"
                 width={3456}
                 height={1914}
@@ -222,14 +224,16 @@ function Features() {
       title: "Analytics",
       content:
         "Track deliveries, opens, clicks, bounces and unsubscribes in real time with a simple, searchable log. Filter by domain, status, api key and export them. Track which campaigns perform best.",
-      imageSrc: "", // add an image like "/analytics.png"
+      imageLightSrc: "/emails-search-light.webp",
+      imageDarkSrc: "/emails-search-dark.webp",
     },
     {
       key: "feature-editor",
       title: "Marketing Email Editor",
       content:
         "Design beautiful campaigns without code using a visual, notion like WYSIWYG editor that works in major email clients. Reuse templates and brand styles, and personalize with variables.",
-      imageSrc: "", // add an image like "/editor.png"
+      imageLightSrc: "/editor-light.webp",
+      imageDarkSrc: "/editor-dark.webp",
     },
   ];
 
@@ -271,7 +275,8 @@ function Features() {
               key={f.key}
               title={f.title}
               content={f.content}
-              imageSrc={f.imageSrc}
+              imageLightSrc={f.imageLightSrc}
+              imageDarkSrc={f.imageDarkSrc}
             />
           ))}
         </div>
@@ -370,7 +375,7 @@ function Pricing() {
             PRICING
           </div>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto">
-            pay for what you use, not for storing contacts
+            pay for what you use, the most affordable email platform
           </p>
         </div>
 
@@ -387,6 +392,10 @@ function Pricing() {
             note="minimum usage per month"
             perks={paidPerks}
           />
+        </div>
+
+        <div className="mt-8">
+          <PricingCalculator />
         </div>
       </div>
     </section>
@@ -469,50 +478,7 @@ function About() {
 
 // FAQ section removed per request
 
-function Footer() {
-  return (
-    <footer className="py-10 border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/logo-squircle.png"
-            alt="useSend"
-            width={24}
-            height={24}
-          />
-          <span className="text-primary font-mono">useSend</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="#features" className="hover:text-foreground">
-            Features
-          </Link>
-          <Link href="/privacy" className="hover:text-foreground">
-            Privacy
-          </Link>
-          <Link href="/terms" className="hover:text-foreground">
-            Terms
-          </Link>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            GitHub
-          </a>
-          <a
-            href={APP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            Get Started
-          </a>
-        </div>
-      </div>
-    </footer>
-  );
-}
+// Footer moved to ~/components/SiteFooter
 
 // Minimal inline icons (stroke-based, sleek)
 function CheckIcon({ className = "" }: { className?: string }) {
