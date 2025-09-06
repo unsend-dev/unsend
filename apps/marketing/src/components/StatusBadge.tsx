@@ -4,66 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 
 type StatusState = "operational" | "degraded" | "down" | "unknown";
 
-// Best-effort fetcher for Uptime Kuma public status page JSON.
-// Falls back gracefully if the endpoint or CORS is not available.
-async function fetchUptimeStatus(baseUrl: string): Promise<StatusState> {
-  const candidates = [
-    "/api/status-page/heartbeat/default", // specific uptime-kuma status page slug
-  ];
-
-  for (const path of candidates) {
-    try {
-      const res = await fetch(baseUrl.replace(/\/$/, "") + path, {
-        // Always fetch from the browser; avoid caching too aggressively
-        cache: "no-store",
-      });
-      if (!res.ok) continue;
-      const data: any = await res.json().catch(() => null);
-      if (!data) continue;
-
-      // Heuristics across possible Kuma payloads
-      // 1) overallStatus or status fields
-      const overall = (data.overallStatus || data.status || "")
-        .toString()
-        .toLowerCase();
-      if (
-        overall.includes("up") ||
-        overall.includes("ok") ||
-        overall.includes("oper")
-      )
-        return "operational";
-      if (overall.includes("degrad") || overall.includes("partial"))
-        return "degraded";
-      if (
-        overall.includes("down") ||
-        overall.includes("outage") ||
-        overall.includes("incident")
-      )
-        return "down";
-
-      // 2) heartbeat style: if any monitor is down
-      if (Array.isArray(data.monitors) && Array.isArray(data.heartbeatList)) {
-        // If any lastHeartbeatStatus === 0 (down) => down
-        const isAnyDown = Object.values<any>(data.heartbeatList).some(
-          (arr: any[]) =>
-            Array.isArray(arr) && arr.some((hb) => hb?.status === 0)
-        );
-        if (isAnyDown) return "down";
-        return "operational";
-      }
-
-      // 3) Generic boolean hints
-      if (typeof data.allUp === "boolean")
-        return data.allUp ? "operational" : "down";
-
-      // Unknown but successful response
-      return "unknown";
-    } catch {
-      // Try next candidate
-      continue;
-    }
+// Fetch normalized status from the app's server API to bypass CORS.
+async function fetchUptimeStatus(): Promise<StatusState> {
+  try {
+    const res = await fetch("/api/status", { cache: "no-store" });
+    if (!res.ok) return "unknown";
+    const data: any = await res.json().catch(() => null);
+    const s = (data?.status || "").toString().toLowerCase();
+    console.log(data);
+    if (s === "operational" || s === "degraded" || s === "down")
+      return s as StatusState;
+    return "unknown";
+  } catch {
+    return "unknown";
   }
-  return "unknown";
 }
 
 export function StatusBadge({
@@ -76,7 +30,8 @@ export function StatusBadge({
   useEffect(() => {
     let mounted = true;
     const load = async () => {
-      const s = await fetchUptimeStatus(baseUrl);
+      const s = await fetchUptimeStatus();
+
       if (mounted) setStatus(s);
     };
     load();
@@ -85,7 +40,7 @@ export function StatusBadge({
       mounted = false;
       clearInterval(id);
     };
-  }, [baseUrl]);
+  }, []);
 
   const dotClass = useMemo(() => {
     switch (status) {
