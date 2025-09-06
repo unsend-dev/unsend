@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@usesend/ui/src/button";
 
-const REPO = "unsend-dev/unsend";
+const REPO = "usesend/usesend";
 const REPO_URL = `https://github.com/${REPO}`;
 const APP_URL = "https://app.usesend.com";
 

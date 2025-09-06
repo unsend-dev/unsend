@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SiteFooter } from "~/components/SiteFooter";
 import { GitHubStarsButton } from "~/components/GitHubStarsButton";
 import { Button } from "@usesend/ui/src/button";
 import { TopNav } from "~/components/TopNav";
@@ -8,7 +9,7 @@ import { FeatureCardPlain } from "~/components/FeatureCardPlain";
 import { PricingCalculator } from "~/components/PricingCalculator";
 import { CodeBlock } from "@usesend/ui/src/code-block";
 
-const REPO = "unsend-dev/unsend";
+const REPO = "usesend/usesend";
 const REPO_URL = `https://github.com/${REPO}`;
 const APP_URL = "https://app.usesend.com";
 
@@ -22,7 +23,7 @@ export default function Page() {
       <CodeExample />
       <Pricing />
       <About />
-      <Footer />
+      <SiteFooter />
     </main>
   );
 }
@@ -477,50 +478,7 @@ function About() {
 
 // FAQ section removed per request
 
-function Footer() {
-  return (
-    <footer className="py-10 border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/logo-squircle.png"
-            alt="useSend"
-            width={24}
-            height={24}
-          />
-          <span className="text-primary font-mono">useSend</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="#features" className="hover:text-foreground">
-            Features
-          </Link>
-          <Link href="/privacy" className="hover:text-foreground">
-            Privacy
-          </Link>
-          <Link href="/terms" className="hover:text-foreground">
-            Terms
-          </Link>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            GitHub
-          </a>
-          <a
-            href={APP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-foreground"
-          >
-            Get Started
-          </a>
-        </div>
-      </div>
-    </footer>
-  );
-}
+// Footer moved to ~/components/SiteFooter
 
 // Minimal inline icons (stroke-based, sleek)
 function CheckIcon({ className = "" }: { className?: string }) {

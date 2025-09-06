@@ -24,7 +24,7 @@ export function FeatureCard({
     <div className="rounded-[18px] bg-primary/20 p-1 ">
       <div className="h-full rounded-[14px] bg-primary/20 p-0.5   shadow-sm">
         <div className="bg-background rounded-xl h-full flex flex-col">
-          <div className="relative w-full aspect-[16/9] rounded-t-xl">
+          <div className="relative w-full aspect-[16/9] rounded-t-xl overflow-hidden">
             {imageLightSrc || imageDarkSrc ? (
               <>
                 <Image
@@ -68,6 +68,7 @@ export function FeatureCard({
                 />
               </>
             )}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 sm:h-16 bg-gradient-to-b from-transparent via-background/60 to-background" />
           </div>
 
           <div className="p-5 flex-1 flex flex-col">

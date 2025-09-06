@@ -1,6 +1,6 @@
 import { Button } from "@usesend/ui/src/button";
 
-const REPO = "unsend-dev/unsend";
+const REPO = "usesend/usesend";
 const REPO_URL = `https://github.com/${REPO}`;
 const API_URL = `https://api.github.com/repos/${REPO}`;
 const REVALIDATE_SECONDS = 60 * 60 * 24 * 7; // 7 days
