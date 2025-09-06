@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { StatusBadge } from "~/components/StatusBadge";
+// Replaced StatusBadge with external status badge image
 
 const REPO = "usesend/usesend";
 const REPO_URL = `https://github.com/${REPO}`;
@@ -132,7 +132,20 @@ export function SiteFooter() {
               </div>
             </div>
 
-            <StatusBadge />
+            <a
+              href="https://status.usesend.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Service status"
+              title="Service status"
+              className="inline-flex items-center"
+            >
+              <img
+                src="https://status.usesend.com/api/badge/2/status?upColor=30D9BD&style=plastic"
+                alt="Service status"
+                className="h-5"
+              />
+            </a>
           </div>
         </div>
 
