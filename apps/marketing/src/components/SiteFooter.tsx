@@ -12,27 +12,49 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
           <div className="flex items-center gap-2 sm:w-56">
-            <Image src="/logo-squircle.png" alt="useSend" width={24} height={24} />
+            <Image
+              src="/logo-squircle.png"
+              alt="useSend"
+              width={24}
+              height={24}
+            />
             <span className="text-primary font-mono">useSend</span>
           </div>
 
           <div className="sm:ml-auto flex items-start gap-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-12 gap-y-2 text-sm">
               <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Product</div>
+                <div className="text-xs uppercase tracking-wider mb-2">
+                  Product
+                </div>
                 <ul className="space-y-2 text-muted-foreground">
                   <li>
-                    <a href={APP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href={APP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       Dashboard
                     </a>
                   </li>
                   <li>
-                    <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href={REPO_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       GitHub
                     </a>
                   </li>
                   <li>
-                    <a href="https://docs.usesend.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href="https://docs.usesend.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       Docs
                     </a>
                   </li>
@@ -40,23 +62,45 @@ export function SiteFooter() {
               </div>
 
               <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Contact</div>
+                <div className="text-xs uppercase tracking-wider  mb-2">
+                  Contact
+                </div>
                 <ul className="space-y-2 text-muted-foreground">
                   <li>
-                    <a href="mailto:hey@usesend.com" className="hover:text-foreground">Email</a>
+                    <a
+                      href="mailto:hey@usesend.com"
+                      className="hover:text-foreground text-xs"
+                    >
+                      Email
+                    </a>
                   </li>
                   <li>
-                    <a href="https://x.com/useSend_com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href="https://x.com/useSend_com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       X (Twitter)
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.linkedin.com/company/use-send/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href="https://www.linkedin.com/company/use-send/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       LinkedIn
                     </a>
                   </li>
                   <li>
-                    <a href="https://bsky.app/profile/usesend.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+                    <a
+                      href="https://bsky.app/profile/usesend.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-foreground text-xs"
+                    >
                       Bluesky
                     </a>
                   </li>
@@ -64,13 +108,25 @@ export function SiteFooter() {
               </div>
 
               <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Company</div>
+                <div className="text-xs uppercase tracking-wider mb-2">
+                  Company
+                </div>
                 <ul className="space-y-2 text-muted-foreground">
                   <li>
-                    <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+                    <Link
+                      href="/privacy"
+                      className="hover:text-foreground text-xs"
+                    >
+                      Privacy
+                    </Link>
                   </li>
                   <li>
-                    <Link href="/terms" className="hover:text-foreground">Terms</Link>
+                    <Link
+                      href="/terms"
+                      className="hover:text-foreground text-xs"
+                    >
+                      Terms
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -87,4 +143,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-
